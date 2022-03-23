@@ -1,18 +1,58 @@
 import { format, startOfToday } from "date-fns";
-import { Form, json, redirect } from "remix";
-import { getUserId } from "~/session.server";
+import { Form, json, redirect, useLoaderData } from "remix";
+import { prisma } from "~/db.server";
+import { getUserId, requireUserId } from "~/session.server";
 
 export async function loader({ request }) {
-  const userId = await getUserId(request);
+  let userId = await getUserId(request);
   if (!userId) return redirect("/");
-  return json({});
+
+  let exercises = await prisma.exercise.findMany({});
+
+  return json({ exercises });
 }
 
-export async function action() {
-  //
+export async function action({ request }) {
+  let userId = await requireUserId(request);
+
+  let formData = await request.formData();
+  let exerciseId = formData.get("exerciseId");
+  let date = formData.get("date");
+  let notes = formData.get("notes");
+
+  await prisma.entry.create({
+    data: {
+      userId,
+      exerciseId,
+      date: `${date}T00:00:00.000Z`,
+      notes,
+    },
+  });
+
+  return redirect(`/`);
+
+  // if (typeof title !== "string" || title.length === 0) {
+  //   return json(
+  //     { errors: { title: "Title is required" } },
+  //     { status: 400 }
+  //   );
+  // }
+
+  // if (typeof body !== "string" || body.length === 0) {
+  //   return json(
+  //     { errors: { body: "Body is required" } },
+  //     { status: 400 }
+  //   );
+  // }
+
+  // let note = await createNote({ title, body, userId });
+
+  // return redirect(`/notes/${note.id}`);
 }
 
 export default function NewEntryPage() {
+  let { exercises } = useLoaderData();
+
   return (
     <div className="px-4 mt-8">
       <h1 className="text-2xl font-semibold">New entry</h1>
@@ -21,9 +61,12 @@ export default function NewEntryPage() {
         <div>
           <label className="space-y-2">
             <span className="text-sm font-medium text-gray-500">Exercise</span>
-            <select className="w-full" name="" id="">
-              <option value="1">Bench press</option>
-              <option value="2">Squat</option>
+            <select className="w-full" name="exerciseId" id="">
+              {exercises.map((exercise) => (
+                <option key={exercise.id} value={exercise.id}>
+                  {exercise.name}
+                </option>
+              ))}
             </select>
           </label>
         </div>
@@ -35,8 +78,7 @@ export default function NewEntryPage() {
               defaultValue={format(startOfToday(), "yyyy-MM-dd")}
               className="w-full"
               type="date"
-              name=""
-              id=""
+              name="date"
             />
           </label>
         </div>
@@ -61,7 +103,7 @@ export default function NewEntryPage() {
         <div>
           <label className="space-y-2">
             <span className="text-sm font-medium text-gray-500">Notes</span>
-            <textarea className="w-full" name="" id="" rows={5}></textarea>
+            <textarea className="w-full" name="notes" rows={5}></textarea>
           </label>
         </div>
 
