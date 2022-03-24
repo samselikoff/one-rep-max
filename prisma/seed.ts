@@ -4,41 +4,31 @@ import bcrypt from "@node-rs/bcrypt";
 const prisma = new PrismaClient();
 
 async function seed() {
-  const email = "rachel@remix.run";
+  // const email = "sam.selikoff@gmail.com";
 
-  // cleanup the existing database
-  await prisma.user.delete({ where: { email } }).catch(() => {
-    // no worries if it doesn't exist yet
-  });
+  // // cleanup the existing database
+  // await prisma.user.delete({ where: { email } }).catch(() => {
+  //   // no worries if it doesn't exist yet
+  // });
 
-  const hashedPassword = await bcrypt.hash("racheliscool", 10);
+  // const hashedPassword = await bcrypt.hash("racheliscool", 10);
 
-  const user = await prisma.user.create({
-    data: {
-      email,
-      password: {
-        create: {
-          hash: hashedPassword,
-        },
-      },
-    },
-  });
+  // const user = await prisma.user.create({
+  //   data: {
+  //     email,
+  //     password: {
+  //       create: {
+  //         hash: hashedPassword,
+  //       },
+  //     },
+  //   },
+  // });
 
-  await prisma.note.create({
-    data: {
-      title: "My first note",
-      body: "Hello, world!",
-      userId: user.id,
-    },
-  });
-
-  await prisma.note.create({
-    data: {
-      title: "My second note",
-      body: "Hello, world!",
-      userId: user.id,
-    },
-  });
+  ["Bench press", "Squat", "Deadlift", "Shoulder press"].forEach(
+    async (name) => {
+      await prisma.exercise.create({ data: { name } });
+    }
+  );
 
   console.log(`Database has been seeded. 🌱`);
 }
