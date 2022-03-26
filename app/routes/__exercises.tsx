@@ -1,18 +1,8 @@
-import { format, parseISO } from "date-fns";
 import { json, Link, NavLink, Outlet, useLoaderData } from "remix";
 import { prisma } from "~/db.server";
-import { requireUserId } from "~/session.server";
 import { useOptionalUser } from "~/utils";
 
 export async function loader({ request }) {
-  let userId = await requireUserId(request);
-  // let entries = await prisma.entry.findMany({
-  //   where: { userId },
-  //   include: {
-  //     exercise: true,
-  //     sets: true,
-  //   },
-  // });
   let exercises = await prisma.exercise.findMany();
 
   return json({ exercises });
