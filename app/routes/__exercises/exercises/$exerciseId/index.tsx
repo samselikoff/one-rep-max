@@ -21,7 +21,7 @@ export async function loader({ request, params }) {
 
   return json({ exercise, entries });
 }
-export default function ExerciseIndexPag() {
+export default function ExerciseIndexPage() {
   let { exercise, entries } = useLoaderData();
 
   return (
@@ -38,9 +38,12 @@ export default function ExerciseIndexPag() {
           <div className="divide-y">
             {entries.map((entry) => (
               <div key={entry.id} className="py-4">
-                <p className="font-medium">
-                  {format(parseISO(entry.date), "EEEE, MMMM do")}
-                </p>
+                <div className="flex justify-between">
+                  <p className="font-medium ">
+                    {format(parseISO(entry.date), "EEEE, MMMM do")}
+                  </p>
+                  {/* <Link to={`/exercises/${exerciseId}/edit`} className="text-sm text-right text-sky-500">Edit</Link> */}
+                </div>
                 <div className="mt-2">
                   {entry.sets.map((set) => (
                     <div key={set.id}>
