@@ -10,6 +10,7 @@ export async function loader({ request }) {
     where: { userId },
     include: {
       exercise: true,
+      sets: true,
     },
   });
 
@@ -23,7 +24,7 @@ export default function Index() {
   return (
     <div>
       {user ? (
-        <div className="px-4 mt-8">
+        <div className="px-4 mt-6">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-semibold">Entries</h1>
             <Link
@@ -43,6 +44,13 @@ export default function Index() {
                     {format(parseISO(entry.date), "EEEE, MMMM do")}
                   </p>
                 </div>
+                {entry.sets.map((set) => (
+                  <div key={set.id}>
+                    <p>
+                      {set.weight} lbs - {set.reps} reps
+                    </p>
+                  </div>
+                ))}
                 <p className="mt-1 text-gray-700">{entry.notes}</p>
               </div>
             ))}

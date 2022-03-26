@@ -24,11 +24,11 @@ async function seed() {
   //   },
   // });
 
-  ["Bench press", "Squat", "Deadlift", "Shoulder press"].forEach(
-    async (name) => {
-      await prisma.exercise.create({ data: { name } });
-    }
-  );
+  // ["Bench press", "Squat", "Deadlift", "Shoulder press"].forEach(
+  //   async (name) => {
+  //     await prisma.exercise.create({ data: { name } });
+  //   }
+  // );
 
   console.log(`Database has been seeded. 🌱`);
 }
