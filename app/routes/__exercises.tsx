@@ -2,7 +2,7 @@ import { json, Link, NavLink, Outlet, useLoaderData } from "remix";
 import { prisma } from "~/db.server";
 import { useOptionalUser } from "~/utils";
 
-export async function loader({ request }) {
+export async function loader() {
   let exercises = await prisma.exercise.findMany();
 
   return json({ exercises });
