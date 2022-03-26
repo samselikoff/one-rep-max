@@ -1,0 +1,10 @@
+-- CreateTable
+CREATE TABLE "Set" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "weight" DECIMAL,
+    "reps" INTEGER NOT NULL,
+    "entryId" TEXT NOT NULL,
+    CONSTRAINT "Set_entryId_fkey" FOREIGN KEY ("entryId") REFERENCES "Entry" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);

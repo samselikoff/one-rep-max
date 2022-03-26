@@ -95,7 +95,9 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col justify-center min-h-full mt-40">
       <div className="w-full max-w-md px-8 mx-auto">
-        <Form method="post" className="space-y-6">
+        <h1 className="text-2xl font-semibold">Sign in</h1>
+
+        <Form method="post" className="mt-4 space-y-6">
           <div>
             <label
               htmlFor="email"
