@@ -1,5 +1,5 @@
 import { format, parseISO } from "date-fns";
-import { json, Link, useLoaderData } from "remix";
+import { json, Link, useLoaderData, useMatches, useParams } from "remix";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 
@@ -23,6 +23,7 @@ export async function loader({ request, params }) {
 }
 export default function ExerciseIndexPage() {
   let { exercise, entries } = useLoaderData();
+  let { exerciseId } = useParams();
 
   return (
     <div className="px-4 mt-4">
@@ -42,7 +43,12 @@ export default function ExerciseIndexPage() {
                   <p className="font-medium ">
                     {format(parseISO(entry.date), "EEEE, MMMM do")}
                   </p>
-                  {/* <Link to={`/exercises/${exerciseId}/edit`} className="text-sm text-right text-sky-500">Edit</Link> */}
+                  <Link
+                    to={`/exercises/${exerciseId}/edit`}
+                    className="text-sm text-right text-sky-500"
+                  >
+                    Edit
+                  </Link>
                 </div>
                 <div className="mt-2">
                   {entry.sets.map((set) => (
