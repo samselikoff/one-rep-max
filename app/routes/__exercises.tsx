@@ -1,32 +1,33 @@
 import { format, parseISO } from "date-fns";
-import { json, Link, useLoaderData } from "remix";
+import { json, Link, NavLink, Outlet, useLoaderData } from "remix";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import { useOptionalUser } from "~/utils";
 
 export async function loader({ request }) {
   let userId = await requireUserId(request);
-  let entries = await prisma.entry.findMany({
-    where: { userId },
-    include: {
-      exercise: true,
-      sets: true,
-    },
-  });
+  // let entries = await prisma.entry.findMany({
+  //   where: { userId },
+  //   include: {
+  //     exercise: true,
+  //     sets: true,
+  //   },
+  // });
+  let exercises = await prisma.exercise.findMany();
 
-  return json({ entries });
+  return json({ exercises });
 }
 
-export default function Index() {
+export default function ExercisesLayout() {
   let user = useOptionalUser();
-  let { entries } = useLoaderData();
+  let { exercises } = useLoaderData();
 
   return (
     <div>
       {user ? (
         <div className="px-4 mt-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-semibold">Entries</h1>
+            <h1 className="text-2xl font-semibold">Exercises</h1>
             <Link
               className="px-2 py-1 text-sm border-2 rounded"
               to="/entries/new"
@@ -35,26 +36,25 @@ export default function Index() {
             </Link>
           </div>
 
-          <div className="mt-8 space-y-6">
-            {entries.map((entry) => (
-              <div key={entry.id}>
-                <div className="flex items-center justify-between text-lg">
-                  <p className="font-semibold">{entry.exercise.name}</p>
-                  <p className="text-sm text-gray-600">
-                    {format(parseISO(entry.date), "EEEE, MMMM do")}
-                  </p>
-                </div>
-                {entry.sets.map((set) => (
-                  <div key={set.id}>
-                    <p>
-                      {set.weight} lbs - {set.reps} reps
-                    </p>
-                  </div>
-                ))}
-                <p className="mt-1 text-gray-700">{entry.notes}</p>
-              </div>
+          <div className="flex pb-4 mt-4 space-x-4 overflow-x-scroll">
+            {exercises.map((exercise) => (
+              <NavLink
+                className={({ isActive }) =>
+                  `${
+                    isActive
+                      ? "border-gray-800 bg-gray-800 text-white"
+                      : "border-gray-300"
+                  } whitespace-nowrap border  px-3 py-2`
+                }
+                to={`/exercises/${exercise.id}`}
+                key={exercise.id}
+              >
+                {exercise.name}
+              </NavLink>
             ))}
           </div>
+
+          <Outlet />
         </div>
       ) : (
         <div className="flex justify-center px-8 mt-40 space-x-4">

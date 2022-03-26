@@ -36,40 +36,8 @@ export async function action({ request }) {
   });
 
   await prisma.entry.create({ data });
-  // data: {
-  //   userId,
-  //   exerciseId,
-  //   date: `${date}T00:00:00.000Z`,
-  //   notes,
-  //   posts: {
-  //     create: [
-  //       { title: 'How to make an omelette' },
-  //       { title: 'How to eat an omelette' },
-  //     ],
-  //   },
-  // },
-  // });
 
-  // return null;
-  return redirect(`/`);
-
-  // if (typeof title !== "string" || title.length === 0) {
-  //   return json(
-  //     { errors: { title: "Title is required" } },
-  //     { status: 400 }
-  //   );
-  // }
-
-  // if (typeof body !== "string" || body.length === 0) {
-  //   return json(
-  //     { errors: { body: "Body is required" } },
-  //     { status: 400 }
-  //   );
-  // }
-
-  // let note = await createNote({ title, body, userId });
-
-  // return redirect(`/notes/${note.id}`);
+  return redirect(`/exercises/${exerciseId}`);
 }
 
 export default function NewEntryPage() {
