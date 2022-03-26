@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { differenceInDays, format, parseISO, startOfToday } from "date-fns";
 import { useRef, useState } from "react";
 import { Form, json, redirect, useLoaderData } from "remix";
