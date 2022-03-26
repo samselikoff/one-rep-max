@@ -1,16 +1,25 @@
-// @ts-nocheck
-import { format, startOfToday } from "date-fns";
+import { differenceInDays, format, parseISO, startOfToday } from "date-fns";
 import { useRef, useState } from "react";
 import { Form, json, redirect, useLoaderData } from "remix";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 
 export async function loader({ request, params }) {
+  let userId = await requireUserId(request);
+
   let exercise = await prisma.exercise.findFirst({
     where: { id: params.exerciseId },
   });
 
-  return json({ exercise });
+  let lastEntry = await prisma.entry.findFirst({
+    where: { userId, exerciseId: params.exerciseId },
+    orderBy: { date: "desc" },
+    include: {
+      sets: true,
+    },
+  });
+
+  return json({ lastEntry, exercise });
 }
 
 export async function action({ request, params }) {
@@ -38,7 +47,7 @@ export async function action({ request, params }) {
 }
 
 export default function NewEntryPage() {
-  let { exercise } = useLoaderData();
+  let { lastEntry, exercise } = useLoaderData();
   let [sets, setSets] = useState(1);
   let formRef = useRef();
 
@@ -133,6 +142,25 @@ export default function NewEntryPage() {
           </button>
         </div>
       </Form>
+
+      <div className="p-4 mt-4 text-sm text-gray-700 bg-gray-200">
+        <div className="flex justify-between">
+          <p className="font-medium">Latest {exercise.name}</p>
+          <p>
+            {differenceInDays(startOfToday(), parseISO(lastEntry.date))} days
+            ago
+          </p>
+        </div>
+        <div className="mt-4">
+          <ul>
+            {lastEntry.sets.map((set) => (
+              <li key={set.id}>
+                {set.weight} lbs - {set.reps} reps
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
