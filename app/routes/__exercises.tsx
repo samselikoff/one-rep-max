@@ -25,18 +25,8 @@ export default function ExercisesLayout() {
   return (
     <div>
       {user ? (
-        <div className="px-4 mt-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-semibold">Exercises</h1>
-            <Link
-              className="px-2 py-1 text-sm border-2 rounded"
-              to="/entries/new"
-            >
-              + New entry
-            </Link>
-          </div>
-
-          <div className="flex pb-4 mt-4 space-x-4 overflow-x-scroll">
+        <div className="mt-4">
+          <div className="flex px-4 pb-4 mt-4 space-x-4 overflow-x-scroll">
             {exercises.map((exercise) => (
               <NavLink
                 className={({ isActive }) =>
