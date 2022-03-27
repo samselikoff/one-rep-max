@@ -1,5 +1,5 @@
 import { format, parseISO } from "date-fns";
-import { json, Link, useLoaderData, useMatches, useParams } from "remix";
+import { json, Link, useLoaderData, useParams } from "remix";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 
@@ -41,10 +41,10 @@ export default function ExerciseIndexPage() {
               <div key={entry.id} className="py-4">
                 <div className="flex justify-between">
                   <p className="font-medium ">
-                    {format(parseISO(entry.date), "EEEE, MMMM do")}
+                    {format(parseISO(entry.date.substring(0, 10)), "MMMM do")}
                   </p>
                   <Link
-                    to={`/exercises/${exerciseId}/edit`}
+                    to={`/exercises/${exerciseId}/entries/${entry.id}/edit`}
                     className="text-sm text-right text-sky-500"
                   >
                     Edit
