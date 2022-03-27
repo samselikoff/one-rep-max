@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { json, redirect, useLoaderData } from "remix";
+import { Form, json, redirect, useLoaderData } from "remix";
 import EntryForm from "~/components/EntryForm";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
@@ -31,31 +31,38 @@ export async function loader({ request, params }) {
 
 export async function action({ request, params }) {
   let userId = await requireUserId(request);
-
-  await prisma.set.deleteMany({
-    where: { entryId: params.entryId },
-  });
-
-  let formData = await request.formData();
   let exerciseId = params.exerciseId;
-  let date = formData.get("date");
-  let notes = formData.get("notes");
-  let weights = formData.getAll("weight");
-  let reps = formData.getAll("reps");
-  let data = {
-    userId,
-    exerciseId,
-    date: `${date}T00:00:00.000Z`,
-    notes,
-    sets: { create: [] },
-  };
-  weights.forEach((weight, i) => {
-    data.sets.create.push({ weight: +weight, reps: +reps[i] });
-  });
+  let formData = await request.formData();
 
-  await prisma.entry.update({ where: { id: params.entryId }, data });
+  if (formData.get("_method") === "delete") {
+    await prisma.entry.delete({
+      where: { id: params.entryId },
+    });
 
-  return redirect(`/exercises/${exerciseId}`);
+    return redirect(`/exercises/${exerciseId}`);
+  } else {
+    await prisma.set.deleteMany({
+      where: { entryId: params.entryId },
+    });
+    let date = formData.get("date");
+    let notes = formData.get("notes");
+    let weights = formData.getAll("weight");
+    let reps = formData.getAll("reps");
+    let data = {
+      userId,
+      exerciseId,
+      date: `${date}T00:00:00.000Z`,
+      notes,
+      sets: { create: [] },
+    };
+    weights.forEach((weight, i) => {
+      data.sets.create.push({ weight: +weight, reps: +reps[i] });
+    });
+
+    await prisma.entry.update({ where: { id: params.entryId }, data });
+
+    return redirect(`/exercises/${exerciseId}`);
+  }
 }
 
 export default function EditEntryPage() {
@@ -66,6 +73,13 @@ export default function EditEntryPage() {
       <h1 className="text-2xl font-semibold">{exercise.name} – Edit entry</h1>
 
       <EntryForm entry={entry} exercise={exercise} lastEntry={lastEntry} />
+
+      <Form method="post">
+        <input type="hidden" name="_method" value="delete" />
+        <button className="font-medium text-red-500" type="submit">
+          Delete
+        </button>
+      </Form>
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
 import { useState } from "react";
 import { Form } from "remix";
 
-export default function EntryForm({ exercise, entry, lastEntry }) {
+export default function EntryForm({ exercise, entry = null, lastEntry }) {
   let [sets, setSets] = useState(
     entry?.sets.length > 0 ? entry.sets : [{ weight: "", reps: "" }]
   );
@@ -126,7 +126,7 @@ export default function EntryForm({ exercise, entry, lastEntry }) {
           <label className="space-y-2">
             <span className="text-sm font-medium text-gray-500">Notes</span>
             <textarea
-              defaultValue={entry ? entry.notes : ""}
+              defaultValue={entry?.notes || ""}
               className="w-full"
               name="notes"
               rows={4}

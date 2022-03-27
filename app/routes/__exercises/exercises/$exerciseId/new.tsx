@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { json, redirect, useLoaderData } from "remix";
 import EntryForm from "~/components/EntryForm";
 import { prisma } from "~/db.server";
@@ -35,7 +34,7 @@ export async function action({ request, params }) {
     exerciseId,
     date: `${date}T00:00:00.000Z`,
     notes,
-    sets: { create: [] },
+    sets: { create: [] as any },
   };
   weights.forEach((weight, i) => {
     data.sets.create.push({ weight: +weight, reps: +reps[i] });
