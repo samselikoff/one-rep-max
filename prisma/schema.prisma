@@ -49,6 +49,7 @@ model Set {
   updatedAt DateTime @updatedAt
   weight    Decimal?
   reps      Int
+  tracked   Boolean  @default(false)
   entry     Entry    @relation(fields: [entryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   entryId   String
 }

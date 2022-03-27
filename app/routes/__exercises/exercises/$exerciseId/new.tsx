@@ -29,6 +29,7 @@ export async function action({ request, params }) {
   let notes = formData.get("notes");
   let weights = formData.getAll("weight");
   let reps = formData.getAll("reps");
+  let trackingSet = +formData.getAll("trackingSet");
   let data = {
     userId,
     exerciseId,
@@ -36,8 +37,12 @@ export async function action({ request, params }) {
     notes,
     sets: { create: [] as any },
   };
-  weights.forEach((weight, i) => {
-    data.sets.create.push({ weight: +weight, reps: +reps[i] });
+  weights.forEach((weight, index) => {
+    data.sets.create.push({
+      weight: +weight,
+      reps: +reps[index],
+      tracked: index === trackingSet,
+    });
   });
 
   await prisma.entry.create({ data });
@@ -49,7 +54,7 @@ export default function NewEntryPage() {
   let { lastEntry, exercise } = useLoaderData();
 
   return (
-    <div className="px-4 mt-4">
+    <div className="mt-4 px-4">
       <h1 className="text-2xl font-semibold">{exercise.name} – New entry</h1>
 
       <EntryForm exercise={exercise} lastEntry={lastEntry} />

@@ -26,10 +26,10 @@ export default function ExerciseIndexPage() {
   let { exerciseId } = useParams();
 
   return (
-    <div className="px-4 mt-4">
+    <div className="mt-4 px-4">
       <div className="flex justify-between">
         <h1 className="text-2xl font-semibold">{exercise.name}</h1>
-        <Link className="px-2 py-1 border" to={`/exercises/${exercise.id}/new`}>
+        <Link className="border px-2 py-1" to={`/exercises/${exercise.id}/new`}>
           + New
         </Link>
       </div>
@@ -45,7 +45,7 @@ export default function ExerciseIndexPage() {
                   </p>
                   <Link
                     to={`/exercises/${exerciseId}/entries/${entry.id}/edit`}
-                    className="text-sm text-right text-sky-500"
+                    className="text-right text-sm text-sky-500"
                   >
                     Edit
                   </Link>
@@ -55,6 +55,7 @@ export default function ExerciseIndexPage() {
                     <div key={set.id}>
                       <p>
                         {set.weight} lbs – {set.reps} reps
+                        {set.tracked && " 👈"}
                       </p>
                     </div>
                   ))}

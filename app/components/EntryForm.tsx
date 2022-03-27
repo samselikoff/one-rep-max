@@ -4,7 +4,9 @@ import { Form } from "remix";
 
 export default function EntryForm({ exercise, entry = null, lastEntry }) {
   let [sets, setSets] = useState(
-    entry?.sets.length > 0 ? entry.sets : [{ weight: "", reps: "" }]
+    entry?.sets.length > 0
+      ? entry.sets
+      : [{ weight: "", reps: "", tracked: false }]
   );
   let defaultDate = entry
     ? parseISO(entry.date.substring(0, 10))
@@ -27,19 +29,146 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
 
         <div>
           <div className="space-y-2">
-            <ol className="space-y-2 list-decimal list-inside">
+            <table>
+              <thead className="">
+                <tr className="text-left">
+                  <th className="pb-2 pr-4 text-sm font-medium text-gray-700">
+                    Sets
+                  </th>
+                  <th className="pb-2 text-sm font-medium text-gray-700">
+                    Weight (lbs)
+                  </th>
+                  <th className="pb-2 text-sm font-medium text-gray-700">
+                    Reps
+                  </th>
+                  <th className="whitespace-nowrap pr-2 pb-2 text-sm font-medium text-gray-700">
+                    Tracking set
+                  </th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody className="pt-1">
+                {sets.map((set, index) => (
+                  <tr key={index + 1}>
+                    <td className="whitespace-nowrap text-sm font-medium text-gray-700">
+                      {index + 1}
+                    </td>
+                    <td className="py-1 pr-2">
+                      <div className="flex">
+                        <input
+                          type="text"
+                          name="weight"
+                          className="z-0 block w-full min-w-0 flex-1 border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          value={set.weight}
+                          onChange={(e) => {
+                            setSets((sets) => {
+                              let newSets = [...sets];
+                              let currentSet = newSets[index];
+                              newSets[index] = {
+                                ...currentSet,
+                                weight: e.target.value,
+                              };
+
+                              return newSets;
+                            });
+                          }}
+                          placeholder="Weight"
+                        />
+                      </div>
+                    </td>
+                    <td className="pr-2">
+                      <input
+                        placeholder="Reps"
+                        className="w-full border-gray-300"
+                        type="number"
+                        name="reps"
+                        value={set.reps}
+                        onChange={(e) => {
+                          setSets((sets) => {
+                            let newSets = [...sets];
+                            let currentSet = newSets[index];
+                            newSets[index] = {
+                              ...currentSet,
+                              reps: e.target.value,
+                            };
+
+                            return newSets;
+                          });
+                        }}
+                      />
+                    </td>
+
+                    <td className="pr-2 text-center">
+                      <input
+                        type="radio"
+                        name="trackingSet"
+                        value={index}
+                        checked={set.tracked}
+                        onChange={(e) => {
+                          setSets((sets) => {
+                            let newSets = [
+                              ...sets.map((set) => {
+                                set.tracked = false;
+                                return set;
+                              }),
+                            ];
+                            let currentSet = newSets[index];
+                            newSets[index] = {
+                              ...currentSet,
+                              tracked: true,
+                            };
+
+                            return newSets;
+                          });
+                        }}
+                      />
+                    </td>
+
+                    <td
+                      className={`${
+                        sets.length === 1 ? "pointer-events-none opacity-0" : ""
+                      }`}
+                    >
+                      <button
+                        onClick={() => {
+                          setSets((sets) => sets.filter((s, i) => i !== index));
+                        }}
+                        className="bg-gray-100 px-3 py-2"
+                        type="button"
+                      >
+                        –
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* <div className="flex">
+              <div className="flex w-full space-x-3">
+                <div className="w-1/6"></div>
+                <p className="w-2/6 whitespace-nowrap text-xs text-gray-500">
+                  Weight (lbs)
+                </p>
+                <p className="w-2/6 whitespace-nowrap text-xs text-gray-500">
+                  Reps
+                </p>
+                <div className="w-1/6"></div>
+              </div>
+            </div>
+            <ol className="list-inside list-decimal space-y-2">
               {sets.map((set, index) => (
                 <li key={index + 1} className="flex items-center space-x-3">
-                  <span className="flex-1 text-sm font-medium text-gray-700 whitespace-nowrap">
-                    Set {index + 1}
+                  <span className="w-1/6 whitespace-nowrap text-sm font-medium text-gray-700">
+                    {index + 1}
                   </span>
-                  <div className="w-full">
+                  <div className="w-2/6">
                     <div>
                       <div className="flex">
                         <input
                           type="text"
                           name="weight"
-                          className="z-0 flex-1 block w-full min-w-0 px-3 py-2 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          className="z-0 block w-full min-w-0 flex-1 border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                           value={set.weight}
                           onChange={(e) => {
                             setSets((sets) => {
@@ -55,13 +184,10 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
                           }}
                           placeholder="Weight"
                         />
-                        <span className="inline-flex items-center px-3 text-gray-500 border border-l-0 border-gray-300 bg-gray-50 sm:text-sm">
-                          lbs
-                        </span>
                       </div>
                     </div>
                   </div>
-                  <div className="w-full">
+                  <div className="w-2/6">
                     <input
                       placeholder="Reps"
                       className="w-full border-gray-300"
@@ -84,7 +210,7 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
                   </div>
 
                   <div
-                    className={`${
+                    className={`w-1/6 ${
                       sets.length === 1 ? "pointer-events-none opacity-0" : ""
                     }`}
                   >
@@ -92,7 +218,7 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
                       onClick={() => {
                         setSets((sets) => sets.filter((s, i) => i !== index));
                       }}
-                      className="px-3 py-2 bg-gray-100"
+                      className="bg-gray-100 px-3 py-2"
                       type="button"
                     >
                       –
@@ -100,7 +226,7 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
                   </div>
                 </li>
               ))}
-            </ol>
+            </ol> */}
           </div>
 
           <div className="mt-6">
@@ -115,7 +241,7 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
                 ])
               }
               type="button"
-              className="w-full text-sm font-medium text-gray-900 bg-gray-300 h-11"
+              className="h-11 w-full border-2 border-dashed border-gray-300 text-sm font-medium text-gray-700"
             >
               + Add set
             </button>
@@ -135,7 +261,7 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
         </div>
 
         <div className="flex justify-end">
-          <button type="submit" className="px-5 py-2 text-white bg-gray-600">
+          <button type="submit" className="bg-gray-600 px-5 py-2 text-white">
             Save
           </button>
         </div>
@@ -143,7 +269,7 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
 
       {lastEntry && !entry && (
         <div className="pt-4 pb-8">
-          <div className="p-4 my-4 text-sm text-gray-700 bg-gray-200">
+          <div className="my-4 bg-gray-200 p-4 text-sm text-gray-700">
             <div className="flex justify-between">
               <p className="font-medium">Last {exercise.name}</p>
               <p>

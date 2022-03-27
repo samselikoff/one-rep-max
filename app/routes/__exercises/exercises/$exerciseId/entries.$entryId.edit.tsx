@@ -54,8 +54,14 @@ export async function action({ request, params }) {
       notes,
       sets: { create: [] },
     };
-    weights.forEach((weight, i) => {
-      data.sets.create.push({ weight: +weight, reps: +reps[i] });
+
+    let trackingSet = +formData.getAll("trackingSet");
+    weights.forEach((weight, index) => {
+      data.sets.create.push({
+        weight: +weight,
+        reps: +reps[index],
+        tracked: index === trackingSet,
+      });
     });
 
     await prisma.entry.update({ where: { id: params.entryId }, data });
@@ -68,7 +74,7 @@ export default function EditEntryPage() {
   let { entry, lastEntry, exercise } = useLoaderData();
 
   return (
-    <div className="px-4 mt-4">
+    <div className="mt-4 px-4">
       <h1 className="text-2xl font-semibold">{exercise.name} – Edit entry</h1>
 
       <EntryForm entry={entry} exercise={exercise} lastEntry={lastEntry} />
