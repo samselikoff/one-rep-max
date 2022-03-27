@@ -73,7 +73,7 @@ export default function EditEntryPage() {
 
       <EntryForm entry={entry} exercise={exercise} lastEntry={lastEntry} />
 
-      <Form method="post">
+      <Form className="pb-16" method="post">
         <input type="hidden" name="_method" value="delete" />
         <button className="font-medium text-red-500" type="submit">
           Delete
