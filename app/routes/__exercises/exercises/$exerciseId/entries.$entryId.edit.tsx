@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Form, json, redirect, useLoaderData } from "remix";
 import EntryForm from "~/components/EntryForm";
 import { prisma } from "~/db.server";
