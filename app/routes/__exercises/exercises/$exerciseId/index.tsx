@@ -41,7 +41,7 @@ export default function ExerciseIndexPage() {
               <div key={entry.id} className="py-4">
                 <div className="flex justify-between">
                   <p className="font-medium ">
-                    {format(parseISO(entry.date), "EEEE, MMMM do")}
+                    {format(parseISO(entry.date.substring(0, 10)), "MMMM do")}
                   </p>
                   <Link
                     to={`/exercises/${exerciseId}/entries/${entry.id}/edit`}

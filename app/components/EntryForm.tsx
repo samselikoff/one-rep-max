@@ -1,4 +1,4 @@
-import { format, formatDistance, parseISO, startOfToday } from "date-fns";
+import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
 import { useState } from "react";
 import { Form } from "remix";
 
@@ -6,7 +6,9 @@ export default function EntryForm({ exercise, entry, lastEntry }) {
   let [sets, setSets] = useState(
     entry?.sets.length > 0 ? entry.sets : [{ weight: "", reps: "" }]
   );
-  let defaultDate = entry ? parseISO(entry.date) : startOfToday();
+  let defaultDate = entry
+    ? parseISO(entry.date.substring(0, 10))
+    : startOfToday();
 
   return (
     <>
@@ -139,13 +141,14 @@ export default function EntryForm({ exercise, entry, lastEntry }) {
         </div>
       </Form>
 
-      {lastEntry && (
+      {lastEntry && !entry && (
         <div className="pt-4 pb-8">
           <div className="p-4 my-4 text-sm text-gray-700 bg-gray-200">
             <div className="flex justify-between">
               <p className="font-medium">Last {exercise.name}</p>
               <p>
-                {formatDistance(startOfToday(), parseISO(lastEntry.date))} ago
+                {formatDistanceToNow(parseISO(lastEntry.date.substring(0, 10)))}{" "}
+                ago
               </p>
             </div>
             <div className="mt-4">
