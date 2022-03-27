@@ -11,6 +11,13 @@ export async function loader({ request, params }) {
     where: { id: params.exerciseId },
   });
 
+  let entry = await prisma.entry.findFirst({
+    where: { id: params.entryId },
+    include: {
+      sets: true,
+    },
+  });
+
   let lastEntry = await prisma.entry.findFirst({
     where: { userId, exerciseId: params.exerciseId },
     orderBy: { date: "desc" },
@@ -19,11 +26,16 @@ export async function loader({ request, params }) {
     },
   });
 
-  return json({ lastEntry, exercise });
+  return json({ entry, lastEntry, exercise });
 }
 
 export async function action({ request, params }) {
   let userId = await requireUserId(request);
+
+  await prisma.set.deleteMany({
+    where: { entryId: params.entryId },
+  });
+
   let formData = await request.formData();
   let exerciseId = params.exerciseId;
   let date = formData.get("date");
@@ -41,19 +53,19 @@ export async function action({ request, params }) {
     data.sets.create.push({ weight: +weight, reps: +reps[i] });
   });
 
-  await prisma.entry.create({ data });
+  await prisma.entry.update({ where: { id: params.entryId }, data });
 
   return redirect(`/exercises/${exerciseId}`);
 }
 
-export default function NewEntryPage() {
-  let { lastEntry, exercise } = useLoaderData();
+export default function EditEntryPage() {
+  let { entry, lastEntry, exercise } = useLoaderData();
 
   return (
     <div className="px-4 mt-4">
-      <h1 className="text-2xl font-semibold">{exercise.name} – New entry</h1>
+      <h1 className="text-2xl font-semibold">{exercise.name} – Edit entry</h1>
 
-      <EntryForm exercise={exercise} lastEntry={lastEntry} />
+      <EntryForm entry={entry} exercise={exercise} lastEntry={lastEntry} />
     </div>
   );
 }
