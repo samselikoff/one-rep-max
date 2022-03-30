@@ -220,7 +220,7 @@ export default function App() {
             {user && (
               <Form action="/logout" method="post">
                 <button type="submit" className="text-gray-500">
-                  Logout
+                  Sign out
                 </button>
               </Form>
             )}
