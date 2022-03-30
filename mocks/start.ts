@@ -1,6 +1,6 @@
 import { setupServer } from "msw/node";
 
-const server = setupServer();
+let server = setupServer();
 
 server.listen({ onUnhandledRequest: "warn" });
 console.info("🔶 Mock server running");

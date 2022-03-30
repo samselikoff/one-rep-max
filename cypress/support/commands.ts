@@ -39,7 +39,7 @@ function login({
   cy.exec(
     `node --require esbuild-register ./cypress/support/create-user.ts "${email}"`
   ).then(({ stdout }) => {
-    const cookieValue = stdout
+    let cookieValue = stdout
       .replace(/.*<cookie>(?<cookieValue>.*)<\/cookie>.*/s, "$<cookieValue>")
       .trim();
     cy.setCookie("__session", cookieValue);
@@ -52,7 +52,7 @@ function cleanupUser({ email }: { email?: string } = {}) {
     deleteUserByEmail(email);
   } else {
     cy.get("@user").then((user) => {
-      const email = (user as { email?: string }).email;
+      let email = (user as { email?: string }).email;
       if (email) {
         deleteUserByEmail(email);
       }

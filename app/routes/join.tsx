@@ -14,8 +14,8 @@ import { getUserId, createUserSession } from "~/session.server";
 import { createUser, getUserByEmail } from "~/models/user.server";
 import { validateEmail } from "~/utils";
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getUserId(request);
+export let loader: LoaderFunction = async ({ request }) => {
+  let userId = await getUserId(request);
   if (userId) return redirect("/");
   return json({});
 };
@@ -27,11 +27,11 @@ interface ActionData {
   };
 }
 
-export const action: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
-  const redirectTo = formData.get("redirectTo");
+export let action: ActionFunction = async ({ request }) => {
+  let formData = await request.formData();
+  let email = formData.get("email");
+  let password = formData.get("password");
+  let redirectTo = formData.get("redirectTo");
 
   if (!validateEmail(email)) {
     return json<ActionData>(
@@ -54,7 +54,7 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
 
-  const existingUser = await getUserByEmail(email);
+  let existingUser = await getUserByEmail(email);
   if (existingUser) {
     return json<ActionData>(
       { errors: { email: "A user already exists with this email" } },
@@ -62,7 +62,7 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
 
-  const user = await createUser(email, password);
+  let user = await createUser(email, password);
 
   return createUserSession({
     request,
@@ -71,18 +71,18 @@ export const action: ActionFunction = async ({ request }) => {
   });
 };
 
-export const meta: MetaFunction = () => {
+export let meta: MetaFunction = () => {
   return {
     title: "Sign Up",
   };
 };
 
 export default function Join() {
-  const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") ?? undefined;
-  const actionData = useActionData() as ActionData;
-  const emailRef = React.useRef<HTMLInputElement>(null);
-  const passwordRef = React.useRef<HTMLInputElement>(null);
+  let [searchParams] = useSearchParams();
+  let redirectTo = searchParams.get("redirectTo") ?? undefined;
+  let actionData = useActionData() as ActionData;
+  let emailRef = React.useRef<HTMLInputElement>(null);
+  let passwordRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     if (actionData?.errors?.email) {
@@ -158,8 +158,8 @@ export default function Join() {
           >
             Create Account
           </button>
-          <div className="flex items-center justify-center">
-            <div className="text-center text-sm text-gray-500">
+          <div className="flex items-center">
+            <div className="text-sm text-gray-500">
               Already have an account?{" "}
               <Link
                 className="text-blue-500 underline"

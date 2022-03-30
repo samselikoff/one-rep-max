@@ -4,7 +4,7 @@ import { getUserById } from "~/models/user.server";
 
 invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 
-export const sessionStorage = createCookieSessionStorage({
+export let sessionStorage = createCookieSessionStorage({
   cookie: {
     name: "__session",
     httpOnly: true,
@@ -16,24 +16,24 @@ export const sessionStorage = createCookieSessionStorage({
   },
 });
 
-const USER_SESSION_KEY = "userId";
+let USER_SESSION_KEY = "userId";
 
 export async function getSession(request) {
-  const cookie = request.headers.get("Cookie");
+  let cookie = request.headers.get("Cookie");
   return sessionStorage.getSession(cookie);
 }
 
 export async function getUserId(request) {
-  const session = await getSession(request);
-  const userId = session.get(USER_SESSION_KEY);
+  let session = await getSession(request);
+  let userId = session.get(USER_SESSION_KEY);
   return userId;
 }
 
 export async function getUser(request) {
-  const userId = await getUserId(request);
+  let userId = await getUserId(request);
   if (userId === undefined) return null;
 
-  const user = await getUserById(userId);
+  let user = await getUserById(userId);
   if (user) return user;
 
   throw await logout(request);
@@ -43,25 +43,25 @@ export async function requireUserId(
   request,
   redirectTo = new URL(request.url).pathname
 ) {
-  const userId = await getUserId(request);
+  let userId = await getUserId(request);
   if (!userId) {
-    const searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
+    let searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
     throw redirect(`/login?${searchParams}`);
   }
   return userId;
 }
 
 export async function requireUser(request) {
-  const userId = await requireUserId(request);
+  let userId = await requireUserId(request);
 
-  const user = await getUserById(userId);
+  let user = await getUserById(userId);
   if (user) return user;
 
   throw await logout(request);
 }
 
 export async function createUserSession({ request, userId, redirectTo }) {
-  const session = await getSession(request);
+  let session = await getSession(request);
   session.set(USER_SESSION_KEY, userId);
   return redirect(redirectTo, {
     headers: {
@@ -73,7 +73,7 @@ export async function createUserSession({ request, userId, redirectTo }) {
 }
 
 export async function logout(request) {
-  const session = await getSession(request);
+  let session = await getSession(request);
   return redirect("/", {
     headers: {
       "Set-Cookie": await sessionStorage.destroySession(session),

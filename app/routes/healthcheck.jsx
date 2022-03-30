@@ -2,7 +2,7 @@
 import { prisma } from "~/db.server";
 
 export async function loader({ request }) {
-  const host =
+  let host =
     request.headers.get("X-Forwarded-Host") ?? request.headers.get("host");
 
   try {

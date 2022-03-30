@@ -13,8 +13,8 @@ import { createUserSession, getUserId } from "~/session.server";
 import { verifyLogin } from "~/models/user.server";
 import { validateEmail } from "~/utils";
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getUserId(request);
+export let loader: LoaderFunction = async ({ request }) => {
+  let userId = await getUserId(request);
   if (userId) return redirect("/");
   return json({});
 };
@@ -26,11 +26,11 @@ interface ActionData {
   };
 }
 
-export const action: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
-  const redirectTo = formData.get("redirectTo");
+export let action: ActionFunction = async ({ request }) => {
+  let formData = await request.formData();
+  let email = formData.get("email");
+  let password = formData.get("password");
+  let redirectTo = formData.get("redirectTo");
 
   if (!validateEmail(email)) {
     return json<ActionData>(
@@ -53,7 +53,7 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
 
-  const user = await verifyLogin(email, password);
+  let user = await verifyLogin(email, password);
 
   if (!user) {
     return json<ActionData>(
@@ -69,18 +69,18 @@ export const action: ActionFunction = async ({ request }) => {
   });
 };
 
-export const meta: MetaFunction = () => {
+export let meta: MetaFunction = () => {
   return {
     title: "Login",
   };
 };
 
 export default function LoginPage() {
-  const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/";
-  const actionData = useActionData() as ActionData;
-  const emailRef = React.useRef<HTMLInputElement>(null);
-  const passwordRef = React.useRef<HTMLInputElement>(null);
+  let [searchParams] = useSearchParams();
+  let redirectTo = searchParams.get("redirectTo") || "/";
+  let actionData = useActionData() as ActionData;
+  let emailRef = React.useRef<HTMLInputElement>(null);
+  let passwordRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     if (actionData?.errors?.email) {

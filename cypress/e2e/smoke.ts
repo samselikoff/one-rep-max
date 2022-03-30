@@ -6,7 +6,7 @@ describe("smoke tests", () => {
   });
 
   it.skip("should allow you to register and login", () => {
-    const loginForm = {
+    let loginForm = {
       email: `${faker.internet.userName()}@example.com`,
       password: faker.internet.password(),
     };
@@ -25,7 +25,7 @@ describe("smoke tests", () => {
   });
 
   it.skip("should allow you to make a note", () => {
-    const testNote = {
+    let testNote = {
       title: faker.lorem.words(1),
       body: faker.lorem.sentences(1),
     };
