@@ -5,8 +5,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        blue: colors.sky,
         gray: colors.stone,
+        blue: colors.sky,
       },
       spacing: {
         "safe-top": "env(safe-area-inset-top)",

@@ -15,27 +15,29 @@ export default function ExercisesLayout() {
   return (
     <div>
       {user ? (
-        <div>
-          <div className="flex space-x-8 overflow-x-scroll bg-gray-800/95 px-4 shadow">
-            {exercises.map((exercise) => (
-              <NavLink
-                className={({ isActive }) =>
-                  `${
-                    isActive
-                      ? "border-blue-500 text-white"
-                      : "border-transparent text-gray-400"
-                  } whitespace-nowrap border-b-4 py-2.5 text-sm font-semibold`
-                }
-                to={`/exercises/${exercise.id}`}
-                key={exercise.id}
-              >
-                {exercise.name}
-              </NavLink>
-            ))}
+        <>
+          <div className="flex overflow-x-scroll bg-gray-800/95">
+            <div className="flex space-x-8 px-4">
+              {exercises.map((exercise) => (
+                <NavLink
+                  className={({ isActive }) =>
+                    `${
+                      isActive
+                        ? "border-blue-500 text-white"
+                        : "border-transparent text-gray-400"
+                    }  whitespace-nowrap border-b-4 py-2.5 text-sm font-semibold`
+                  }
+                  to={`/exercises/${exercise.id}`}
+                  key={exercise.id}
+                >
+                  {exercise.name}
+                </NavLink>
+              ))}
+            </div>
           </div>
 
           <Outlet />
-        </div>
+        </>
       ) : (
         <div className="mt-40 flex justify-center space-x-4 px-8">
           <Link
