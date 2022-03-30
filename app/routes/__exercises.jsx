@@ -16,7 +16,7 @@ export default function ExercisesLayout() {
     <div>
       {user ? (
         <>
-          <div className="flex overflow-x-scroll bg-gray-900">
+          <nav className="scrollbar-hidden flex overflow-x-scroll bg-gray-900">
             <div className="flex space-x-8 px-4">
               {exercises.map((exercise) => (
                 <NavLink
@@ -34,7 +34,7 @@ export default function ExercisesLayout() {
                 </NavLink>
               ))}
             </div>
-          </div>
+          </nav>
 
           <Outlet />
         </>

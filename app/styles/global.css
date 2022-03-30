@@ -2,3 +2,7 @@ a,
 button {
   -webkit-tap-highlight-color: transparent;
 }
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
