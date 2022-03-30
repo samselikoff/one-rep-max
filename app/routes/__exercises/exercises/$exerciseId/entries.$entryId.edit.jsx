@@ -75,7 +75,7 @@ export default function EditEntryPage() {
 
   return (
     <div className="mt-4 px-4">
-      <h1 className="text-2xl font-semibold">{exercise.name} – Edit entry</h1>
+      <h1 className="text-2xl font-bold">{exercise.name} – Edit entry</h1>
 
       <EntryForm entry={entry} exercise={exercise} lastEntry={lastEntry} />
 

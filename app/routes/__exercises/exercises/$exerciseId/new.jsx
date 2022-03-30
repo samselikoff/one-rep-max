@@ -55,7 +55,7 @@ export default function NewEntryPage() {
 
   return (
     <div className="mt-4 px-4">
-      <h1 className="text-2xl font-semibold">{exercise.name} – New entry</h1>
+      <h1 className="text-2xl font-bold">{exercise.name} – New entry</h1>
 
       <EntryForm exercise={exercise} lastEntry={lastEntry} />
     </div>
