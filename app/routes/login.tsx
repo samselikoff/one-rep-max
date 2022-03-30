@@ -31,7 +31,6 @@ export const action: ActionFunction = async ({ request }) => {
   const email = formData.get("email");
   const password = formData.get("password");
   const redirectTo = formData.get("redirectTo");
-  const remember = formData.get("remember");
 
   if (!validateEmail(email)) {
     return json<ActionData>(
@@ -66,7 +65,6 @@ export const action: ActionFunction = async ({ request }) => {
   return createUserSession({
     request,
     userId: user.id,
-    remember: remember === "on" ? true : false,
     redirectTo: typeof redirectTo === "string" ? redirectTo : "/",
   });
 };
@@ -93,8 +91,8 @@ export default function LoginPage() {
   }, [actionData]);
 
   return (
-    <div className="flex flex-col justify-center min-h-full mt-40">
-      <div className="w-full max-w-md px-8 mx-auto">
+    <div className="mt-40 flex min-h-full flex-col justify-center">
+      <div className="mx-auto w-full max-w-md px-8">
         <h1 className="text-2xl font-semibold">Sign in</h1>
 
         <Form method="post" className="mt-4 space-y-6">
@@ -116,7 +114,7 @@ export default function LoginPage() {
                 autoComplete="email"
                 aria-invalid={actionData?.errors?.email ? true : undefined}
                 aria-describedby="email-error"
-                className="w-full px-2 py-1 text-lg border border-gray-500 rounded"
+                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
               />
               {actionData?.errors?.email && (
                 <div className="pt-1 text-red-700" id="email-error">
@@ -142,7 +140,7 @@ export default function LoginPage() {
                 autoComplete="current-password"
                 aria-invalid={actionData?.errors?.password ? true : undefined}
                 aria-describedby="password-error"
-                className="w-full px-2 py-1 text-lg border border-gray-500 rounded"
+                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
               />
               {actionData?.errors?.password && (
                 <div className="pt-1 text-red-700" id="password-error">
@@ -155,26 +153,12 @@ export default function LoginPage() {
           <input type="hidden" name="redirectTo" value={redirectTo} />
           <button
             type="submit"
-            className="w-full px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:bg-blue-400"
+            className="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
           >
             Log in
           </button>
           <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember"
-                name="remember"
-                type="checkbox"
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <label
-                htmlFor="remember"
-                className="block ml-2 text-sm text-gray-900"
-              >
-                Remember me
-              </label>
-            </div>
-            <div className="text-sm text-center text-gray-500">
+            <div className="text-center text-sm text-gray-500">
               Don't have an account?{" "}
               <Link
                 className="text-blue-500 underline"

@@ -11,7 +11,7 @@ import { createUser } from "~/models/user.server";
 
 installGlobals();
 
-async function createAndLogin(email: string) {
+async function createAndLogin(email) {
   if (!email) {
     throw new Error("email required for login");
   }
@@ -24,7 +24,6 @@ async function createAndLogin(email: string) {
   const response = await createUserSession({
     request: new Request(""),
     userId: user.id,
-    remember: false,
     redirectTo: "/",
   });
 
