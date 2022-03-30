@@ -30,7 +30,7 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
         <div>
           <div className="space-y-2">
             <table>
-              <thead className="">
+              <thead>
                 <tr className="text-left">
                   <th className="pb-2 pr-4 text-sm font-medium text-gray-700">
                     Sets
