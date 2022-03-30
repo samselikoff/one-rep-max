@@ -11,7 +11,7 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "target": "ES2019",
-    "strict": false,
+    "strict": true,
     "baseUrl": ".",
     "paths": {
       "~/*": ["./app/*"]
@@ -20,6 +20,6 @@
 
     // Remix takes care of building everything in `remix build`.
     "noEmit": true,
-    "noImplicitAny": false
+    "allowJs": true
   }
 }

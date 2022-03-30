@@ -16,7 +16,7 @@ export default function ExercisesLayout() {
     <div>
       {user ? (
         <div className="mt-4">
-          <div className="flex px-4 pb-4 mt-4 space-x-4 overflow-x-scroll">
+          <div className="mt-4 flex space-x-4 overflow-x-scroll px-4 pb-4">
             {exercises.map((exercise) => (
               <NavLink
                 className={({ isActive }) =>
@@ -37,15 +37,15 @@ export default function ExercisesLayout() {
           <Outlet />
         </div>
       ) : (
-        <div className="flex justify-center px-8 mt-40 space-x-4">
+        <div className="mt-40 flex justify-center space-x-4 px-8">
           <Link
-            className="block w-1/2 py-2 font-medium text-center text-white bg-gray-600"
+            className="block w-1/2 bg-gray-600 py-2 text-center font-medium text-white"
             to="/join"
           >
             Sign up
           </Link>
           <Link
-            className="block w-1/2 py-2 font-medium text-center text-white bg-gray-600"
+            className="block w-1/2 bg-gray-600 py-2 text-center font-medium text-white"
             to="/login"
           >
             Log In

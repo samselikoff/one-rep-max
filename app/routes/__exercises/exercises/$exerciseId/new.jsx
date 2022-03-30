@@ -35,7 +35,7 @@ export async function action({ request, params }) {
     exerciseId,
     date: `${date}T00:00:00.000Z`,
     notes,
-    sets: { create: [] as any },
+    sets: { create: [] },
   };
   weights.forEach((weight, index) => {
     data.sets.create.push({
