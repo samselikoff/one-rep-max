@@ -102,6 +102,7 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
                       <input
                         type="radio"
                         name="trackingSet"
+                        className="color-blue-500"
                         value={index}
                         checked={set.tracked}
                         onChange={(e) => {
@@ -261,7 +262,10 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
         </div>
 
         <div className="flex justify-end">
-          <button type="submit" className="bg-gray-600 px-5 py-2 text-white">
+          <button
+            type="submit"
+            className="bg-blue-500 px-5 py-2 font-medium text-white"
+          >
             Save
           </button>
         </div>

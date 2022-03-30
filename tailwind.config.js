@@ -1,7 +1,13 @@
+const colors = require("tailwindcss/colors");
+
 module.exports = {
   content: ["./app/**/*.{ts,tsx,jsx,js}"],
   theme: {
     extend: {
+      colors: {
+        blue: colors.sky,
+        gray: colors.stone,
+      },
       spacing: {
         "safe-top": "env(safe-area-inset-top)",
         "safe-bottom": "env(safe-area-inset-bottom)",

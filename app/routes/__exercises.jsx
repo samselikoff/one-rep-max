@@ -15,16 +15,16 @@ export default function ExercisesLayout() {
   return (
     <div>
       {user ? (
-        <div className="mt-4">
-          <div className="mt-4 flex space-x-4 overflow-x-scroll px-4 pb-4">
+        <div>
+          <div className="flex space-x-8 overflow-x-scroll bg-gray-800/95 px-4 shadow">
             {exercises.map((exercise) => (
               <NavLink
                 className={({ isActive }) =>
                   `${
                     isActive
-                      ? "border-gray-800 bg-gray-800 text-white"
-                      : "border-gray-300"
-                  } whitespace-nowrap border  px-3 py-2`
+                      ? "border-blue-500 text-white"
+                      : "border-transparent text-gray-400"
+                  } whitespace-nowrap border-b-4 py-2.5 text-sm font-semibold`
                 }
                 to={`/exercises/${exercise.id}`}
                 key={exercise.id}

@@ -81,8 +81,8 @@ export default function EditEntryPage() {
 
       <Form className="pb-16" method="post">
         <input type="hidden" name="_method" value="delete" />
-        <button className="font-medium text-red-500" type="submit">
-          Delete
+        <button className="text-sm text-gray-500 underline" type="submit">
+          Delete this entry...
         </button>
       </Form>
     </div>

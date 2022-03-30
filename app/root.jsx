@@ -11,6 +11,7 @@ import {
 } from "remix";
 
 import tailwindStylesheetUrl from "./styles/tailwind.css";
+import globalStylesheetURL from "./styles/global.css";
 import { getUser } from "./session.server";
 import { useOptionalUser } from "./utils";
 
@@ -24,6 +25,7 @@ export function links() {
     },
     { rel: "apple-touch-icon", href: "apple-icon-180.png" },
     { rel: "stylesheet", href: tailwindStylesheetUrl },
+    { rel: "stylesheet", href: globalStylesheetURL },
     { rel: "manifest", href: "/site.webmanifest" },
     {
       rel: "apple-touch-startup-image",
@@ -210,17 +212,14 @@ export default function App() {
         <Links />
       </head>
       <body className="h-full">
-        <header className="bg-gray-800 px-4 pt-safe-top text-white">
+        <header className="bg-gray-900 px-4 pt-safe-top text-white">
           <div className="flex h-[72px] items-center justify-between">
             <h1 className="text-3xl font-bold">
               <Link to=".">One Rep Max</Link>
             </h1>
             {user && (
               <Form action="/logout" method="post">
-                <button
-                  type="submit"
-                  className="bg-gray-600 px-4 py-2 text-blue-100 hover:bg-gray-500 active:bg-gray-600"
-                >
+                <button type="submit" className="text-gray-500">
                   Logout
                 </button>
               </Form>
