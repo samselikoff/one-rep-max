@@ -16,7 +16,7 @@ export default function ExercisesLayout() {
     <div>
       {user ? (
         <>
-          <div className="flex overflow-x-scroll bg-gray-800/95">
+          <div className="flex overflow-x-scroll bg-gray-900">
             <div className="flex space-x-8 px-4">
               {exercises.map((exercise) => (
                 <NavLink
@@ -25,7 +25,7 @@ export default function ExercisesLayout() {
                       isActive
                         ? "border-blue-500 text-white"
                         : "border-transparent text-gray-400"
-                    }  whitespace-nowrap border-b-4 py-2.5 text-sm font-semibold`
+                    }  whitespace-nowrap border-b-4 py-2.5 font-semibold`
                   }
                   to={`/exercises/${exercise.id}`}
                   key={exercise.id}

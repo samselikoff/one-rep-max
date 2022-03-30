@@ -29,7 +29,7 @@ export default function ExerciseIndexPage() {
   return (
     <div className="mt-4 px-4">
       <div className="flex justify-between">
-        <h1 className="text-2xl font-semibold">{exercise.name}</h1>
+        <h1 className="text-2xl font-bold">{exercise.name}</h1>
         <Link
           className="flex items-center whitespace-nowrap p-1 text-sm font-medium text-blue-500"
           to={`/exercises/${exercise.id}/new`}
