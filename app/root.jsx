@@ -1,18 +1,17 @@
 import {
   Form,
   json,
-  Link,
   Links,
   LiveReload,
   Meta,
+  NavLink,
   Outlet,
   Scripts,
   ScrollRestoration,
 } from "remix";
-
-import tailwindStylesheetUrl from "./styles/tailwind.css";
-import globalStylesheetURL from "./styles/global.css";
 import { getUser } from "./session.server";
+import globalStylesheetURL from "./styles/global.css";
+import tailwindStylesheetUrl from "./styles/tailwind.css";
 import { useOptionalUser } from "./utils";
 
 export function links() {
@@ -215,7 +214,17 @@ export default function App() {
         <header className="bg-gray-900 px-4 pt-safe-top text-white">
           <div className="flex h-[72px] items-center justify-between">
             <h1 className="text-3xl font-bold">
-              <Link to=".">One Rep Max</Link>
+              <NavLink
+                end
+                className={({ isActive }) =>
+                  `${
+                    isActive ? "border-blue-500" : "border-transparent"
+                  } border-b-4`
+                }
+                to="."
+              >
+                One Rep Max
+              </NavLink>
             </h1>
             {user && (
               <Form action="/logout" method="post">

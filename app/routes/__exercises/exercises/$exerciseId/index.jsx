@@ -22,6 +22,7 @@ export async function loader({ request, params }) {
 
   return json({ exercise, entries });
 }
+
 export default function ExerciseIndexPage() {
   let { exercise, entries } = useLoaderData();
   let { exerciseId } = useParams();

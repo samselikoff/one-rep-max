@@ -1,5 +1,5 @@
 {
-  "exclude": ["./cypress", "./public/build", "./node_modules"],
+  "exclude": ["./cypress", "./public/build", "./node_modules", "./build"],
   "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx", "**/*.jsx", "**/*.js"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2019"],

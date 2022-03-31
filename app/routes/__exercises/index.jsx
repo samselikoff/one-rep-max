@@ -1,3 +1,7 @@
 export default function ExercisesIndexPage() {
-  return <p className="px-4 mt-4">Choose an exercise.</p>;
+  return (
+    <div className="p-4">
+      <p>Choose an exercise.</p>
+    </div>
+  );
 }
