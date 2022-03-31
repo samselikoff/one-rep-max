@@ -254,7 +254,7 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
             <span className="text-sm font-medium text-gray-500">Notes</span>
             <textarea
               defaultValue={entry?.notes || ""}
-              className="w-full"
+              className="w-full border-gray-300"
               name="notes"
               rows={4}
             ></textarea>
