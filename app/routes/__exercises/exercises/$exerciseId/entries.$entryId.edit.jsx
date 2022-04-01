@@ -74,8 +74,8 @@ export default function EditEntryPage() {
   let { entry, lastEntry, exercise } = useLoaderData();
 
   return (
-    <div className="mt-4 px-4">
-      <h1 className="text-2xl font-bold">{exercise.name} – Edit entry</h1>
+    <div className="mt-6 px-4">
+      <h1 className="text-3xl font-bold">{exercise.name} – Edit</h1>
 
       <EntryForm entry={entry} exercise={exercise} lastEntry={lastEntry} />
 
