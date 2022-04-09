@@ -33,8 +33,6 @@ export default function ExerciseIndexPage() {
   let { exercise, entries } = useLoaderData();
   let { exerciseId } = useParams();
 
-  console.log({ exercise });
-
   return (
     <div className="mt-6 px-4">
       <h1 className="text-3xl font-bold">{exercise.name}</h1>
