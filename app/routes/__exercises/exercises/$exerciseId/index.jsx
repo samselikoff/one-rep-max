@@ -1,10 +1,5 @@
 import { PencilAltIcon } from "@heroicons/react/outline";
-import {
-  differenceInDays,
-  format,
-  formatDistanceToNowStrict,
-  parseISO,
-} from "date-fns";
+import { differenceInDays, format, parseISO } from "date-fns";
 import { json, Link, useLoaderData, useParams } from "remix";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
