@@ -2,13 +2,13 @@ import { PencilAltIcon } from "@heroicons/react/outline";
 import {
   differenceInDays,
   format,
-  formatDistanceToNow,
   formatDistanceToNowStrict,
   parseISO,
 } from "date-fns";
 import { json, Link, useLoaderData, useParams } from "remix";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
+import timeAgo from "~/utils/time-ago";
 
 export async function loader({ request, params }) {
   let userId = await requireUserId(request);
@@ -32,6 +32,8 @@ export async function loader({ request, params }) {
 export default function ExerciseIndexPage() {
   let { exercise, entries } = useLoaderData();
   let { exerciseId } = useParams();
+
+  console.log({ exercise });
 
   return (
     <div className="mt-6 px-4">
@@ -73,11 +75,7 @@ export default function ExerciseIndexPage() {
                       &middot;
                     </span>
                     <span className="text-sm text-gray-500">
-                      {formatDistanceToNow(
-                        parseISO(entry.date.substring(0, 10)),
-                        "MMMM do"
-                      )}{" "}
-                      ago
+                      {timeAgo(entry.date)}
                     </span>
                   </p>
                 </div>
@@ -123,9 +121,11 @@ function estimatedMax(set) {
 
 function HeaviestSetStat({ entries }) {
   let allSets = entries.flatMap((entry) => entry.sets);
-  let heaviestSet = allSets.sort((a, b) => {
-    return +a.weight > +b.weight ? -1 : 1;
-  })[0];
+  let heaviestSet = allSets
+    .filter((set) => set.reps > 0)
+    .sort((a, b) => {
+      return +a.weight > +b.weight ? -1 : 1;
+    })[0];
   let entryWithHeaviestSet = entries.find((entry) => {
     return entry.sets.includes(heaviestSet);
   });
@@ -144,15 +144,7 @@ function HeaviestSetStat({ entries }) {
           <p className="text-xs leading-none text-gray-500">
             <span>{heaviestSet.reps} reps</span>
             <span className="px-0.5 font-medium">&middot;</span>
-            <span>
-              {formatDistanceToNowStrict(
-                parseISO(entryWithHeaviestSet.date.substring(0, 10), "MMMM do"),
-                {
-                  addSuffix: true,
-                  unit: "day",
-                }
-              )}
-            </span>
+            <span>{timeAgo(entryWithHeaviestSet.date)}</span>
           </p>
         </>
       ) : (
@@ -169,9 +161,11 @@ function HeaviestSetStat({ entries }) {
 
 function OneRepMaxStat({ entries }) {
   let allSets = entries.flatMap((entry) => entry.sets);
-  let highestEstimatesOneRepMaxSet = allSets.sort((a, b) => {
-    return estimatedMax(a) > estimatedMax(b) ? -1 : 1;
-  })[0];
+  let highestEstimatesOneRepMaxSet = allSets
+    .filter((set) => set.reps > 0)
+    .sort((a, b) => {
+      return estimatedMax(a) > estimatedMax(b) ? -1 : 1;
+    })[0];
 
   return (
     <div>
