@@ -26,7 +26,7 @@ export default function ExercisesIndexPage() {
   let { entries } = useLoaderData();
 
   return (
-    <div className="mt-6 px-4">
+    <div className="my-6 px-4 pb-safe-bottom">
       {entries.length > 0 ? (
         <>
           <h1 className="text-3xl font-bold">Latest exercises</h1>
@@ -54,17 +54,11 @@ function EntryCard({ entry }) {
         className="relative w-full py-3 text-left"
       >
         <div>
-          <div className="">
-            <p className="text-[15px]">
-              <span className="text-lg font-semibold">
-                {entry.exercise.name}
-              </span>
-              <span className="px-1 font-medium text-gray-500">&middot;</span>
-              <span className="text-sm text-gray-500">
-                {timeAgo(entry.date)}
-              </span>
-            </p>
-          </div>
+          <p className="text-[15px]">
+            <span className="text-lg font-semibold">{entry.exercise.name}</span>
+            <span className="px-1 font-medium text-gray-500">&middot;</span>
+            <span className="text-sm text-gray-500">{timeAgo(entry.date)}</span>
+          </p>
           <motion.div layout="position" className="overflow-hidden">
             <AnimatePresence initial={false}>
               {entry.sets
