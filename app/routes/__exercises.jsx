@@ -16,7 +16,7 @@ export default function ExercisesLayout() {
     <div>
       {user ? (
         <>
-          <nav className="scrollbar-hidden flex overflow-x-scroll bg-gray-900">
+          <nav className="scrollbar-hidden -mt-px flex overflow-x-scroll bg-gray-900">
             <div className="flex space-x-8 px-4">
               {exercises.map((exercise) => (
                 <NavLink
