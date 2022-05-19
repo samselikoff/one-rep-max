@@ -1,16 +1,14 @@
-import { formatDistanceToNowStrict, parseISO } from "date-fns";
+import { formatDistanceToNowStrict, isToday, parseISO } from "date-fns";
 
-export default function (date) {
-  let time = formatDistanceToNowStrict(
-    parseISO(date.substring(0, 10), "MMMM do"),
-    {
-      unit: "day",
-      addSuffix: true,
-    }
-  );
+export default function (dateString) {
+  let date = parseISO(dateString.substring(0, 10), "MMMM do");
+  let time = formatDistanceToNowStrict(date, {
+    unit: "day",
+    addSuffix: true,
+  });
 
-  if (time === "0 days ago") {
-    return "today";
+  if (isToday(date)) {
+    return "Today";
   }
   return time;
 }
