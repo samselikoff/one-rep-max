@@ -1,6 +1,7 @@
 import { PencilAltIcon } from "@heroicons/react/outline";
 import { differenceInDays, format, parseISO } from "date-fns";
-import { json, Link, useLoaderData, useParams } from "remix";
+import { Link, useLoaderData, useParams } from "@remix-run/react";
+import { json } from "@remix-run/node";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import timeAgo from "~/utils/time-ago";
@@ -17,7 +18,7 @@ export async function loader({ request, params }) {
     orderBy: { date: "desc" },
   });
 
-  let exercise = await prisma.exercise.findFirst({
+  let exercise = await prisma.exercise.findUnique({
     where: { id: params.exerciseId },
   });
 

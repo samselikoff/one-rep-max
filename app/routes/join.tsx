@@ -1,13 +1,12 @@
 import * as React from "react";
-import type { ActionFunction, LoaderFunction, MetaFunction } from "remix";
-import {
-  Form,
-  Link,
-  redirect,
-  useSearchParams,
-  json,
-  useActionData,
-} from "remix";
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+
+import { Form, Link, useSearchParams, useActionData } from "@remix-run/react";
 
 import { getUserId, createUserSession } from "~/session.server";
 

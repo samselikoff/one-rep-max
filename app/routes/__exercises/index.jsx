@@ -1,6 +1,7 @@
 import { MinusIcon, PlusIcon } from "@heroicons/react/outline";
 import { useState } from "react";
-import { json, useLoaderData } from "remix";
+import { useLoaderData } from "@remix-run/react";
+import { json } from "@remix-run/node";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import timeAgo from "~/utils/time-ago";

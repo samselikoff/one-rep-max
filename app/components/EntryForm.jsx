@@ -1,6 +1,6 @@
+import { Form } from "@remix-run/react";
 import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
 import { useState } from "react";
-import { Form } from "remix";
 
 export default function EntryForm({ exercise, entry = null, lastEntry }) {
   let [sets, setSets] = useState(

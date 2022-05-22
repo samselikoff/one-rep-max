@@ -1,6 +1,7 @@
-import { json, Link, NavLink, Outlet, useLoaderData } from "remix";
+import { Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 import { prisma } from "~/db.server";
 import { useOptionalUser } from "~/utils";
+import { json } from "@remix-run/node";
 
 export async function loader() {
   let exercises = await prisma.exercise.findMany();

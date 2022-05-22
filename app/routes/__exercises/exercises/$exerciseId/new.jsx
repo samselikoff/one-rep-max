@@ -1,4 +1,5 @@
-import { json, redirect, useLoaderData } from "remix";
+import { useLoaderData } from "@remix-run/react";
+import { json, redirect } from "@remix-run/node";
 import EntryForm from "~/components/EntryForm";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";

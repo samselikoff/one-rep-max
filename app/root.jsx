@@ -1,6 +1,5 @@
 import {
   Form,
-  json,
   Links,
   LiveReload,
   Meta,
@@ -8,7 +7,9 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "remix";
+} from "@remix-run/react";
+import { json } from "@remix-run/node";
+
 import { getUser } from "./session.server";
 import globalStylesheetURL from "./styles/global.css";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
@@ -20,7 +21,7 @@ export function links() {
       rel: "icon",
       type: "image/png",
       sizes: "196x196",
-      href: "favicon-196.png",
+      href: "/favicon-196.png",
     },
     { rel: "apple-touch-icon", href: "apple-icon-180.png" },
     { rel: "stylesheet", href: tailwindStylesheetUrl },
