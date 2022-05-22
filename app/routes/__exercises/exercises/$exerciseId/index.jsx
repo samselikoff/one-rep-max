@@ -5,6 +5,7 @@ import { json } from "@remix-run/node";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import timeAgo from "~/utils/time-ago";
+import pluralize from "pluralize";
 
 export async function loader({ request, params }) {
   let userId = await requireUserId(request);
@@ -32,6 +33,8 @@ export default function ExerciseIndexPage() {
   return (
     <div className="mt-6 px-4">
       <h1 className="text-3xl font-bold">{exercise.name}</h1>
+
+      <div>chart</div>
 
       <div className="mt-4 flex border-b pb-8">
         <div className="w-1/3">
@@ -77,7 +80,7 @@ export default function ExerciseIndexPage() {
                   {entry.sets.map((set) => (
                     <div key={set.id}>
                       <p>
-                        {set.weight} lbs – {set.reps} reps
+                        {set.weight} lbs – {pluralize("rep", set.reps, true)}
                         {set.tracked && " 👈"}
                       </p>
                     </div>
@@ -136,7 +139,7 @@ function HeaviestSetStat({ entries }) {
             <span className="pl-0.5 text-lg text-blue-500">lbs</span>
           </p>
           <p className="text-xs leading-none text-gray-500">
-            <span>{heaviestSet.reps} reps</span>
+            <span>{pluralize("rep", heaviestSet.reps, true)}</span>
             <span className="px-0.5 font-medium">&middot;</span>
             <span>{timeAgo(entryWithHeaviestSet.date)}</span>
           </p>
@@ -177,7 +180,9 @@ function OneRepMaxStat({ entries }) {
           <p className="text-xs leading-none text-gray-500">
             <span>{highestEstimatesOneRepMaxSet.weight}lbs</span>
             <span className="px-0.5 font-medium">&middot;</span>
-            <span>{highestEstimatesOneRepMaxSet.reps} reps</span>
+            <span>
+              {pluralize("rep", highestEstimatesOneRepMaxSet.reps, true)}
+            </span>
           </p>
         </>
       ) : (
@@ -209,7 +214,7 @@ function FrequencyStat({ entries }) {
           {last30DaysEntries.length}
         </span>
         <span className="pl-0.5 text-lg text-blue-500">
-          {last30DaysEntries.length === 1 ? "lift" : "lifts"}
+          {pluralize("lift", last30DaysEntries.length)}
         </span>
       </p>
       <p className="text-xs leading-none text-gray-500">
