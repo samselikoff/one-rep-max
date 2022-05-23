@@ -30,7 +30,7 @@ export async function action({ request, params }) {
   let notes = formData.get("notes");
   let weights = formData.getAll("weight");
   let reps = formData.getAll("reps");
-  let trackingSet = +formData.getAll("trackingSet");
+  let trackingSetIndexes = formData.getAll("trackingSet").map((i) => +i);
   let data = {
     userId,
     exerciseId,
@@ -42,7 +42,7 @@ export async function action({ request, params }) {
     data.sets.create.push({
       weight: +weight,
       reps: +reps[index],
-      tracked: index === trackingSet,
+      tracked: trackingSetIndexes.includes(index),
     });
   });
 

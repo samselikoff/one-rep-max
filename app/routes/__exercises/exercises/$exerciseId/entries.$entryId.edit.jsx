@@ -56,12 +56,12 @@ export async function action({ request, params }) {
       sets: { create: [] },
     };
 
-    let trackingSet = +formData.getAll("trackingSet");
+    let trackingSetIndexes = formData.getAll("trackingSet").map((i) => +i);
     weights.forEach((weight, index) => {
       data.sets.create.push({
         weight: +weight,
         reps: +reps[index],
-        tracked: index === trackingSet,
+        tracked: trackingSetIndexes.includes(index),
       });
     });
 
