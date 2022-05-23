@@ -8,14 +8,11 @@ export default function Chart({ entries }) {
   let chartRef = useRef();
   let [containerRef, bounds] = useMeasure();
 
-  // console.log(entries);
   let allMaxes = entries
     .map((entry) => {
       let setWithhighestEstimatedMax = entry.sets
-        .filter((set) => set.reps > 0)
-        .sort((a, b) => {
-          return estimatedMax(a) > estimatedMax(b) ? -1 : 1;
-        })[0];
+        .filter((set) => set.reps > 0 && set.tracked)
+        .sort((a, b) => estimatedMax(b) - estimatedMax(a))[0];
 
       return {
         date: parseISO(entry.date),
@@ -27,7 +24,6 @@ export default function Chart({ entries }) {
     .filter((s) => s.estimatedMax);
 
   useEffect(() => {
-    console.log(allMaxes);
     let chart = Plot.plot({
       width: bounds.width,
       height: bounds.height,
@@ -63,32 +59,3 @@ export default function Chart({ entries }) {
     </div>
   );
 }
-
-// let trackingSets = [
-//   { date: "2022-01-20T00:00:00.000Z", max: 165 },
-//   { date: "2022-01-21T00:00:00.000Z", max: 175 },
-//   { date: "2022-01-28T00:00:00.000Z", max: 185 },
-//   { date: "2022-02-02T00:00:00.000Z", max: 215 },
-//   { date: "2022-02-06T00:00:00.000Z", max: 225 },
-//   { date: "2022-02-08T00:00:00.000Z", max: 225 },
-// ].map((d) => {
-//   // let xyz = utcToZonedTime(d.date, timeZone);
-//   // debugger;
-//   // d.date = utcToZonedTime(d.date, timeZone);
-//   // d.date = utcToZonedTime(parseISO(d.date), timeZone);
-//   d.date = parseISO(d.date.slice(0, 10));
-//   return d;
-// });
-
-// let data = eachDayOfInterval({
-//   start: trackingSets[0].date,
-//   end: trackingSets[trackingSets.length - 1].date,
-// }).map((day) => {
-//   // console.log(day);
-//   // debugger;
-//   return {
-//     date: day,
-//     max: trackingSets.find((s) => isEqual(s.date, day))?.max,
-//   };
-// });
-// let data = trackingSets;
