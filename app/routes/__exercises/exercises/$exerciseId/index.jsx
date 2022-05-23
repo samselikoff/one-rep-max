@@ -1,9 +1,13 @@
-import { PencilAltIcon } from "@heroicons/react/outline";
+import * as Icons from "@heroicons/react/outline";
 import { differenceInDays, format, parseISO } from "date-fns";
-import { json, Link, useLoaderData, useParams } from "remix";
+import { Link, useLoaderData, useParams } from "@remix-run/react";
+import { json } from "@remix-run/node";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import timeAgo from "~/utils/time-ago";
+import pluralize from "pluralize";
+import Chart from "~/components/Chart";
+import estimatedMax from "~/utils/estimated-max";
 
 export async function loader({ request, params }) {
   let userId = await requireUserId(request);
@@ -17,7 +21,7 @@ export async function loader({ request, params }) {
     orderBy: { date: "desc" },
   });
 
-  let exercise = await prisma.exercise.findFirst({
+  let exercise = await prisma.exercise.findUnique({
     where: { id: params.exerciseId },
   });
 
@@ -32,26 +36,27 @@ export default function ExerciseIndexPage() {
     <div className="mt-6 px-4">
       <h1 className="text-3xl font-bold">{exercise.name}</h1>
 
-      <div className="mt-4 flex border-b pb-8">
-        <div className="w-1/3">
-          <HeaviestSetStat entries={entries} />
-        </div>
-        <div className="w-1/3">
-          <OneRepMaxStat entries={entries} />
-        </div>
-        <div className="w-1/3">
-          <FrequencyStat entries={entries} />
-        </div>
+      <p className="mt-4 text-center text-xs font-semibold uppercase text-gray-500">
+        One rep max (Est)
+      </p>
+      <div className="">
+        <Chart entries={entries} />
+      </div>
+
+      <div className="mt-4 flex justify-between border-b px-2 pb-8">
+        <HeaviestSetStat entries={entries} />
+        <OneRepMaxStat entries={entries} />
+        <FrequencyStat entries={entries} />
       </div>
 
       <div className="mt-6">
         <div className="flex justify-between">
           <p className="text-xl font-semibold">All entries</p>
           <Link
-            className="flex items-center whitespace-nowrap p-1 text-sm font-medium text-blue-500"
+            className="flex h-8 w-8 items-center justify-center whitespace-nowrap rounded-full bg-blue-500 text-sm font-medium text-white"
             to={`/exercises/${exercise.id}/new`}
           >
-            <PencilAltIcon className="h-5 w-5" />
+            <Icons.PlusIcon className="h-5 w-5" />
           </Link>
         </div>
 
@@ -76,7 +81,7 @@ export default function ExerciseIndexPage() {
                   {entry.sets.map((set) => (
                     <div key={set.id}>
                       <p>
-                        {set.weight} lbs – {set.reps} reps
+                        {set.weight} lbs – {pluralize("rep", set.reps, true)}
                         {set.tracked && " 👈"}
                       </p>
                     </div>
@@ -104,14 +109,6 @@ export default function ExerciseIndexPage() {
   );
 }
 
-function estimatedMax(set) {
-  // Jim Wendler formula
-  // return +set.weight * +set.reps * 0.0333 + +set.weight;
-
-  // Brzycki formula
-  return set.weight / (1.0278 - 0.0278 * set.reps);
-}
-
 function HeaviestSetStat({ entries }) {
   let allSets = entries.flatMap((entry) => entry.sets);
   let heaviestSet = allSets
@@ -125,17 +122,17 @@ function HeaviestSetStat({ entries }) {
 
   return (
     <div>
-      <p className="text-xs font-semibold uppercase text-gray-500">
+      <p className="text-center text-xs font-semibold uppercase text-gray-500">
         Heaviest set
       </p>
       {entryWithHeaviestSet ? (
         <>
-          <p className="font-semibold ">
+          <p className="text-center font-semibold">
             <span className="text-3xl text-blue-500">{heaviestSet.weight}</span>
             <span className="pl-0.5 text-lg text-blue-500">lbs</span>
           </p>
-          <p className="text-xs leading-none text-gray-500">
-            <span>{heaviestSet.reps} reps</span>
+          <p className="pt-0.5 text-center text-[10px] leading-none text-gray-500">
+            <span>{pluralize("rep", heaviestSet.reps, true)}</span>
             <span className="px-0.5 font-medium">&middot;</span>
             <span>{timeAgo(entryWithHeaviestSet.date)}</span>
           </p>
@@ -162,21 +159,23 @@ function OneRepMaxStat({ entries }) {
 
   return (
     <div>
-      <p className="text-xs font-semibold uppercase text-gray-500">
+      <p className="text-center text-xs font-semibold uppercase text-gray-500">
         Estimated 1RM
       </p>
       {highestEstimatesOneRepMaxSet ? (
         <>
-          <p className="font-semibold">
+          <p className="text-center font-semibold">
             <span className="text-3xl text-blue-500">
               {Math.floor(estimatedMax(highestEstimatesOneRepMaxSet))}
             </span>
             <span className="pl-0.5 text-lg text-blue-500">lbs</span>
           </p>
-          <p className="text-xs leading-none text-gray-500">
+          <p className="pt-0.5 text-center text-xs text-[10px] leading-none text-gray-500">
             <span>{highestEstimatesOneRepMaxSet.weight}lbs</span>
             <span className="px-0.5 font-medium">&middot;</span>
-            <span>{highestEstimatesOneRepMaxSet.reps} reps</span>
+            <span>
+              {pluralize("rep", highestEstimatesOneRepMaxSet.reps, true)}
+            </span>
           </p>
         </>
       ) : (
@@ -202,16 +201,18 @@ function FrequencyStat({ entries }) {
 
   return (
     <div>
-      <p className="text-xs font-semibold uppercase text-gray-500">Frequency</p>
-      <p className="font-semibold ">
+      <p className="text-center text-xs font-semibold uppercase text-gray-500">
+        Frequency
+      </p>
+      <p className="text-center font-semibold">
         <span className="text-3xl text-blue-500">
           {last30DaysEntries.length}
         </span>
         <span className="pl-0.5 text-lg text-blue-500">
-          {last30DaysEntries.length === 1 ? "lift" : "lifts"}
+          {pluralize("lift", last30DaysEntries.length)}
         </span>
       </p>
-      <p className="text-xs leading-none text-gray-500">
+      <p className="pt-0.5 text-center text-xs text-[10px] leading-none text-gray-500">
         <span>Past 30 days</span>
       </p>
     </div>
