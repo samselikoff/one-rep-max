@@ -37,7 +37,7 @@ export default function ExerciseIndexPage() {
       <h1 className="text-3xl font-bold">{exercise.name}</h1>
 
       <p className="mt-4 text-center text-xs font-semibold uppercase text-gray-500">
-        One rep max (Est)
+        One Rep Max (Est)
       </p>
       <div className="">
         <Chart entries={entries} />
@@ -160,7 +160,7 @@ function OneRepMaxStat({ entries }) {
   return (
     <div>
       <p className="text-center text-xs font-semibold uppercase text-gray-500">
-        Estimated 1RM
+        Top Est ORM
       </p>
       {highestEstimatesOneRepMaxSet ? (
         <>
