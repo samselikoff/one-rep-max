@@ -100,7 +100,7 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
 
                     <td className="pr-2 text-center">
                       <input
-                        type="radio"
+                        type="checkbox"
                         name="trackingSet"
                         className="color-blue-500"
                         value={index}
@@ -108,16 +108,13 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
                         onChange={(e) => {
                           setSets((sets) => {
                             let newSets = [
-                              ...sets.map((set) => {
-                                set.tracked = false;
+                              ...sets.map((set, i) => {
+                                if (i === index) {
+                                  set.tracked = !set.tracked;
+                                }
                                 return set;
                               }),
                             ];
-                            let currentSet = newSets[index];
-                            newSets[index] = {
-                              ...currentSet,
-                              tracked: true,
-                            };
 
                             return newSets;
                           });
@@ -238,6 +235,7 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
                   {
                     weight: sets[sets.length - 1].weight,
                     reps: sets[sets.length - 1].reps,
+                    tracked: false,
                   },
                 ])
               }
@@ -271,7 +269,7 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
         </div>
       </Form>
 
-      {lastEntry && !entry && (
+      {lastEntry && (
         <div className="pt-4 pb-8">
           <div className="my-4 bg-gray-200 p-4 text-sm text-gray-700">
             <div className="flex justify-between">
