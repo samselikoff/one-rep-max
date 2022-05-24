@@ -18,11 +18,15 @@ let { colors } = resolveConfig(tailwindConfig).theme;
 export default function NewChart({ entries }) {
   let [ref, bounds] = useMeasure();
 
-  if (entries.length === 0) {
+  if (
+    !entries
+      .flatMap((entry) => entry.sets)
+      .some((set) => set.reps > 0 && set.tracked)
+  ) {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <p className="text-sm italic text-gray-400">
-          Lift some weight to see a chart!
+          Add a tracked set to see a chart!
         </p>
       </div>
     );
@@ -62,6 +66,7 @@ function Chart({ data, width, height }) {
     left: 25,
   };
 
+  console.log(data);
   let startDay = startOfMonth(data[0].date);
   let endDay = endOfMonth(data[data.length - 1].date);
 
