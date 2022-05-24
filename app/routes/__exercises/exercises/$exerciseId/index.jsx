@@ -6,7 +6,6 @@ import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import timeAgo from "~/utils/time-ago";
 import pluralize from "pluralize";
-import Chart from "~/components/Chart";
 import estimatedMax from "~/utils/estimated-max";
 import NewChart from "~/components/NewChart";
 

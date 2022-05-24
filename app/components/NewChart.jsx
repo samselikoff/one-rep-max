@@ -54,20 +54,6 @@ export default function NewChart({ entries }) {
 }
 
 function Chart({ data, width, height }) {
-  // const line = d3
-  // .line()
-  // .defined((i) => D[i])
-  // .curve(curve)
-  // .x((i) => xScale(X[i]))
-  // .y((i) => yScale(Y[i]));
-
-  // let d= line(I)
-  // let data = [
-  //   { date: parseISO("2022-05-21T00:00:00.000Z"), max: 10 },
-  //   { date: parseISO("2022-05-22T00:00:00.000Z"), max: 20 },
-  //   { date: parseISO("2022-05-23T00:00:00.000Z"), max: 30 },
-  // ];
-
   let maxes = data.map((d) => d.estimatedMax);
   let margin = {
     top: 20,
@@ -89,16 +75,6 @@ function Chart({ data, width, height }) {
     .domain([Math.min(...maxes), Math.max(...maxes)])
     .range([height - margin.bottom, margin.top]);
 
-  // let axis = d3.axisBottom(x);
-  // console.log(axis);
-
-  // let xAxis = (g) =>
-  //   g
-  //     .attr("transform", `translate(0,${bounds.height - margin})`)
-  //     .call(d3.axisBottom(x));
-  // let xaxis = xAxis(data);
-  // console.log({ xaxis });
-
   let line = d3
     .line()
     .x((d) => x(d.date))
@@ -109,70 +85,23 @@ function Chart({ data, width, height }) {
     start: data[0].date,
     end: data[data.length - 1].date,
   });
-  // let monthWidth = x(data[1].date) - x(data[0].date);
-  // monthWidth = monthWidth > 0 ? monthWidth : 0; // TODO: fix
 
   return (
     <>
       <svg viewBox={`0 0 ${width} ${height}`}>
-        {/* <line
-          x1={0}
-          x2={0}
-          y1={0}
-          y2={bounds.height}
-          stroke={colors.gray[200]}
-          strokeWidth={2}
-        /> */}
-
-        {/* <line
-          x1={0}
-          x2={bounds.width}
-          y1={bounds.height}
-          y2={bounds.height}
-          stroke={colors.gray[200]}
-          strokeWidth={2}
-        /> */}
-
-        {/* <g transform={`translateX(${})`}>
-
-        </g> */}
-
         {/* X axis */}
         {months.map((month, i) => (
           <g key={i} transform={`translate(${x(month)},0)`}>
             {i % 2 && (
               <motion.rect
-                // initial={{ height: 0, y: 148 }}
-                // animate={{ height: bounds.height - margin.bottom, y: 10 }}
-                // initial={{ opacity: 0 }}
-                // animate={{ opacity: 1 }}
-                // transition={{ duration: 1 }}
                 height={height - margin.top - margin.bottom + 10}
                 y={margin.top - 5}
                 width={x(endOfMonth(month)) - x(month)}
                 fill={colors.gray[100]}
-                // fill={colors.blue[50]}
               />
             )}
-            {/* <line
-              // y1={margin.bottom}
-              // y1={0}
-              y2={height - margin.bottom}
-              stroke={colors.gray[100]}
-              strokeWidth={2}
-              // strokeDasharray={10}
-            /> */}
           </g>
         ))}
-        <g transform={`translate(${x(endDay)},${height})`}>
-          {/* <line
-            y1={-margin.bottom}
-            y2={-height}
-            stroke={colors.gray[100]}
-            strokeWidth={2}
-            // strokeDasharray={10}
-          /> */}
-        </g>
 
         {/* Y axis */}
         {y.ticks(4).map((max, i) => (
@@ -181,7 +110,6 @@ function Chart({ data, width, height }) {
               x1={margin.left + 5}
               x2={width - margin.right}
               stroke={colors.gray[400]}
-              // stroke={colors.blue[400]}
               strokeWidth={1}
               strokeDasharray="1,3"
               strokeDashoffset={10}
@@ -213,9 +141,6 @@ function Chart({ data, width, height }) {
 
         {data.map((d, i) => (
           <motion.circle
-            // initial={{ opacity: 0 }}
-            // animate={{ opacity: 1 }}
-            // transition={{ delay: i * (0.75 / data.length) }}
             key={d.date}
             r="5"
             cx={x(d.date)}
