@@ -28,7 +28,7 @@ export default function NewChart({ entries }) {
     );
   }
 
-  let data = entries
+  let data = [...entries]
     .sort((a, b) => (a.date > b.date ? 1 : -1))
     .map((entry) => {
       let setWithhighestEstimatedMax = entry.sets
