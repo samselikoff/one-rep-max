@@ -39,7 +39,7 @@ export default function ExerciseIndexPage() {
       <p className="mt-6 text-center text-xs font-semibold uppercase text-gray-400">
         One Rep Max (Est)
       </p>
-      <div className="h-52 w-full text-blue-500">
+      <div className="h-40 w-full text-blue-500">
         {/* <Chart entries={entries} /> */}
         <NewChart entries={entries} key={exerciseId} />
       </div>
