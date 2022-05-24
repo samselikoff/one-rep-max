@@ -3,6 +3,7 @@ import {
   eachMonthOfInterval,
   endOfMonth,
   format,
+  isSameMonth,
   parseISO,
   startOfMonth,
 } from "date-fns";
@@ -149,7 +150,7 @@ function Chart({ data, width, height }) {
                 height={height - margin.top - margin.bottom + 10}
                 y={margin.top - 5}
                 width={x(endOfMonth(month)) - x(month)}
-                fill={colors.gray[50]}
+                fill={colors.gray[100]}
                 // fill={colors.blue[50]}
               />
             )}
@@ -220,7 +221,11 @@ function Chart({ data, width, height }) {
             cx={x(d.date)}
             cy={y(d.estimatedMax)}
             fill="currentColor"
-            stroke={i % 2 === 0 ? "white" : colors.gray[50]}
+            stroke={
+              months.findIndex((m) => isSameMonth(m, d.date)) % 2 === 0
+                ? "white"
+                : colors.gray[100]
+            }
             strokeWidth={2}
           />
         ))}
