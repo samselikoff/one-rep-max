@@ -6,8 +6,8 @@ import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import timeAgo from "~/utils/time-ago";
 import pluralize from "pluralize";
-import Chart from "~/components/Chart";
 import estimatedMax from "~/utils/estimated-max";
+import NewChart from "~/components/NewChart";
 
 export async function loader({ request, params }) {
   let userId = await requireUserId(request);
@@ -36,14 +36,15 @@ export default function ExerciseIndexPage() {
     <div className="mt-6 px-4">
       <h1 className="text-3xl font-bold">{exercise.name}</h1>
 
-      <p className="mt-4 text-center text-xs font-semibold uppercase text-gray-500">
+      <p className="mt-6 text-center text-xs font-semibold uppercase text-gray-400">
         One Rep Max (Est)
       </p>
-      <div className="">
-        <Chart entries={entries} />
+      <div className="h-52 w-full text-blue-500">
+        {/* <Chart entries={entries} /> */}
+        <NewChart entries={entries} key={exerciseId} />
       </div>
 
-      <div className="mt-4 flex justify-between border-b px-2 pb-8">
+      <div className="mt-6 flex justify-between border-b px-2 pb-8">
         <HeaviestSetStat entries={entries} />
         <OneRepMaxStat entries={entries} />
         <FrequencyStat entries={entries} />
