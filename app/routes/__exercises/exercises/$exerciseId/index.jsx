@@ -37,7 +37,7 @@ export default function ExerciseIndexPage() {
     <div className="mt-6 px-4">
       <h1 className="text-3xl font-bold">{exercise.name}</h1>
 
-      <p className="mt-4 text-center text-xs font-semibold uppercase text-gray-500">
+      <p className="mt-6 text-center text-xs font-semibold uppercase text-gray-500">
         One Rep Max (Est)
       </p>
       <div className="h-52 w-full text-blue-500">
@@ -45,7 +45,7 @@ export default function ExerciseIndexPage() {
         <NewChart entries={entries} key={exerciseId} />
       </div>
 
-      <div className="mt-4 flex justify-between border-b px-2 pb-8">
+      <div className="mt-6 flex justify-between border-b px-2 pb-8">
         <HeaviestSetStat entries={entries} />
         <OneRepMaxStat entries={entries} />
         <FrequencyStat entries={entries} />
