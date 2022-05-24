@@ -35,14 +35,14 @@ export default function NewChart({ entries }) {
   let data = [...entries]
     .sort((a, b) => (a.date > b.date ? 1 : -1))
     .map((entry) => {
-      let setWithhighestEstimatedMax = entry.sets
+      let setWithHighestEstimatedMax = entry.sets
         .filter((set) => set.reps > 0 && set.tracked)
         .sort((a, b) => estimatedMax(b) - estimatedMax(a))[0];
 
       return {
         date: parseISO(entry.date),
-        estimatedMax: setWithhighestEstimatedMax
-          ? estimatedMax(setWithhighestEstimatedMax)
+        estimatedMax: setWithHighestEstimatedMax
+          ? estimatedMax(setWithHighestEstimatedMax)
           : null,
       };
     })
@@ -66,7 +66,6 @@ function Chart({ data, width, height }) {
     left: 25,
   };
 
-  console.log(data);
   let startDay = startOfMonth(data[0].date);
   let endDay = endOfMonth(data[data.length - 1].date);
 
