@@ -7,7 +7,7 @@ import { requireUserId } from "~/session.server";
 import timeAgo from "~/utils/time-ago";
 import pluralize from "pluralize";
 import estimatedMax from "~/utils/estimated-max";
-import NewChart from "~/components/NewChart";
+import Chart from "~/components/Chart";
 
 export async function loader({ request, params }) {
   let userId = await requireUserId(request);
@@ -40,8 +40,7 @@ export default function ExerciseIndexPage() {
         One Rep Max (Est)
       </p>
       <div className="h-40 w-full text-blue-500">
-        {/* <Chart entries={entries} /> */}
-        <NewChart entries={entries} key={exerciseId} />
+        <Chart entries={entries} />
       </div>
 
       <div className="mt-6 flex justify-between border-b px-2 pb-8">
