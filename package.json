@@ -38,6 +38,7 @@
     "@remix-run/react": "*",
     "@remix-run/serve": "*",
     "@remix-run/server-runtime": "*",
+    "@tailwindcss/forms": "^0.5.2",
     "bcryptjs": "^2.4.3",
     "d3": "^7.4.4",
     "date-fns": "^2.28.0",
@@ -47,9 +48,9 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-use-measure": "^2.1.1",
-    "tiny-invariant": "^1.2.0",
     "tailwindcss": "^3.0.24",
-    "@tailwindcss/forms": "^0.5.2"
+    "tiny-invariant": "^1.2.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.3.1",
