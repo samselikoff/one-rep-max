@@ -1,12 +1,20 @@
 import { Form } from "@remix-run/react";
 import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
 import { useState } from "react";
+import { AnimatePresence, motion, useAnimation } from "framer-motion";
+import { ResizablePanel } from "./ResizablePanel";
+import resolveConfig from "tailwindcss/resolveConfig";
+import tailwindConfig from "../../tailwind.config.js";
+import { v4 as uuid } from "uuid";
+
+let fullConfig = resolveConfig(tailwindConfig);
+let colors = fullConfig.theme.colors;
 
 export default function EntryForm({ exercise, entry = null, lastEntry }) {
   let [sets, setSets] = useState(
     entry?.sets.length > 0
       ? entry.sets
-      : [{ weight: "", reps: "", tracked: false }]
+      : [{ id: uuid(), weight: "", reps: "", tracked: false }]
   );
   let defaultDate = entry
     ? parseISO(entry.date.substring(0, 10))
@@ -28,7 +36,7 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
         </div>
 
         <div>
-          <div className="space-y-2">
+          <ResizablePanel>
             <table>
               <thead>
                 <tr className="text-left">
@@ -41,209 +49,151 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
                   <th className="pb-2 text-sm font-medium text-gray-700">
                     Reps
                   </th>
-                  <th className="whitespace-nowrap pr-2 pb-2 text-sm font-medium text-gray-700">
-                    Tracking set
+                  <th className="whitespace-nowrap pl-4 pr-6 pb-2 text-sm font-medium text-gray-700">
+                    Failure
                   </th>
                   <th></th>
                 </tr>
               </thead>
               <tbody className="pt-1">
-                {sets.map((set, index) => (
-                  <tr key={index + 1}>
-                    <td className="whitespace-nowrap text-sm font-medium text-gray-700">
-                      {index + 1}
-                    </td>
-                    <td className="py-1 pr-2">
-                      <div className="flex">
+                <AnimatePresence initial={false}>
+                  {sets.map((set, index) => (
+                    <motion.tr
+                      key={set.id}
+                      layout
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{
+                        type: "linear",
+                        duration: 0.2,
+                        layout: {
+                          type: "spring",
+                          duration: 0.3,
+                        },
+                      }}
+                    >
+                      <td className="whitespace-nowrap text-sm font-medium text-gray-700">
+                        {index + 1}
+                      </td>
+                      <td className="py-1 pr-2">
+                        <div className="flex">
+                          <input
+                            type="text"
+                            name="weight"
+                            inputMode="decimal"
+                            className="z-0 block w-full min-w-0 flex-1 border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            value={set.weight}
+                            onChange={(e) => {
+                              setSets((sets) => {
+                                let newSets = [...sets];
+                                let currentSet = newSets[index];
+                                newSets[index] = {
+                                  ...currentSet,
+                                  weight: e.target.value,
+                                };
+                                return newSets;
+                              });
+                            }}
+                            placeholder="Weight"
+                          />
+                        </div>
+                      </td>
+                      <td className="pr-2">
                         <input
+                          placeholder="Reps"
+                          className="w-full border-gray-300"
                           type="text"
-                          name="weight"
-                          className="z-0 block w-full min-w-0 flex-1 border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          value={set.weight}
+                          inputMode="numeric"
+                          name="reps"
+                          value={set.reps}
                           onChange={(e) => {
                             setSets((sets) => {
                               let newSets = [...sets];
                               let currentSet = newSets[index];
                               newSets[index] = {
                                 ...currentSet,
-                                weight: e.target.value,
+                                reps: e.target.value,
                               };
-
                               return newSets;
                             });
                           }}
-                          placeholder="Weight"
                         />
-                      </div>
-                    </td>
-                    <td className="pr-2">
-                      <input
-                        placeholder="Reps"
-                        className="w-full border-gray-300"
-                        type="number"
-                        name="reps"
-                        value={set.reps}
-                        onChange={(e) => {
-                          setSets((sets) => {
-                            let newSets = [...sets];
-                            let currentSet = newSets[index];
-                            newSets[index] = {
-                              ...currentSet,
-                              reps: e.target.value,
-                            };
-
-                            return newSets;
-                          });
-                        }}
-                      />
-                    </td>
-
-                    <td className="pr-2 text-center">
-                      <input
-                        type="checkbox"
-                        name="trackingSet"
-                        className="color-blue-500"
-                        value={index}
-                        checked={set.tracked}
-                        onChange={(e) => {
-                          setSets((sets) => {
-                            let newSets = [
-                              ...sets.map((set, i) => {
-                                if (i === index) {
-                                  set.tracked = !set.tracked;
-                                }
-                                return set;
-                              }),
-                            ];
-
-                            return newSets;
-                          });
-                        }}
-                      />
-                    </td>
-
-                    <td
-                      className={`${
-                        sets.length === 1 ? "pointer-events-none opacity-0" : ""
-                      }`}
-                    >
-                      <button
-                        onClick={() => {
-                          setSets((sets) => sets.filter((s, i) => i !== index));
-                        }}
-                        className="bg-gray-100 px-3 py-2"
-                        type="button"
-                      >
-                        –
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {/* <div className="flex">
-              <div className="flex w-full space-x-3">
-                <div className="w-1/6"></div>
-                <p className="w-2/6 whitespace-nowrap text-xs text-gray-500">
-                  Weight (lbs)
-                </p>
-                <p className="w-2/6 whitespace-nowrap text-xs text-gray-500">
-                  Reps
-                </p>
-                <div className="w-1/6"></div>
-              </div>
-            </div>
-            <ol className="list-inside list-decimal space-y-2">
-              {sets.map((set, index) => (
-                <li key={index + 1} className="flex items-center space-x-3">
-                  <span className="w-1/6 whitespace-nowrap text-sm font-medium text-gray-700">
-                    {index + 1}
-                  </span>
-                  <div className="w-2/6">
-                    <div>
-                      <div className="flex">
+                      </td>
+                      <td className="pr-2 text-center">
                         <input
-                          type="text"
-                          name="weight"
-                          className="z-0 block w-full min-w-0 flex-1 border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          value={set.weight}
+                          type="checkbox"
+                          name="trackingSet"
+                          className="color-blue-500"
+                          value={index}
+                          checked={set.tracked}
                           onChange={(e) => {
                             setSets((sets) => {
-                              let newSets = [...sets];
-                              let currentSet = newSets[index];
-                              newSets[index] = {
-                                weight: e.target.value,
-                                reps: currentSet.reps,
-                              };
-
+                              let newSets = [
+                                ...sets.map((set, i) => {
+                                  if (i === index) {
+                                    set.tracked = !set.tracked;
+                                  }
+                                  return set;
+                                }),
+                              ];
                               return newSets;
                             });
                           }}
-                          placeholder="Weight"
                         />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="w-2/6">
-                    <input
-                      placeholder="Reps"
-                      className="w-full border-gray-300"
-                      type="number"
-                      name="reps"
-                      value={set.reps}
-                      onChange={(e) => {
-                        setSets((sets) => {
-                          let newSets = [...sets];
-                          let currentSet = newSets[index];
-                          newSets[index] = {
-                            weight: currentSet.weight,
-                            reps: e.target.value,
-                          };
-
-                          return newSets;
-                        });
-                      }}
-                    />
-                  </div>
-
-                  <div
-                    className={`w-1/6 ${
-                      sets.length === 1 ? "pointer-events-none opacity-0" : ""
-                    }`}
-                  >
-                    <button
-                      onClick={() => {
-                        setSets((sets) => sets.filter((s, i) => i !== index));
-                      }}
-                      className="bg-gray-100 px-3 py-2"
-                      type="button"
-                    >
-                      –
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ol> */}
-          </div>
+                      </td>
+                      <td
+                        className={
+                          sets.length === 1 ? "pointer-events-none" : ""
+                        }
+                      >
+                        <AnimatedButton
+                          onClick={(animationControls) => {
+                            animationControls.start({
+                              background: [colors.gray[300], colors.gray[100]],
+                            });
+                            setSets((sets) =>
+                              sets.filter((s, i) => i !== index)
+                            );
+                          }}
+                          className="h-10 w-10 rounded-md bg-gray-100"
+                          type="button"
+                        >
+                          –
+                        </AnimatedButton>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
+              </tbody>
+            </table>
+          </ResizablePanel>
 
           <div className="mt-6">
-            <button
-              onClick={() =>
+            <AnimatedButton
+              transition={{
+                duration: 0.75,
+                rotate: { ease: "anticipate" },
+              }}
+              onClick={(animationControls) => {
+                animationControls.start({
+                  background: [colors.gray[300], colors.gray[100]],
+                });
                 setSets((sets) => [
                   ...sets,
                   {
+                    id: uuid(),
                     weight: sets[sets.length - 1].weight,
                     reps: sets[sets.length - 1].reps,
                     tracked: false,
                   },
-                ])
-              }
+                ]);
+              }}
               type="button"
-              className="h-11 w-full border-2 border-dashed border-gray-300 text-sm font-medium text-gray-700"
+              className="h-11 w-full rounded-md bg-gray-100 text-sm font-medium text-gray-700"
             >
               + Add set
-            </button>
+            </AnimatedButton>
           </div>
         </div>
 
@@ -262,7 +212,7 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
         <div className="flex justify-end">
           <button
             type="submit"
-            className="bg-blue-500 px-5 py-2 font-medium text-white"
+            className="rounded-md bg-blue-500 px-5 py-2 font-medium text-white"
           >
             Save
           </button>
@@ -294,3 +244,25 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
     </>
   );
 }
+
+function AnimatedButton({ onClick, ...rest }) {
+  const controls = useAnimation();
+
+  return (
+    <motion.button
+      animate={controls}
+      onClick={() => onClick(controls)}
+      {...rest}
+    />
+  );
+}
+
+// function transparentize(hexColor, opacity) {
+//   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hexColor);
+//   return result
+//     ? `rgba(${parseInt(result[1], 16)} ${parseInt(result[2], 16)} ${parseInt(
+//         result[3],
+//         16
+//       )} / ${opacity})`
+//     : null;
+// }
