@@ -58,7 +58,6 @@ export async function action({ request, params }) {
 
 export default function NewEntryPage() {
   let { lastEntry, exercise, lastTrackedEntry } = useLoaderData();
-  console.log({ lastTrackedEntry });
 
   return (
     <div className="mt-6 px-4">
