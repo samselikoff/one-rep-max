@@ -11,7 +11,7 @@ export async function loader({ request, params }) {
     where: { id: params.exerciseId },
   });
 
-  let lastEntry = await prisma.entry.findFirst({
+  let entries = await prisma.entry.findMany({
     where: { userId, exerciseId: params.exerciseId },
     orderBy: { date: "desc" },
     include: {
@@ -19,7 +19,12 @@ export async function loader({ request, params }) {
     },
   });
 
-  return json({ lastEntry, exercise });
+  let lastEntry = entries[0];
+  let lastTrackedEntry = entries.find((entry) =>
+    entry.sets.some((s) => s.tracked)
+  );
+
+  return json({ lastEntry, exercise, lastTrackedEntry });
 }
 
 export async function action({ request, params }) {
@@ -52,13 +57,18 @@ export async function action({ request, params }) {
 }
 
 export default function NewEntryPage() {
-  let { lastEntry, exercise } = useLoaderData();
+  let { lastEntry, exercise, lastTrackedEntry } = useLoaderData();
+  console.log({ lastTrackedEntry });
 
   return (
     <div className="mt-6 px-4">
       <h1 className="text-3xl font-bold">{exercise.name} – New</h1>
 
-      <EntryForm exercise={exercise} lastEntry={lastEntry} />
+      <EntryForm
+        exercise={exercise}
+        lastEntry={lastEntry}
+        lastTrackedEntry={lastTrackedEntry}
+      />
     </div>
   );
 }

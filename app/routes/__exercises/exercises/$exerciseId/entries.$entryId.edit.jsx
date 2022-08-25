@@ -18,15 +18,20 @@ export async function loader({ request, params }) {
     },
   });
 
-  let lastEntry = await prisma.entry.findFirst({
-    where: { userId, exerciseId: params.exerciseId },
+  let entries = await prisma.entry.findMany({
+    where: { userId, exerciseId: params.exerciseId, date: { lt: entry.date } },
     orderBy: { date: "desc" },
     include: {
       sets: true,
     },
   });
 
-  return json({ entry, lastEntry, exercise });
+  let lastEntry = entries[0];
+  let lastTrackedEntry = entries.find((entry) =>
+    entry.sets.some((s) => s.tracked)
+  );
+
+  return json({ entry, lastEntry, exercise, lastTrackedEntry });
 }
 
 export async function action({ request, params }) {
@@ -72,13 +77,18 @@ export async function action({ request, params }) {
 }
 
 export default function EditEntryPage() {
-  let { entry, lastEntry, exercise } = useLoaderData();
+  let { entry, lastEntry, exercise, lastTrackedEntry } = useLoaderData();
 
   return (
     <div className="mt-6 px-4">
       <h1 className="text-3xl font-bold">{exercise.name} – Edit</h1>
 
-      <EntryForm entry={entry} exercise={exercise} lastEntry={lastEntry} />
+      <EntryForm
+        entry={entry}
+        exercise={exercise}
+        lastEntry={lastEntry}
+        lastTrackedEntry={lastTrackedEntry}
+      />
 
       <Form className="pb-16" method="post">
         <input type="hidden" name="_method" value="delete" />

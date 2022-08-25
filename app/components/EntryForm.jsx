@@ -1,16 +1,22 @@
 import { Form } from "@remix-run/react";
 import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import { ResizablePanel } from "./ResizablePanel";
 import resolveConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "../../tailwind.config.js";
 import { v4 as uuid } from "uuid";
+import estimatedMax from "~/utils/estimated-max";
 
 let fullConfig = resolveConfig(tailwindConfig);
 let colors = fullConfig.theme.colors;
 
-export default function EntryForm({ exercise, entry = null, lastEntry }) {
+export default function EntryForm({
+  exercise,
+  entry = null,
+  lastEntry,
+  lastTrackedEntry,
+}) {
   let [sets, setSets] = useState(
     entry?.sets.length > 0
       ? entry.sets
@@ -19,6 +25,14 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
   let defaultDate = entry
     ? parseISO(entry.date.substring(0, 10))
     : startOfToday();
+
+  let lastEstimatedMax;
+  if (lastTrackedEntry) {
+    let maxes = lastTrackedEntry.sets
+      .filter((set) => set.tracked)
+      .map((set) => estimatedMax(set));
+    lastEstimatedMax = Math.max(...maxes);
+  }
 
   return (
     <>
@@ -58,111 +72,128 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
               <tbody className="pt-1">
                 <AnimatePresence initial={false}>
                   {sets.map((set, index) => (
-                    <motion.tr
-                      key={set.id}
-                      layout
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{
-                        type: "linear",
-                        duration: 0.2,
-                        layout: {
-                          type: "spring",
-                          duration: 0.3,
-                        },
-                      }}
-                    >
-                      <td className="whitespace-nowrap text-sm font-medium text-gray-700">
-                        {index + 1}
-                      </td>
-                      <td className="py-1 pr-2">
-                        <div className="flex">
+                    <Fragment key={set.id}>
+                      <motion.tr
+                        key={set.id}
+                        layout
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{
+                          type: "linear",
+                          duration: 0.2,
+                          layout: {
+                            type: "spring",
+                            duration: 0.3,
+                          },
+                        }}
+                      >
+                        <td className="whitespace-nowrap text-sm font-medium text-gray-700">
+                          {index + 1}
+                        </td>
+                        <td className="py-1 pr-2">
+                          <div className="flex">
+                            <input
+                              type="text"
+                              name="weight"
+                              inputMode="decimal"
+                              className="z-0 block w-full min-w-0 flex-1 border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              value={set.weight}
+                              onChange={(e) => {
+                                setSets((sets) => {
+                                  let newSets = [...sets];
+                                  let currentSet = newSets[index];
+                                  newSets[index] = {
+                                    ...currentSet,
+                                    weight: e.target.value,
+                                  };
+                                  return newSets;
+                                });
+                              }}
+                              placeholder="Weight"
+                            />
+                          </div>
+                        </td>
+                        <td className="pr-2">
                           <input
+                            placeholder="Reps"
+                            className="w-full border-gray-300"
                             type="text"
-                            name="weight"
-                            inputMode="decimal"
-                            className="z-0 block w-full min-w-0 flex-1 border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            value={set.weight}
+                            inputMode="numeric"
+                            name="reps"
+                            value={set.reps}
                             onChange={(e) => {
                               setSets((sets) => {
                                 let newSets = [...sets];
                                 let currentSet = newSets[index];
                                 newSets[index] = {
                                   ...currentSet,
-                                  weight: e.target.value,
+                                  reps: e.target.value,
                                 };
                                 return newSets;
                               });
                             }}
-                            placeholder="Weight"
                           />
-                        </div>
-                      </td>
-                      <td className="pr-2">
-                        <input
-                          placeholder="Reps"
-                          className="w-full border-gray-300"
-                          type="text"
-                          inputMode="numeric"
-                          name="reps"
-                          value={set.reps}
-                          onChange={(e) => {
-                            setSets((sets) => {
-                              let newSets = [...sets];
-                              let currentSet = newSets[index];
-                              newSets[index] = {
-                                ...currentSet,
-                                reps: e.target.value,
-                              };
-                              return newSets;
-                            });
-                          }}
-                        />
-                      </td>
-                      <td className="pr-2 text-center">
-                        <input
-                          type="checkbox"
-                          name="trackingSet"
-                          className="color-blue-500"
-                          value={index}
-                          checked={set.tracked}
-                          onChange={(e) => {
-                            setSets((sets) => {
-                              let newSets = [
-                                ...sets.map((set, i) => {
-                                  if (i === index) {
-                                    set.tracked = !set.tracked;
-                                  }
-                                  return set;
-                                }),
-                              ];
-                              return newSets;
-                            });
-                          }}
-                        />
-                      </td>
-                      <td
-                        className={
-                          sets.length === 1 ? "pointer-events-none" : ""
-                        }
-                      >
-                        <AnimatedButton
-                          onClick={(animationControls) => {
-                            animationControls.start({
-                              background: [colors.gray[300], colors.gray[100]],
-                            });
-                            setSets((sets) =>
-                              sets.filter((s, i) => i !== index)
-                            );
-                          }}
-                          className="h-10 w-10 rounded-md bg-gray-100"
-                          type="button"
+                        </td>
+                        <td className="pr-2 text-center">
+                          <input
+                            type="checkbox"
+                            name="trackingSet"
+                            className="color-blue-500"
+                            value={index}
+                            checked={set.tracked}
+                            onChange={(e) => {
+                              setSets((sets) => {
+                                let newSets = [
+                                  ...sets.map((set, i) => {
+                                    if (i === index) {
+                                      set.tracked = !set.tracked;
+                                    }
+                                    return set;
+                                  }),
+                                ];
+                                return newSets;
+                              });
+                            }}
+                          />
+                        </td>
+                        <td
+                          className={
+                            sets.length === 1 ? "pointer-events-none" : ""
+                          }
                         >
-                          –
-                        </AnimatedButton>
-                      </td>
-                    </motion.tr>
+                          <AnimatedButton
+                            onClick={(animationControls) => {
+                              animationControls.start({
+                                background: [
+                                  colors.gray[300],
+                                  colors.gray[100],
+                                ],
+                              });
+                              setSets((sets) =>
+                                sets.filter((s, i) => i !== index)
+                              );
+                            }}
+                            className="h-10 w-10 rounded-md bg-gray-100"
+                            type="button"
+                          >
+                            –
+                          </AnimatedButton>
+                        </td>
+                      </motion.tr>
+                      {set.tracked && set.weight && lastEstimatedMax && (
+                        <motion.tr>
+                          <td />
+                          <td
+                            colSpan={4}
+                            className="pt-1 pb-4 text-left text-sm italic"
+                          >
+                            {repsToBeatMax(lastEstimatedMax, set.weight)} reps
+                            at this weight to beat previous ORM
+                          </td>
+                        </motion.tr>
+                      )}
+                    </Fragment>
                   ))}
                 </AnimatePresence>
               </tbody>
@@ -223,7 +254,7 @@ export default function EntryForm({ exercise, entry = null, lastEntry }) {
         <div className="pt-4 pb-8">
           <div className="my-4 bg-gray-200 p-4 text-sm text-gray-700">
             <div className="flex justify-between">
-              <p className="font-medium">Last {exercise.name}</p>
+              <p className="font-medium">Previous {exercise.name}</p>
               <p>
                 {formatDistanceToNow(parseISO(lastEntry.date.substring(0, 10)))}{" "}
                 ago
@@ -266,3 +297,20 @@ function AnimatedButton({ onClick, ...rest }) {
 //       )} / ${opacity})`
 //     : null;
 // }
+
+function repsToBeatMax(max, weight) {
+  let reps = (max - +weight) / (+weight * 0.0333);
+  let repsToBeat = Math.ceil(reps);
+  let newMax = estimatedMax({ weight, reps: repsToBeat });
+
+  let x;
+  if (newMax === max && repsToBeat > 0) {
+    x = repsToBeat + 1;
+  } else if (newMax > max && repsToBeat > 0) {
+    x = repsToBeat;
+  } else {
+    x = 1;
+  }
+
+  return x;
+}
