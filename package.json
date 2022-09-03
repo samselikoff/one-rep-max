@@ -34,6 +34,8 @@
     "@heroicons/react": "^1.0.6",
     "@observablehq/plot": "^0.4.3",
     "@prisma/client": "^3.14.0",
+    "@react-aria/button": "^3.6.1",
+    "@react-aria/focus": "^3.8.0",
     "@remix-run/node": "*",
     "@remix-run/react": "*",
     "@remix-run/serve": "*",

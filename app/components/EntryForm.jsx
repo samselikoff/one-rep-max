@@ -7,6 +7,7 @@ import resolveConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "../../tailwind.config.js";
 import { v4 as uuid } from "uuid";
 import estimatedMax from "~/utils/estimated-max";
+import AnimatedButton from "./AnimatedButton";
 
 let fullConfig = resolveConfig(tailwindConfig);
 let colors = fullConfig.theme.colors;
@@ -163,13 +164,9 @@ export default function EntryForm({
                           }
                         >
                           <AnimatedButton
-                            onClick={(animationControls) => {
-                              animationControls.start({
-                                background: [
-                                  colors.gray[300],
-                                  colors.gray[100],
-                                ],
-                              });
+                            backgroundColor={colors.gray[100]}
+                            highlightColor={colors.gray[300]}
+                            onClick={() => {
                               setSets((sets) =>
                                 sets.filter((s, i) => i !== index)
                               );
@@ -202,14 +199,12 @@ export default function EntryForm({
 
           <div className="mt-6">
             <AnimatedButton
+              backgroundColor={colors.gray[100]}
+              highlightColor={colors.gray[300]}
               transition={{
                 duration: 0.75,
-                rotate: { ease: "anticipate" },
               }}
-              onClick={(animationControls) => {
-                animationControls.start({
-                  background: [colors.gray[300], colors.gray[100]],
-                });
+              onClick={() => {
                 setSets((sets) => [
                   ...sets,
                   {
@@ -241,12 +236,14 @@ export default function EntryForm({
         </div>
 
         <div className="flex justify-end">
-          <button
+          <AnimatedButton
             type="submit"
-            className="rounded-md bg-blue-500 px-5 py-2 font-medium text-white"
+            backgroundColor={colors.blue[500]}
+            highlightColor={colors.blue[600]}
+            className="rounded-md px-5 py-2 font-medium text-white"
           >
             Save
-          </button>
+          </AnimatedButton>
         </div>
       </Form>
 
@@ -276,17 +273,17 @@ export default function EntryForm({
   );
 }
 
-function AnimatedButton({ onClick, ...rest }) {
-  const controls = useAnimation();
+// function AnimatedButton({ onClick, ...rest }) {
+//   const controls = useAnimation();
 
-  return (
-    <motion.button
-      animate={controls}
-      onClick={() => onClick(controls)}
-      {...rest}
-    />
-  );
-}
+//   return (
+//     <motion.button
+//       animate={controls}
+//       onClick={(event) => onClick(event, controls)}
+//       {...rest}
+//     />
+//   );
+// }
 
 // function transparentize(hexColor, opacity) {
 //   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hexColor);
