@@ -1,10 +1,10 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model User {
@@ -12,14 +12,14 @@ model User {
   email     String    @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  password  Password?
   entries   Entry[]
+  password  Password?
 }
 
 model Password {
   hash   String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Exercise {
@@ -36,10 +36,10 @@ model Entry {
   notes      String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId     String
-  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   sets       Set[]
 }
 
@@ -50,6 +50,6 @@ model Set {
   weight    Decimal?
   reps      Int
   tracked   Boolean  @default(false)
-  entry     Entry    @relation(fields: [entryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   entryId   String
+  entry     Entry    @relation(fields: [entryId], references: [id], onDelete: Cascade)
 }
