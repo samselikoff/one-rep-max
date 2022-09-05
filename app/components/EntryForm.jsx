@@ -158,12 +158,9 @@ export default function EntryForm({
                             }}
                           />
                         </td>
-                        <td
-                          className={
-                            sets.length === 1 ? "pointer-events-none" : ""
-                          }
-                        >
+                        <td>
                           <AnimatedButton
+                            disabled={sets.length === 1}
                             backgroundColor={colors.gray[100]}
                             highlightColor={colors.gray[300]}
                             onClick={() => {

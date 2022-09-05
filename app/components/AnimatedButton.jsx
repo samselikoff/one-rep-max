@@ -6,6 +6,7 @@ import { useRef } from "react";
 export default function AnimatedButton({
   onClick = () => {},
   children,
+  disabled,
   className,
   backgroundColor,
   highlightColor,
@@ -37,7 +38,7 @@ export default function AnimatedButton({
       <motion.button
         initial={{ background: backgroundColor }}
         animate={controls}
-        {...buttonProps}
+        {...(!disabled ? buttonProps : {})}
         style={{
           WebkitTapHighlightColor: "transparent",
           touchAction: "none",
