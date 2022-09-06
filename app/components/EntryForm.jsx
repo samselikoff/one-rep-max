@@ -59,7 +59,7 @@ export default function EntryForm({
                 <div>Reps</div>
                 <div className="text-center">Failure</div>
               </div>
-              <div className="pt-1">
+              <div className="mt-3">
                 <AnimatePresence mode="popLayout" initial={false}>
                   {sets.map((set, index) => (
                     <motion.div
@@ -78,7 +78,7 @@ export default function EntryForm({
                       }}
                     >
                       <div className="grid grid-cols-[40px_25%_25%_15%_15%] gap-x-2 pb-2">
-                        <div className="whitespace-nowrap text-sm font-medium text-gray-700">
+                        <div className="flex items-center text-sm font-medium text-gray-700">
                           {index + 1}
                         </div>
                         <div>
@@ -125,7 +125,7 @@ export default function EntryForm({
                             }}
                           />
                         </div>
-                        <div className="text-center">
+                        <div className="flex items-center justify-center text-center">
                           <input
                             type="checkbox"
                             name="trackingSet"
@@ -133,18 +133,13 @@ export default function EntryForm({
                             value={index}
                             checked={set.tracked}
                             onChange={(e) => {
-                              setSets((sets) => {
-                                let newSets = [
-                                  ...sets.map((set, i) => {
-                                    if (i === index) {
-                                      console.log(set.tracked);
-                                      set.tracked = !set.tracked;
-                                    }
-                                    return set;
-                                  }),
-                                ];
-                                return newSets;
-                              });
+                              setSets((sets) =>
+                                sets.map((set, i) => ({
+                                  ...set,
+                                  tracked:
+                                    i === index ? !set.tracked : set.tracked,
+                                }))
+                              );
                             }}
                           />
                         </div>
