@@ -52,47 +52,36 @@ export default function EntryForm({
 
         <div>
           <ResizablePanel>
-            <table>
-              <thead>
-                <tr className="text-left">
-                  <th className="pb-2 pr-4 text-sm font-medium text-gray-700">
-                    Sets
-                  </th>
-                  <th className="pb-2 text-sm font-medium text-gray-700">
-                    Weight (lbs)
-                  </th>
-                  <th className="pb-2 text-sm font-medium text-gray-700">
-                    Reps
-                  </th>
-                  <th className="whitespace-nowrap pl-4 pr-6 pb-2 text-sm font-medium text-gray-700">
-                    Failure
-                  </th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody className="pt-1">
-                <AnimatePresence initial={false}>
+            <div>
+              <div className="grid grid-cols-[40px_25%_25%_15%_15%] gap-x-2 text-sm font-medium text-gray-700">
+                <div>Sets</div>
+                <div>Weight (lbs)</div>
+                <div>Reps</div>
+                <div className="text-center">Failure</div>
+              </div>
+              <div className="pt-1">
+                <AnimatePresence mode="popLayout" initial={false}>
                   {sets.map((set, index) => (
-                    <Fragment key={set.id}>
-                      <motion.tr
-                        key={set.id}
-                        layout
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{
-                          type: "linear",
-                          duration: 0.2,
-                          layout: {
-                            type: "spring",
-                            duration: 0.3,
-                          },
-                        }}
-                      >
-                        <td className="whitespace-nowrap text-sm font-medium text-gray-700">
+                    <motion.div
+                      key={set.id}
+                      layout
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{
+                        type: "linear",
+                        duration: 0.2,
+                        layout: {
+                          type: "spring",
+                          duration: 0.3,
+                        },
+                      }}
+                    >
+                      <div className="grid grid-cols-[40px_25%_25%_15%_15%] gap-x-2 pb-2">
+                        <div className="whitespace-nowrap text-sm font-medium text-gray-700">
                           {index + 1}
-                        </td>
-                        <td className="py-1 pr-2">
+                        </div>
+                        <div>
                           <div className="flex">
                             <input
                               type="text"
@@ -114,8 +103,8 @@ export default function EntryForm({
                               placeholder="Weight"
                             />
                           </div>
-                        </td>
-                        <td className="pr-2">
+                        </div>
+                        <div>
                           <input
                             placeholder="Reps"
                             className="w-full border-gray-300"
@@ -135,8 +124,8 @@ export default function EntryForm({
                               });
                             }}
                           />
-                        </td>
-                        <td className="pr-2 text-center">
+                        </div>
+                        <div className="text-center">
                           <input
                             type="checkbox"
                             name="trackingSet"
@@ -148,6 +137,7 @@ export default function EntryForm({
                                 let newSets = [
                                   ...sets.map((set, i) => {
                                     if (i === index) {
+                                      console.log(set.tracked);
                                       set.tracked = !set.tracked;
                                     }
                                     return set;
@@ -157,8 +147,8 @@ export default function EntryForm({
                               });
                             }}
                           />
-                        </td>
-                        <td>
+                        </div>
+                        <div className="text-right">
                           <AnimatedButton
                             disabled={sets.length === 1}
                             backgroundColor={colors.gray[100]}
@@ -173,25 +163,25 @@ export default function EntryForm({
                           >
                             –
                           </AnimatedButton>
-                        </td>
-                      </motion.tr>
+                        </div>
+                      </div>
                       {set.tracked && set.weight && lastEstimatedMax && (
-                        <motion.tr>
-                          <td />
-                          <td
+                        <motion.div>
+                          <div />
+                          <div
                             colSpan={4}
                             className="pt-1 pb-4 text-left text-sm italic"
                           >
                             {repsToBeatMax(lastEstimatedMax, set.weight)} reps
                             at this weight to beat previous ORM
-                          </td>
-                        </motion.tr>
+                          </div>
+                        </motion.div>
                       )}
-                    </Fragment>
+                    </motion.div>
                   ))}
                 </AnimatePresence>
-              </tbody>
-            </table>
+              </div>
+            </div>
           </ResizablePanel>
 
           <div className="mt-6">

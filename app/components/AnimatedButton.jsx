@@ -39,6 +39,7 @@ export default function AnimatedButton({
         initial={{ background: backgroundColor }}
         animate={controls}
         {...(!disabled ? buttonProps : {})}
+        disabled={disabled}
         style={{
           WebkitTapHighlightColor: "transparent",
           touchAction: "none",
