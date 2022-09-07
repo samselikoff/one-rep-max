@@ -90,7 +90,6 @@ export default function EntryForm({
                             <input
                               type="text"
                               name="weight"
-                              autoFocus
                               inputMode="decimal"
                               className="z-0 block w-full min-w-0 flex-1 border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               value={set.weight}
