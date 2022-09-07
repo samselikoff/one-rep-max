@@ -1,12 +1,12 @@
 import { Form } from "@remix-run/react";
 import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
-import { Fragment, useState } from "react";
-import { AnimatePresence, motion, useAnimation } from "framer-motion";
-import { ResizablePanel } from "./ResizablePanel";
+import { AnimatePresence, motion } from "framer-motion";
+import { useRef, useState } from "react";
 import resolveConfig from "tailwindcss/resolveConfig";
-import tailwindConfig from "../../tailwind.config.js";
 import { v4 as uuid } from "uuid";
 import estimatedMax from "~/utils/estimated-max";
+import tailwindConfig from "../../tailwind.config.js";
+import AnimatedButton from "./AnimatedButton";
 
 let fullConfig = resolveConfig(tailwindConfig);
 let colors = fullConfig.theme.colors;
@@ -17,6 +17,7 @@ export default function EntryForm({
   lastEntry,
   lastTrackedEntry,
 }) {
+  let formRef = useRef();
   let [sets, setSets] = useState(
     entry?.sets.length > 0
       ? entry.sets
@@ -36,7 +37,7 @@ export default function EntryForm({
 
   return (
     <>
-      <Form className="mt-4 space-y-4" method="post">
+      <Form className="mt-4 space-y-4" method="post" ref={formRef}>
         <div>
           <label className="space-y-2">
             <span className="text-sm font-medium text-gray-700">Date</span>
@@ -50,166 +51,145 @@ export default function EntryForm({
         </div>
 
         <div>
-          <ResizablePanel>
-            <table>
-              <thead>
-                <tr className="text-left">
-                  <th className="pb-2 pr-4 text-sm font-medium text-gray-700">
-                    Sets
-                  </th>
-                  <th className="pb-2 text-sm font-medium text-gray-700">
-                    Weight (lbs)
-                  </th>
-                  <th className="pb-2 text-sm font-medium text-gray-700">
-                    Reps
-                  </th>
-                  <th className="whitespace-nowrap pl-4 pr-6 pb-2 text-sm font-medium text-gray-700">
-                    Failure
-                  </th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody className="pt-1">
-                <AnimatePresence initial={false}>
-                  {sets.map((set, index) => (
-                    <Fragment key={set.id}>
-                      <motion.tr
-                        key={set.id}
-                        layout
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{
-                          type: "linear",
-                          duration: 0.2,
-                          layout: {
-                            type: "spring",
-                            duration: 0.3,
-                          },
-                        }}
-                      >
-                        <td className="whitespace-nowrap text-sm font-medium text-gray-700">
-                          {index + 1}
-                        </td>
-                        <td className="py-1 pr-2">
-                          <div className="flex">
-                            <input
-                              type="text"
-                              name="weight"
-                              inputMode="decimal"
-                              className="z-0 block w-full min-w-0 flex-1 border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                              value={set.weight}
-                              onChange={(e) => {
-                                setSets((sets) => {
-                                  let newSets = [...sets];
-                                  let currentSet = newSets[index];
-                                  newSets[index] = {
-                                    ...currentSet,
-                                    weight: e.target.value,
-                                  };
-                                  return newSets;
-                                });
-                              }}
-                              placeholder="Weight"
-                            />
-                          </div>
-                        </td>
-                        <td className="pr-2">
+          <div>
+            <div className="grid grid-cols-[40px_1fr_1fr_15%_15%] gap-x-2 text-sm font-medium text-gray-700">
+              <div>Sets</div>
+              <div>Weight (lbs)</div>
+              <div>Reps</div>
+              <div className="text-center">Failure</div>
+            </div>
+
+            <div className="overflow-hidden pt-3 pb-6">
+              <AnimatePresence initial={false}>
+                {sets.map((set, index) => (
+                  <motion.div
+                    key={set.id}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{
+                      opacity: {
+                        duration: 0.2,
+                      },
+                    }}
+                    className="overflow-hidden"
+                  >
+                    <div className="grid grid-cols-[40px_1fr_1fr_15%_15%] gap-x-2 pb-2">
+                      <div className="flex items-center text-sm font-medium text-gray-700">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <div className="flex">
                           <input
-                            placeholder="Reps"
-                            className="w-full border-gray-300"
                             type="text"
-                            inputMode="numeric"
-                            name="reps"
-                            value={set.reps}
+                            name="weight"
+                            inputMode="decimal"
+                            className="z-0 block w-full min-w-0 flex-1 border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            value={set.weight}
                             onChange={(e) => {
                               setSets((sets) => {
                                 let newSets = [...sets];
                                 let currentSet = newSets[index];
                                 newSets[index] = {
                                   ...currentSet,
-                                  reps: e.target.value,
+                                  weight: e.target.value,
                                 };
                                 return newSets;
                               });
                             }}
+                            placeholder="Weight"
                           />
-                        </td>
-                        <td className="pr-2 text-center">
-                          <input
-                            type="checkbox"
-                            name="trackingSet"
-                            className="color-blue-500"
-                            value={index}
-                            checked={set.tracked}
-                            onChange={(e) => {
-                              setSets((sets) => {
-                                let newSets = [
-                                  ...sets.map((set, i) => {
-                                    if (i === index) {
-                                      set.tracked = !set.tracked;
-                                    }
-                                    return set;
-                                  }),
-                                ];
-                                return newSets;
-                              });
-                            }}
-                          />
-                        </td>
-                        <td
-                          className={
-                            sets.length === 1 ? "pointer-events-none" : ""
-                          }
+                        </div>
+                      </div>
+                      <div>
+                        <input
+                          placeholder="Reps"
+                          className="w-full border-gray-300"
+                          type="text"
+                          inputMode="numeric"
+                          name="reps"
+                          value={set.reps}
+                          onChange={(e) => {
+                            setSets((sets) => {
+                              let newSets = [...sets];
+                              let currentSet = newSets[index];
+                              newSets[index] = {
+                                ...currentSet,
+                                reps: e.target.value,
+                              };
+                              return newSets;
+                            });
+                          }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-center text-center">
+                        <input
+                          type="checkbox"
+                          name="trackingSet"
+                          className="color-blue-500"
+                          value={index}
+                          checked={set.tracked}
+                          onChange={(e) => {
+                            setSets((sets) =>
+                              sets.map((set, i) => ({
+                                ...set,
+                                tracked:
+                                  i === index ? !set.tracked : set.tracked,
+                              }))
+                            );
+                          }}
+                        />
+                      </div>
+                      <div className="text-right">
+                        <AnimatedButton
+                          disabled={sets.length === 1}
+                          backgroundColor={colors.gray[100]}
+                          highlightColor={colors.gray[300]}
+                          onClick={() => {
+                            setSets((sets) =>
+                              sets.filter((s, i) => i !== index)
+                            );
+                          }}
+                          className="h-10 w-10 rounded-md bg-gray-100"
+                          type="button"
                         >
-                          <AnimatedButton
-                            onClick={(animationControls) => {
-                              animationControls.start({
-                                background: [
-                                  colors.gray[300],
-                                  colors.gray[100],
-                                ],
-                              });
-                              setSets((sets) =>
-                                sets.filter((s, i) => i !== index)
-                              );
-                            }}
-                            className="h-10 w-10 rounded-md bg-gray-100"
-                            type="button"
-                          >
-                            –
-                          </AnimatedButton>
-                        </td>
-                      </motion.tr>
+                          –
+                        </AnimatedButton>
+                      </div>
+                    </div>
+                    <AnimatePresence>
                       {set.tracked && set.weight && lastEstimatedMax && (
-                        <motion.tr>
-                          <td />
-                          <td
-                            colSpan={4}
-                            className="pt-1 pb-4 text-left text-sm italic"
-                          >
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{
+                            opacity: {
+                              duration: 0.2,
+                            },
+                          }}
+                        >
+                          <div className="pt-1 pb-4 text-center text-sm italic">
                             {repsToBeatMax(lastEstimatedMax, set.weight)} reps
                             at this weight to beat previous ORM
-                          </td>
-                        </motion.tr>
+                          </div>
+                        </motion.div>
                       )}
-                    </Fragment>
-                  ))}
-                </AnimatePresence>
-              </tbody>
-            </table>
-          </ResizablePanel>
+                    </AnimatePresence>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
 
-          <div className="mt-6">
+          <div>
             <AnimatedButton
+              backgroundColor={colors.gray[100]}
+              highlightColor={colors.gray[300]}
               transition={{
                 duration: 0.75,
-                rotate: { ease: "anticipate" },
               }}
-              onClick={(animationControls) => {
-                animationControls.start({
-                  background: [colors.gray[300], colors.gray[100]],
-                });
+              onClick={() => {
                 setSets((sets) => [
                   ...sets,
                   {
@@ -219,6 +199,11 @@ export default function EntryForm({
                     tracked: false,
                   },
                 ]);
+
+                // TODO: focus new set's weight?
+                // [...formRef.current.querySelectorAll("[name=weight]")]
+                //   .at(-1)
+                //   .focus();
               }}
               type="button"
               className="h-11 w-full rounded-md bg-gray-100 text-sm font-medium text-gray-700"
@@ -241,12 +226,14 @@ export default function EntryForm({
         </div>
 
         <div className="flex justify-end">
-          <button
+          <AnimatedButton
             type="submit"
-            className="rounded-md bg-blue-500 px-5 py-2 font-medium text-white"
+            backgroundColor={colors.blue[500]}
+            highlightColor={colors.blue[600]}
+            className="rounded-md px-5 py-2 font-medium text-white"
           >
             Save
-          </button>
+          </AnimatedButton>
         </div>
       </Form>
 
@@ -276,17 +263,17 @@ export default function EntryForm({
   );
 }
 
-function AnimatedButton({ onClick, ...rest }) {
-  const controls = useAnimation();
+// function AnimatedButton({ onClick, ...rest }) {
+//   const controls = useAnimation();
 
-  return (
-    <motion.button
-      animate={controls}
-      onClick={() => onClick(controls)}
-      {...rest}
-    />
-  );
-}
+//   return (
+//     <motion.button
+//       animate={controls}
+//       onClick={(event) => onClick(event, controls)}
+//       {...rest}
+//     />
+//   );
+// }
 
 // function transparentize(hexColor, opacity) {
 //   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hexColor);

@@ -1,4 +1,4 @@
-import * as Icons from "@heroicons/react/outline";
+import * as Icons from "@heroicons/react/24/outline";
 import { differenceInDays, format, parseISO } from "date-fns";
 import { Link, useLoaderData, useParams } from "@remix-run/react";
 import { json } from "@remix-run/node";
