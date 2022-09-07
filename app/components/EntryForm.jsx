@@ -1,6 +1,6 @@
 import { Form } from "@remix-run/react";
 import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
-import { Fragment, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ResizablePanel } from "./ResizablePanel";
 import resolveConfig from "tailwindcss/resolveConfig";
@@ -18,6 +18,7 @@ export default function EntryForm({
   lastEntry,
   lastTrackedEntry,
 }) {
+  let formRef = useRef();
   let [sets, setSets] = useState(
     entry?.sets.length > 0
       ? entry.sets
@@ -37,7 +38,7 @@ export default function EntryForm({
 
   return (
     <>
-      <Form className="mt-4 space-y-4" method="post">
+      <Form className="mt-4 space-y-4" method="post" ref={formRef}>
         <div>
           <label className="space-y-2">
             <span className="text-sm font-medium text-gray-700">Date</span>
@@ -77,7 +78,10 @@ export default function EntryForm({
                         },
                       }}
                     >
-                      <div className="grid grid-cols-[40px_25%_25%_15%_15%] gap-x-2 pb-2">
+                      <motion.div
+                        layout
+                        className="grid grid-cols-[40px_25%_25%_15%_15%] gap-x-2 pb-2"
+                      >
                         <div className="flex items-center text-sm font-medium text-gray-700">
                           {index + 1}
                         </div>
@@ -86,6 +90,7 @@ export default function EntryForm({
                             <input
                               type="text"
                               name="weight"
+                              autoFocus
                               inputMode="decimal"
                               className="z-0 block w-full min-w-0 flex-1 border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               value={set.weight}
@@ -159,19 +164,17 @@ export default function EntryForm({
                             –
                           </AnimatedButton>
                         </div>
-                      </div>
-                      {set.tracked && set.weight && lastEstimatedMax && (
-                        <motion.div>
-                          <div />
-                          <div
-                            colSpan={4}
-                            className="pt-1 pb-4 text-left text-sm italic"
-                          >
-                            {repsToBeatMax(lastEstimatedMax, set.weight)} reps
-                            at this weight to beat previous ORM
-                          </div>
-                        </motion.div>
-                      )}
+                      </motion.div>
+                      <AnimatePresence mode="popLayout">
+                        {set.tracked && set.weight && lastEstimatedMax && (
+                          <motion.div exit={{ opacity: 0 }}>
+                            <div className="pt-1 pb-4 text-center text-sm italic">
+                              {repsToBeatMax(lastEstimatedMax, set.weight)} reps
+                              at this weight to beat previous ORM
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </motion.div>
                   ))}
                 </AnimatePresence>
@@ -196,6 +199,11 @@ export default function EntryForm({
                     tracked: false,
                   },
                 ]);
+
+                // TODO: focus new set's weight?
+                // [...formRef.current.querySelectorAll("[name=weight]")]
+                //   .at(-1)
+                //   .focus();
               }}
               type="button"
               className="h-11 w-full rounded-md bg-gray-100 text-sm font-medium text-gray-700"
