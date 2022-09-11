@@ -1,7 +1,7 @@
 import { Form, useTransition } from "@remix-run/react";
 import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import resolveConfig from "tailwindcss/resolveConfig";
 import { v4 as uuid } from "uuid";
 import estimatedMax from "~/utils/estimated-max";
@@ -34,8 +34,17 @@ export default function EntryForm({
       .map((set) => estimatedMax(set));
     lastEstimatedMax = Math.max(...maxes);
   }
-  const { state } = useTransition();
+  let { state } = useTransition();
   let isSaving = state === "submitting" || state === "loading";
+
+  const [focusLastSet, setfocusLastSet] = useState(false);
+
+  useEffect(() => {
+    if (focusLastSet) {
+      [...formRef.current.querySelectorAll("[name=weight]")].at(-1).focus();
+      setfocusLastSet(false);
+    }
+  }, [focusLastSet]);
 
   return (
     <>
@@ -204,16 +213,13 @@ export default function EntryForm({
                   ...sets,
                   {
                     id: uuid(),
-                    weight: sets[sets.length - 1].weight,
+                    weight: "",
                     reps: sets[sets.length - 1].reps,
                     tracked: false,
                   },
                 ]);
 
-                // TODO: focus new set's weight?
-                // [...formRef.current.querySelectorAll("[name=weight]")]
-                //   .at(-1)
-                //   .focus();
+                setfocusLastSet(true);
               }}
               type="button"
               className="h-11 w-full rounded-md bg-gray-100 text-sm font-medium text-gray-700"
