@@ -1,4 +1,4 @@
-import { Form } from "@remix-run/react";
+import { Form, useTransition } from "@remix-run/react";
 import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRef, useState } from "react";
@@ -34,6 +34,8 @@ export default function EntryForm({
       .map((set) => estimatedMax(set));
     lastEstimatedMax = Math.max(...maxes);
   }
+  const { state } = useTransition();
+  let isSaving = state === "submitting" || state === "loading";
 
   return (
     <>
@@ -68,6 +70,10 @@ export default function EntryForm({
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
                     transition={{
+                      height: {
+                        type: "spring",
+                        duration: 0.3,
+                      },
                       opacity: {
                         duration: 0.2,
                       },
@@ -164,6 +170,10 @@ export default function EntryForm({
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
                           transition={{
+                            height: {
+                              type: "spring",
+                              duration: 0.3,
+                            },
                             opacity: {
                               duration: 0.2,
                             },
@@ -227,6 +237,7 @@ export default function EntryForm({
 
         <div className="flex justify-end">
           <AnimatedButton
+            isSaving={isSaving}
             type="submit"
             backgroundColor={colors.blue[500]}
             highlightColor={colors.blue[600]}
