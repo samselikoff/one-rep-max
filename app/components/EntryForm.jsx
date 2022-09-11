@@ -89,7 +89,7 @@ export default function EntryForm({
                     }}
                     className="overflow-hidden"
                   >
-                    <div className="grid grid-cols-[40px_1fr_1fr_15%_15%] gap-x-2 pb-2">
+                    <div className="grid grid-cols-[40px_1fr_1fr_15%_15%] gap-x-2 pt-px pb-2">
                       <div className="flex items-center text-sm font-medium text-gray-700">
                         {index + 1}
                       </div>
@@ -99,7 +99,7 @@ export default function EntryForm({
                             type="text"
                             name="weight"
                             inputMode="decimal"
-                            className="z-0 block w-full min-w-0 flex-1 border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            className="z-0 block w-full min-w-0 flex-1 border-gray-300 px-3 py-2 sm:text-sm"
                             value={set.weight}
                             onChange={(e) => {
                               setSets((sets) => {
