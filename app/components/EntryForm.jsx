@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import resolveConfig from "tailwindcss/resolveConfig";
 import { v4 as uuid } from "uuid";
-import estimatedMax from "~/utils/estimated-max";
+import estimatedMax, { repsFromEstimatedMax } from "~/utils/estimated-max";
 import tailwindConfig from "../../tailwind.config.js";
 import AnimatedButton from "./AnimatedButton";
 
@@ -30,8 +30,9 @@ export default function EntryForm({
   let lastEstimatedMax;
   if (lastTrackedEntry) {
     let maxes = lastTrackedEntry.sets
-      .filter((set) => set.tracked)
+      .filter((set) => set.tracked && set.reps > 0)
       .map((set) => estimatedMax(set));
+    console.log({ maxes });
     lastEstimatedMax = Math.max(...maxes);
   }
   let { state } = useTransition();
@@ -189,8 +190,15 @@ export default function EntryForm({
                           }}
                         >
                           <div className="pt-1 pb-4 text-center text-sm italic">
-                            {repsToBeatMax(lastEstimatedMax, set.weight)} reps
-                            at this weight to beat previous ORM
+                            {repsToBeatMax(lastEstimatedMax, set.weight) ===
+                            Infinity ? (
+                              <p>Can't beat the previous 1RM at this weight!</p>
+                            ) : (
+                              <p>
+                                {repsToBeatMax(lastEstimatedMax, set.weight)}{" "}
+                                reps at this weight to beat previous 1RM
+                              </p>
+                            )}
                           </div>
                         </motion.div>
                       )}
@@ -280,35 +288,15 @@ export default function EntryForm({
   );
 }
 
-// function AnimatedButton({ onClick, ...rest }) {
-//   const controls = useAnimation();
-
-//   return (
-//     <motion.button
-//       animate={controls}
-//       onClick={(event) => onClick(event, controls)}
-//       {...rest}
-//     />
-//   );
-// }
-
-// function transparentize(hexColor, opacity) {
-//   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hexColor);
-//   return result
-//     ? `rgba(${parseInt(result[1], 16)} ${parseInt(result[2], 16)} ${parseInt(
-//         result[3],
-//         16
-//       )} / ${opacity})`
-//     : null;
-// }
-
 function repsToBeatMax(max, weight) {
-  let reps = (max - +weight) / (+weight * 0.0333);
-  let repsToBeat = Math.ceil(reps);
+  let reps = repsFromEstimatedMax(max, weight);
+  let repsToBeat = Math.max(Math.ceil(reps), 1);
   let newMax = estimatedMax({ weight, reps: repsToBeat });
 
   let x;
-  if (newMax === max && repsToBeat > 0) {
+  if (newMax < max) {
+    x = Infinity;
+  } else if (newMax === max && repsToBeat > 0) {
     x = repsToBeat + 1;
   } else if (newMax > max && repsToBeat > 0) {
     x = repsToBeat;
