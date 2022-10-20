@@ -32,7 +32,6 @@ export default function EntryForm({
     let maxes = lastTrackedEntry.sets
       .filter((set) => set.tracked && set.reps > 0)
       .map((set) => estimatedMax(set));
-    console.log({ maxes });
     lastEstimatedMax = Math.max(...maxes);
   }
   let { state } = useTransition();
