@@ -37,14 +37,14 @@ export default function EntryForm({
   let { state } = useTransition();
   let isSaving = state === "submitting" || state === "loading";
 
-  const [focusLastSet, setfocusLastSet] = useState(false);
+  // const [focusLastSet, setfocusLastSet] = useState(false);
 
-  useEffect(() => {
-    if (focusLastSet) {
-      [...formRef.current.querySelectorAll("[name=weight]")].at(-1).focus();
-      setfocusLastSet(false);
-    }
-  }, [focusLastSet]);
+  // useEffect(() => {
+  //   if (focusLastSet) {
+  //     [...formRef.current.querySelectorAll("[name=weight]")].at(-1).focus();
+  //     setfocusLastSet(false);
+  //   }
+  // }, [focusLastSet]);
 
   return (
     <>
@@ -101,6 +101,7 @@ export default function EntryForm({
                             inputMode="decimal"
                             className="z-0 block w-full min-w-0 flex-1 border-gray-300 px-3 py-2 sm:text-sm"
                             value={set.weight}
+                            autoFocus={set === sets.at(-1)}
                             onChange={(e) => {
                               setSets((sets) => {
                                 let newSets = [...sets];
@@ -226,7 +227,7 @@ export default function EntryForm({
                   },
                 ]);
 
-                setfocusLastSet(true);
+                // setfocusLastSet(true);
               }}
               type="button"
               className="h-11 w-full rounded-md bg-gray-100 text-sm font-medium text-gray-700"
