@@ -13,7 +13,9 @@ import { json } from "@remix-run/node";
 import { getUser } from "./session.server";
 import globalStylesheetURL from "./styles/global.css";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
+import radixThemesStylesheetUrl from "@radix-ui/themes/styles.css";
 import { useOptionalUser } from "./utils";
+import { Box, Button, Flex, Link, Theme } from "@radix-ui/themes";
 
 export function links() {
   return [
@@ -25,6 +27,7 @@ export function links() {
     },
     { rel: "apple-touch-icon", href: "apple-icon-180.png" },
     { rel: "stylesheet", href: tailwindStylesheetUrl },
+    { rel: "stylesheet", href: radixThemesStylesheetUrl },
     { rel: "stylesheet", href: globalStylesheetURL },
     { rel: "manifest", href: "/site.webmanifest" },
     {
@@ -212,34 +215,55 @@ export default function App() {
         <Links />
       </head>
       <body className="h-full">
-        <header className="bg-gray-900 px-4 pt-safe-top text-white">
-          <div className="flex h-[72px] items-center justify-between">
-            <h1 className="text-3xl font-bold">
-              <NavLink
-                end
-                className={({ isActive }) =>
-                  `${
-                    isActive ? "border-blue-500" : "border-transparent"
-                  } border-b-4`
-                }
-                to="."
-              >
-                One Rep Max
-              </NavLink>
-            </h1>
-            {user && (
-              <Form action="/logout" method="post">
-                <button type="submit" className="text-gray-500">
-                  Sign out
-                </button>
-              </Form>
-            )}
-          </div>
-        </header>
+        <Theme accentColor="blue">
+          <Theme appearance="dark">
+            <Flex justify="between" align="center" asChild p="4">
+              <header>
+                <Link color="gray" size="7" weight="bold" asChild>
+                  <NavLink end to=".">
+                    One Rep Max
+                  </NavLink>
+                </Link>
+                {user && (
+                  <Form action="/logout" method="post">
+                    <Button color="gray" variant="ghost" type="submit">
+                      Sign out
+                    </Button>
+                  </Form>
+                )}
+              </header>
+            </Flex>
+          </Theme>
 
-        <main>
-          <Outlet />
-        </main>
+          {/* <header className="bg-gray-900 px-4 pt-safe-top text-white">
+            <div className="flex h-[72px] items-center justify-between">
+              <h1 className="text-3xl font-bold">
+                <NavLink
+                  end
+                  className={({ isActive }) =>
+                    `${
+                      isActive ? "border-blue-500" : "border-transparent"
+                    } border-b-4`
+                  }
+                  to="."
+                >
+                  One Rep Max
+                </NavLink>
+              </h1>
+              {user && (
+                <Form action="/logout" method="post">
+                  <button type="submit" className="text-gray-500">
+                    Sign out
+                  </button>
+                </Form>
+              )}
+            </div>
+          </header> */}
+
+          <main>
+            <Outlet />
+          </main>
+        </Theme>
 
         <ScrollRestoration />
         <Scripts />
