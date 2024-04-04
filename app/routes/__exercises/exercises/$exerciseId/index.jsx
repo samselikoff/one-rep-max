@@ -41,7 +41,8 @@ export default function ExerciseIndexPage() {
       <h1 className="text-3xl font-bold">{exercise.name}</h1>
 
       <p className="mt-6 text-center text-xs font-semibold uppercase text-gray-400">
-        One Rep Max (Est)
+        Total lifted (lbs)
+        {/* One Rep Max (Est) */}
       </p>
       <div className="h-40 w-full text-blue-500">
         <Chart entries={entries} />

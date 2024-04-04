@@ -10,7 +10,7 @@ import {
 import { motion } from "framer-motion";
 import useMeasure from "react-use-measure";
 import resolveConfig from "tailwindcss/resolveConfig";
-import estimatedMax from "~/utils/estimated-max";
+// import estimatedMax from "~/utils/estimated-max";
 import tailwindConfig from "../../tailwind.config.js";
 
 let { colors } = resolveConfig(tailwindConfig).theme;
@@ -18,15 +18,12 @@ let { colors } = resolveConfig(tailwindConfig).theme;
 export default function Chart({ entries }) {
   let [ref, bounds] = useMeasure();
 
-  if (
-    !entries
-      .flatMap((entry) => entry.sets)
-      .some((set) => set.reps > 0 && set.tracked)
-  ) {
+  // Total weight
+  if (!entries.flatMap((entry) => entry.sets).some((set) => set.reps > 0)) {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <p className="text-sm italic text-gray-400">
-          Add a tracked set to see a chart!
+          Add a set to see a chart!
         </p>
       </div>
     );
@@ -35,18 +32,16 @@ export default function Chart({ entries }) {
   let data = [...entries]
     .sort((a, b) => (a.date > b.date ? 1 : -1))
     .map((entry) => {
-      let setWithHighestEstimatedMax = entry.sets
-        .filter((set) => set.reps > 0 && set.tracked)
-        .sort((a, b) => estimatedMax(b) - estimatedMax(a))[0];
+      let value = entry.sets.reduce((memo, set) => {
+        return memo + set.reps * set.weight;
+      }, 0);
 
       return {
         date: parseISO(entry.date),
-        estimatedMax: setWithHighestEstimatedMax
-          ? estimatedMax(setWithHighestEstimatedMax)
-          : null,
+        value,
       };
     })
-    .filter((s) => s.estimatedMax);
+    .filter((s) => s.value);
 
   return (
     <div className="relative h-full w-full" ref={ref}>
@@ -55,10 +50,49 @@ export default function Chart({ entries }) {
       )}
     </div>
   );
+
+  // One rep max
+  // if (
+  //   !entries
+  //     .flatMap((entry) => entry.sets)
+  //     .some((set) => set.reps > 0 && set.tracked)
+  // ) {
+  //   return (
+  //     <div className="flex h-full w-full items-center justify-center">
+  //       <p className="text-sm italic text-gray-400">
+  //         Add a tracked set to see a chart!
+  //       </p>
+  //     </div>
+  //   );
+  // }
+
+  // let data = [...entries]
+  //   .sort((a, b) => (a.date > b.date ? 1 : -1))
+  //   .map((entry) => {
+  //     let setWithHighestEstimatedMax = entry.sets
+  //       .filter((set) => set.reps > 0 && set.tracked)
+  //       .sort((a, b) => estimatedMax(b) - estimatedMax(a))[0];
+
+  //     return {
+  //       date: parseISO(entry.date),
+  //       value: setWithHighestEstimatedMax
+  //         ? estimatedMax(setWithHighestEstimatedMax)
+  //         : null,
+  //     };
+  //   })
+  //   .filter((s) => s.value);
+
+  // return (
+  //   <div className="relative h-full w-full" ref={ref}>
+  //     {bounds.width > 0 && (
+  //       <ChartInner data={data} width={bounds.width} height={bounds.height} />
+  //     )}
+  //   </div>
+  // );
 }
 
 function ChartInner({ data, width, height }) {
-  let maxes = data.map((d) => d.estimatedMax);
+  let maxes = data.map((d) => d.value);
   let margin = {
     top: 20,
     right: 0,
@@ -87,7 +121,7 @@ function ChartInner({ data, width, height }) {
   let line = d3
     .line()
     .x((d) => x(d.date))
-    .y((d) => y(d.estimatedMax));
+    .y((d) => y(d.value));
   let d = line(data);
 
   let months = eachMonthOfInterval({
@@ -164,7 +198,7 @@ function ChartInner({ data, width, height }) {
             key={d.date}
             r="5"
             cx={x(d.date)}
-            cy={y(d.estimatedMax)}
+            cy={y(d.value)}
             fill="currentColor"
             stroke={
               months.findIndex((m) => isSameMonth(m, d.date)) % 2 === 0
