@@ -74,9 +74,14 @@ function ChartInner({ data, width, height }) {
     .domain([startDay, endDay])
     .range([margin.left, width - margin.right]);
 
+  let yMax = Math.max(...maxes);
+  let yMin = Math.min(...maxes);
+  if (yMin === yMax) {
+    yMin = 0;
+  }
   let y = d3
     .scaleLinear()
-    .domain([Math.min(...maxes), Math.max(...maxes)])
+    .domain([yMin, yMax])
     .range([height - margin.bottom, margin.top]);
 
   let line = d3
