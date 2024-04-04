@@ -1,5 +1,5 @@
 import * as Icons from "@heroicons/react/24/outline";
-import { differenceInDays, format, parseISO } from "date-fns";
+import { differenceInDays, format, parseISO, sub } from "date-fns";
 import { Link, useLoaderData, useParams } from "@remix-run/react";
 import { json } from "@remix-run/node";
 import { prisma } from "~/db.server";
@@ -13,7 +13,11 @@ export async function loader({ request, params }) {
   let userId = await requireUserId(request);
 
   let entries = await prisma.entry.findMany({
-    where: { userId, exerciseId: params.exerciseId },
+    where: {
+      userId,
+      exerciseId: params.exerciseId,
+      date: { gte: sub(new Date(), { months: 6 }) },
+    },
     include: {
       exercise: true,
       sets: true,
