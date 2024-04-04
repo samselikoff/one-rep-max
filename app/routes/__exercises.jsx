@@ -20,7 +20,7 @@ export default function ExercisesLayout() {
       {user ? (
         <>
           <Theme appearance="dark">
-            <Box pb="2">
+            <Box pb="2" overflow="visible">
               <TabNav.Root>
                 {exercises.map((exercise) => (
                   <TabNav.Link
@@ -31,40 +31,11 @@ export default function ExercisesLayout() {
                     active={params.exerciseId === exercise.id}
                     key={exercise.id}
                   >
-                    <NavLink
-                      // className={({ isActive }) =>
-                      //   `${
-                      //     isActive
-                      //       ? "border-blue-500 text-white"
-                      //       : "border-transparent text-gray-400"
-                      //   }  whitespace-nowrap border-b-4 py-2.5 font-semibold`
-                      // }
-                      to={`/exercises/${exercise.id}`}
-                      // key={exercise.id}
-                    >
+                    <NavLink to={`/exercises/${exercise.id}`}>
                       {exercise.name}
                     </NavLink>
                   </TabNav.Link>
                 ))}
-                {/* <nav className="scrollbar-hidden -mt-px flex overflow-x-scroll bg-gray-900">
-                <div className="flex space-x-8 px-4">
-                  {exercises.map((exercise) => (
-                    <NavLink
-                      className={({ isActive }) =>
-                        `${
-                          isActive
-                            ? "border-blue-500 text-white"
-                            : "border-transparent text-gray-400"
-                        }  whitespace-nowrap border-b-4 py-2.5 font-semibold`
-                      }
-                      to={`/exercises/${exercise.id}`}
-                      key={exercise.id}
-                    >
-                      {exercise.name}
-                    </NavLink>
-                  ))}
-                </div>
-              </nav> */}
               </TabNav.Root>
             </Box>
           </Theme>
