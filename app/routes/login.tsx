@@ -19,6 +19,7 @@ import {
   Box,
   Button,
   Callout,
+  Container,
   Flex,
   Heading,
   Link,
@@ -105,96 +106,92 @@ export default function LoginPage() {
   }, [actionData]);
 
   return (
-    <div className="mt-36 flex min-h-full flex-col justify-center">
-      <div className="mx-auto w-full max-w-md px-8">
-        <Heading mb="4">Sign in</Heading>
+    <Container mt="9" size="1" px="4">
+      <Heading mb="6">Sign in</Heading>
 
-        <Form method="post">
-          <label htmlFor="email">
+      <Form method="post">
+        <label htmlFor="email">
+          <Text size="2" weight="medium" mb="2">
+            Email address
+          </Text>
+        </label>
+
+        <Box mt="2">
+          <TextField.Root
+            ref={emailRef}
+            id="email"
+            required
+            size="3"
+            autoFocus={true}
+            name="email"
+            type="email"
+            autoComplete="email"
+            aria-invalid={actionData?.errors?.email ? true : undefined}
+            aria-describedby="email-error"
+          />
+
+          {actionData?.errors?.email && (
+            <Callout.Root size="1" color="red" mt="2" id="email-error">
+              <Callout.Icon>
+                <ExclamationTriangleIcon />
+              </Callout.Icon>
+              <Callout.Text>{actionData.errors.email}</Callout.Text>
+            </Callout.Root>
+          )}
+        </Box>
+
+        <Box mt="2">
+          <label htmlFor="password">
             <Text size="2" weight="medium" mb="2">
-              Email address
+              Password
             </Text>
           </label>
 
           <Box mt="2">
             <TextField.Root
-              ref={emailRef}
-              id="email"
-              required
+              id="password"
+              ref={passwordRef}
+              name="password"
+              type="password"
               size="3"
-              autoFocus={true}
-              name="email"
-              type="email"
-              autoComplete="email"
-              aria-invalid={actionData?.errors?.email ? true : undefined}
-              aria-describedby="email-error"
+              autoComplete="current-password"
+              aria-invalid={actionData?.errors?.password ? true : undefined}
+              aria-describedby="password-error"
             />
 
-            {actionData?.errors?.email && (
-              <Callout.Root size="1" color="red" mt="2" id="email-error">
+            {actionData?.errors?.password && (
+              <Callout.Root size="1" color="red" mt="2" id="password-error">
                 <Callout.Icon>
                   <ExclamationTriangleIcon />
                 </Callout.Icon>
-                <Callout.Text>{actionData.errors.email}</Callout.Text>
+                <Callout.Text>{actionData.errors.password}</Callout.Text>
               </Callout.Root>
             )}
           </Box>
+        </Box>
 
-          <Box mt="2">
-            <label htmlFor="password">
-              <Text size="2" weight="medium" mb="2">
-                Password
-              </Text>
-            </label>
+        <input type="hidden" name="redirectTo" value={redirectTo} />
 
-            <Box mt="2">
-              <TextField.Root
-                id="password"
-                ref={passwordRef}
-                name="password"
-                type="password"
-                size="3"
-                autoComplete="current-password"
-                aria-invalid={actionData?.errors?.password ? true : undefined}
-                aria-describedby="password-error"
-              />
+        <Flex align="stretch" direction="column" mt="5">
+          <Button size="3" type="submit">
+            Log in
+          </Button>
+        </Flex>
 
-              {actionData?.errors?.password && (
-                <Callout.Root size="1" color="red" mt="2" id="password-error">
-                  <Callout.Icon>
-                    <ExclamationTriangleIcon />
-                  </Callout.Icon>
-                  <Callout.Text>{actionData.errors.password}</Callout.Text>
-                </Callout.Root>
-              )}
-            </Box>
-          </Box>
-
-          <input type="hidden" name="redirectTo" value={redirectTo} />
-
-          <Flex align="stretch" direction="column" mt="5">
-            <Button size="3" type="submit">
-              Log in
-            </Button>
-          </Flex>
-
-          <Box mt="4">
-            <Text size="2">
-              <Text color="gray">Don't have an account? </Text>
-              <Link asChild underline="always">
-                <RemixLink
-                  to={{
-                    pathname: "/join",
-                    search: searchParams.toString(),
-                  }}
-                >
-                  Sign up
-                </RemixLink>
-              </Link>
-            </Text>
-          </Box>
-        </Form>
-      </div>
-    </div>
+        <Text size="2" mt="9" as="p">
+          <Text color="gray">Don't have an account? </Text>
+          <Link asChild underline="always">
+            <RemixLink
+              to={{
+                pathname: "/join",
+                search: searchParams.toString(),
+              }}
+            >
+              Sign up
+            </RemixLink>
+          </Link>
+        </Text>
+      </Form>
+    </Container>
   );
 }
