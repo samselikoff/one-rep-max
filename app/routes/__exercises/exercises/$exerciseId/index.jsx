@@ -8,7 +8,7 @@ import timeAgo from "~/utils/time-ago";
 import pluralize from "pluralize";
 import estimatedMax from "~/utils/estimated-max";
 import Chart from "~/components/Chart";
-import { Box, Flex, Heading, Separator, Text } from "@radix-ui/themes";
+import { Box, Flex, Grid, Heading, Separator, Text } from "@radix-ui/themes";
 
 export async function loader({ request, params }) {
   let userId = await requireUserId(request);
@@ -60,11 +60,11 @@ export default function ExerciseIndexPage() {
         </Text>
       </Box>
 
-      <Flex mt="6" justify="between" px="3">
+      <Grid mt="6" px="1" columns="3">
         <HeaviestSetStat entries={entries} />
         <OneRepMaxStat entries={entries} />
         <FrequencyStat entries={entries} />
-      </Flex>
+      </Grid>
 
       <Separator size="4" mt="6" />
 
@@ -223,7 +223,9 @@ function Stat({ title, stat, statSuffix, subItems = [] }) {
       )}
 
       <Text size="1" color="gray" weight="light">
-        <Flex gap="1">{subItemsLabel}</Flex>
+        <small>
+          <Flex gap="1">{subItemsLabel}</Flex>
+        </small>
       </Text>
     </Flex>
   );

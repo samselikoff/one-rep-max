@@ -24,9 +24,6 @@ export default function ExercisesLayout() {
               <TabNav.Root>
                 {exercises.map((exercise) => (
                   <TabNav.Link
-                    color="gray"
-                    weight="medium"
-                    wrap="nowrap"
                     asChild
                     active={params.exerciseId === exercise.id}
                     key={exercise.id}
