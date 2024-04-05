@@ -71,7 +71,7 @@ export default function EntryForm({
 
             {sets.map((set, index) => (
               <Fragment key={set.id}>
-                <Text size="1" weight="light">
+                <Text size="3" color="gray">
                   {index + 1}
                 </Text>
                 <TextField.Root
@@ -114,6 +114,7 @@ export default function EntryForm({
                 <Flex justify="center" align="center">
                   <Switch
                     name="trackingSet"
+                    size="3"
                     value={index}
                     checked={set.tracked}
                     onCheckedChange={() => {
@@ -144,9 +145,9 @@ export default function EntryForm({
             ))}
           </Grid>
 
-          <Flex mt="6" align="stretch" direction="column">
+          <Flex mt="7" align="stretch" direction="column">
             <Button
-              size="2"
+              size="3"
               color="gray"
               variant="soft"
               type="button"
