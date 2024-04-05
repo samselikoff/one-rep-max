@@ -2,15 +2,17 @@ import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
 import {
   Box,
   Button,
+  Card,
   Flex,
   Grid,
   IconButton,
+  Link,
   Switch,
   Text,
   TextArea,
   TextField,
 } from "@radix-ui/themes";
-import { Form, useTransition } from "@remix-run/react";
+import { Form, useTransition, Link as RemixLink } from "@remix-run/react";
 import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
 import { Fragment, useRef, useState } from "react";
 import { v4 as uuid } from "uuid";
@@ -52,26 +54,20 @@ export default function EntryForm({
         </label>
 
         <Box mt="6">
-          <Text size="2" weight="medium" as="p">
-            Sets
-          </Text>
-
           <Grid columns="40px 1fr 1fr 1fr auto" align="center" gap="2">
+            <Text size="2" weight="medium" as="p">
+              Sets
+            </Text>
             <div />
-            <Text weight="light" size="1">
-              WEIGHT
-            </Text>
-            <Text weight="light" size="1">
-              REPS
-            </Text>
+            <div />
             <Text weight="light" align="center" size="1">
-              FAILURE
+              Failure
             </Text>
             <div />
 
             {sets.map((set, index) => (
               <Fragment key={set.id}>
-                <Text size="3" color="gray">
+                <Text size="3" color="gray" ml="2" className="tabular-nums">
                   {index + 1}
                 </Text>
                 <TextField.Root
@@ -133,7 +129,7 @@ export default function EntryForm({
                       setSets((sets) => sets.filter((s, i) => i !== index));
                     }}
                     disabled={sets.length === 1}
-                    size="3"
+                    size="2"
                     color="gray"
                     variant="soft"
                     type="button"
@@ -184,7 +180,11 @@ export default function EntryForm({
           </label>
         </Box>
 
-        <Flex mt="4" justify="end">
+        <Flex mt="4" justify="between" align="center">
+          <Link asChild size="2" weight="medium">
+            <RemixLink to={`/exercises/${exercise.id}`}>Cancel</RemixLink>
+          </Link>
+
           <Button size="3" type="submit" loading={isSaving}>
             Save
           </Button>
@@ -192,26 +192,26 @@ export default function EntryForm({
       </Form>
 
       {lastEntry && (
-        <div className="pt-4 pb-8">
-          <div className="my-4 bg-gray-200 p-4 text-sm text-gray-700">
-            <div className="flex justify-between">
-              <p className="font-medium">Previous {exercise.name}</p>
-              <p>
+        <Box py="8">
+          <Card variant="classic">
+            <Flex justify="between">
+              <Text size="1" color="gray">
+                Previous {exercise.name}
+              </Text>
+              <Text size="1" color="gray">
                 {formatDistanceToNow(parseISO(lastEntry.date.substring(0, 10)))}{" "}
                 ago
-              </p>
-            </div>
-            <div className="mt-4">
-              <ul>
-                {lastEntry.sets.map((set) => (
-                  <li key={set.id}>
-                    {set.weight} lbs - {set.reps} reps
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
+              </Text>
+            </Flex>
+            <Box mt="4">
+              {lastEntry.sets.map((set) => (
+                <Text color="gray" key={set.id} as="p">
+                  {set.weight} lbs - {set.reps} reps
+                </Text>
+              ))}
+            </Box>
+          </Card>
+        </Box>
       )}
     </Box>
   );
