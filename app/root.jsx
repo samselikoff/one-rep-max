@@ -1,3 +1,4 @@
+import { json } from "@remix-run/node";
 import {
   Form,
   Links,
@@ -8,14 +9,13 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { json } from "@remix-run/node";
 
+import { Button, Flex, Link, Theme } from "@radix-ui/themes";
+import radixThemesStylesheetUrl from "@radix-ui/themes/styles.css";
 import { getUser } from "./session.server";
 import globalStylesheetURL from "./styles/global.css";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
-import radixThemesStylesheetUrl from "@radix-ui/themes/styles.css";
 import { useOptionalUser } from "./utils";
-import { Box, Button, Flex, Link, Theme } from "@radix-ui/themes";
 
 export function links() {
   return [

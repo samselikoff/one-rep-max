@@ -4,6 +4,7 @@ import EntryForm from "~/components/EntryForm";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import { Heading } from "@radix-ui/themes";
+import { minDelay } from "~/utils/minDelay";
 
 export async function loader({ request, params }) {
   let userId = await requireUserId(request);
@@ -52,7 +53,7 @@ export async function action({ request, params }) {
     });
   });
 
-  await prisma.entry.create({ data });
+  await minDelay(prisma.entry.create({ data }), 750);
 
   return redirect(`/exercises/${exerciseId}`);
 }

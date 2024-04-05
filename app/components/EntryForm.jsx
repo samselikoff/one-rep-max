@@ -1,28 +1,19 @@
-import { Form, useTransition } from "@remix-run/react";
-import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
-import { AnimatePresence, motion } from "framer-motion";
-import { Fragment, useRef, useState } from "react";
-import resolveConfig from "tailwindcss/resolveConfig";
-import { v4 as uuid } from "uuid";
-import estimatedMax, { repsFromEstimatedMax } from "~/utils/estimated-max";
-import tailwindConfig from "../../tailwind.config.js";
-import AnimatedButton from "./AnimatedButton";
+import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
 import {
   Box,
   Button,
   Flex,
   Grid,
   IconButton,
-  Separator,
   Switch,
   Text,
   TextArea,
   TextField,
 } from "@radix-ui/themes";
-import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
-
-let fullConfig = resolveConfig(tailwindConfig);
-let colors = fullConfig.theme.colors;
+import { Form, useTransition } from "@remix-run/react";
+import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
+import { Fragment, useRef, useState } from "react";
+import { v4 as uuid } from "uuid";
 
 export default function EntryForm({
   exercise,
@@ -40,13 +31,6 @@ export default function EntryForm({
     ? parseISO(entry.date.substring(0, 10))
     : startOfToday();
 
-  let lastEstimatedMax;
-  if (lastTrackedEntry) {
-    let maxes = lastTrackedEntry.sets
-      .filter((set) => set.tracked && set.reps > 0)
-      .map((set) => estimatedMax(set));
-    lastEstimatedMax = Math.max(...maxes);
-  }
   let { state } = useTransition();
   let isSaving = state === "submitting" || state === "loading";
 
@@ -230,23 +214,4 @@ export default function EntryForm({
       )}
     </Box>
   );
-}
-
-function repsToBeatMax(max, weight) {
-  let reps = repsFromEstimatedMax(max, weight);
-  let repsToBeat = Math.max(Math.ceil(reps), 1);
-  let newMax = estimatedMax({ weight, reps: repsToBeat });
-
-  let x;
-  if (newMax < max) {
-    x = Infinity;
-  } else if (newMax === max && repsToBeat > 0) {
-    x = repsToBeat + 1;
-  } else if (newMax > max && repsToBeat > 0) {
-    x = repsToBeat;
-  } else {
-    x = 1;
-  }
-
-  return x;
 }

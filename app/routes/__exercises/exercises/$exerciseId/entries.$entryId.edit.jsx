@@ -3,6 +3,7 @@ import { json, redirect } from "@remix-run/node";
 import EntryForm from "~/components/EntryForm";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
+import { minDelay } from "~/utils/minDelay";
 
 export async function loader({ request, params }) {
   let userId = await requireUserId(request);
@@ -70,7 +71,10 @@ export async function action({ request, params }) {
       });
     });
 
-    await prisma.entry.update({ where: { id: params.entryId }, data });
+    await minDelay(
+      prisma.entry.update({ where: { id: params.entryId }, data }),
+      750
+    );
 
     return redirect(`/exercises/${exerciseId}`);
   }

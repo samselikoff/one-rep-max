@@ -1,13 +1,9 @@
-import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
-import { useLoaderData } from "@remix-run/react";
+import { Box, Flex, Heading, Separator, Text } from "@radix-ui/themes";
 import { json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import timeAgo from "~/utils/time-ago";
-import { AnimatePresence, motion } from "framer-motion";
-import pluralize from "pluralize";
-import { Box, Flex, Heading, Separator, Text } from "@radix-ui/themes";
 
 export async function loader({ request }) {
   let userId = await requireUserId(request);
@@ -36,7 +32,7 @@ export default function ExercisesIndexPage() {
 
           <Flex mt="6" direction="column" gap="4">
             {entries.map((entry) => (
-              <EntryCard entry={entry} key={entry.i} />
+              <EntryCard entry={entry} key={entry.id} />
             ))}
           </Flex>
         </>
@@ -48,7 +44,7 @@ export default function ExercisesIndexPage() {
 }
 
 function EntryCard({ entry }) {
-  let [expanded, setExpanded] = useState(false);
+  // let [expanded, setExpanded] = useState(false);
 
   return (
     <>
