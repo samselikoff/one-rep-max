@@ -217,48 +217,36 @@ export default function App() {
       <body className="h-full">
         <Theme accentColor="blue" radius="small">
           <Theme appearance="dark">
-            <Flex justify="between" align="center" asChild p="4">
-              <header>
-                <Link color="gray" size="7" weight="bold" asChild>
+            <header>
+              <Flex justify="between" align="baseline" p="4">
+                <Link
+                  color="gray"
+                  underline="none"
+                  highContrast
+                  size="7"
+                  weight="bold"
+                  asChild
+                >
                   <NavLink end to=".">
                     One Rep Max
                   </NavLink>
                 </Link>
+
                 {user && (
                   <Form action="/logout" method="post">
-                    <Button color="gray" variant="ghost" type="submit">
+                    <Button
+                      color="gray"
+                      variant="ghost"
+                      type="submit"
+                      className="opacity-50"
+                    >
                       Sign out
                     </Button>
                   </Form>
                 )}
-              </header>
-            </Flex>
+              </Flex>
+            </header>
           </Theme>
-
-          {/* <header className="bg-gray-900 px-4 pt-safe-top text-white">
-            <div className="flex h-[72px] items-center justify-between">
-              <h1 className="text-3xl font-bold">
-                <NavLink
-                  end
-                  className={({ isActive }) =>
-                    `${
-                      isActive ? "border-blue-500" : "border-transparent"
-                    } border-b-4`
-                  }
-                  to="."
-                >
-                  One Rep Max
-                </NavLink>
-              </h1>
-              {user && (
-                <Form action="/logout" method="post">
-                  <button type="submit" className="text-gray-500">
-                    Sign out
-                  </button>
-                </Form>
-              )}
-            </div>
-          </header> */}
 
           <main>
             <Outlet />
