@@ -192,7 +192,7 @@ export default function EntryForm({
       </Form>
 
       {lastEntry && (
-        <Box py="8">
+        <Box pt="8">
           <Card variant="classic">
             <Flex justify="between">
               <Text size="1" color="gray">
