@@ -3,6 +3,7 @@ import { json, redirect } from "@remix-run/node";
 import EntryForm from "~/components/EntryForm";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
+import { Heading } from "@radix-ui/themes";
 
 export async function loader({ request, params }) {
   let userId = await requireUserId(request);
@@ -61,7 +62,7 @@ export default function NewEntryPage() {
 
   return (
     <div className="mt-6 px-4">
-      <h1 className="text-3xl font-bold">{exercise.name} – New</h1>
+      <Heading>{exercise.name} – New</Heading>
 
       <EntryForm
         exercise={exercise}

@@ -215,7 +215,7 @@ export default function App() {
         <Links />
       </head>
       <body className="h-full">
-        <Theme accentColor="blue">
+        <Theme accentColor="blue" radius="small">
           <Theme appearance="dark">
             <Flex justify="between" align="center" asChild p="4">
               <header>

@@ -32,7 +32,7 @@ export default function ExercisesIndexPage() {
     <Box px="4" my="5" className="pb-safe-bottom">
       {entries.length > 0 ? (
         <>
-          <Heading size="7">Latest exercises</Heading>
+          <Heading>Latest exercises</Heading>
 
           <Flex mt="6" direction="column" gap="4">
             {entries.map((entry) => (

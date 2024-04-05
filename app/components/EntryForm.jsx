@@ -1,12 +1,25 @@
 import { Form, useTransition } from "@remix-run/react";
 import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import resolveConfig from "tailwindcss/resolveConfig";
 import { v4 as uuid } from "uuid";
 import estimatedMax, { repsFromEstimatedMax } from "~/utils/estimated-max";
 import tailwindConfig from "../../tailwind.config.js";
 import AnimatedButton from "./AnimatedButton";
+import {
+  Box,
+  Button,
+  Flex,
+  Grid,
+  IconButton,
+  Separator,
+  Switch,
+  Text,
+  TextArea,
+  TextField,
+} from "@radix-ui/themes";
+import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
 
 let fullConfig = resolveConfig(tailwindConfig);
 let colors = fullConfig.theme.colors;
@@ -38,192 +51,159 @@ export default function EntryForm({
   let isSaving = state === "submitting" || state === "loading";
 
   return (
-    <>
-      <Form className="mt-4 space-y-4" method="post" ref={formRef}>
-        <div>
-          <label className="space-y-2">
-            <span className="text-sm font-medium text-gray-700">Date</span>
-            <input
-              defaultValue={format(defaultDate, "yyyy-MM-dd")}
-              className="w-full border-gray-300"
-              type="date"
-              name="date"
-            />
-          </label>
-        </div>
+    <Box mt="4">
+      <Form method="post" ref={formRef}>
+        <label>
+          <Text size="2" weight="medium" as="div" mb="2">
+            Date
+          </Text>
 
-        <div>
-          <div>
-            <div className="grid grid-cols-[40px_1fr_1fr_15%_15%] gap-x-2 text-sm font-medium text-gray-700">
-              <div>Sets</div>
-              <div>Weight (lbs)</div>
-              <div>Reps</div>
-              <div className="text-center">Failure</div>
-            </div>
+          <TextField.Root
+            type="date"
+            size="3"
+            placeholder="Search the docs…"
+            defaultValue={format(defaultDate, "yyyy-MM-dd")}
+            name="date"
+          />
+        </label>
 
-            <div className="overflow-hidden pt-3 pb-6">
-              {sets.map((set, index) => (
-                <div key={set.id} className="overflow-hidden">
-                  <div className="grid grid-cols-[40px_1fr_1fr_15%_15%] gap-x-2 pt-px pb-2">
-                    <div className="flex items-center text-sm font-medium text-gray-700">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <div className="flex">
-                        <input
-                          type="text"
-                          name="weight"
-                          inputMode="decimal"
-                          className="z-0 block w-full min-w-0 flex-1 border-gray-300 px-3 py-2 sm:text-sm"
-                          value={set.weight}
-                          autoFocus={set === sets.at(-1)}
-                          onChange={(e) => {
-                            setSets((sets) => {
-                              let newSets = [...sets];
-                              let currentSet = newSets[index];
-                              newSets[index] = {
-                                ...currentSet,
-                                weight: e.target.value,
-                              };
-                              return newSets;
-                            });
-                          }}
-                          placeholder="Weight"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <input
-                        placeholder="Reps"
-                        className="w-full border-gray-300"
-                        type="text"
-                        inputMode="numeric"
-                        name="reps"
-                        value={set.reps}
-                        onChange={(e) => {
-                          setSets((sets) => {
-                            let newSets = [...sets];
-                            let currentSet = newSets[index];
-                            newSets[index] = {
-                              ...currentSet,
-                              reps: e.target.value,
-                            };
-                            return newSets;
-                          });
-                        }}
-                      />
-                    </div>
-                    <div className="flex items-center justify-center text-center">
-                      <input
-                        type="checkbox"
-                        name="trackingSet"
-                        className="color-blue-500"
-                        value={index}
-                        checked={set.tracked}
-                        onChange={(e) => {
-                          setSets((sets) =>
-                            sets.map((set, i) => ({
-                              ...set,
-                              tracked: i === index ? !set.tracked : set.tracked,
-                            }))
-                          );
-                        }}
-                      />
-                    </div>
-                    <div className="text-right">
-                      <AnimatedButton
-                        disabled={sets.length === 1}
-                        backgroundColor={colors.gray[100]}
-                        highlightColor={colors.gray[300]}
-                        onClick={() => {
-                          setSets((sets) => sets.filter((s, i) => i !== index));
-                        }}
-                        className="h-10 w-10 rounded-md bg-gray-100"
-                        type="button"
-                      >
-                        –
-                      </AnimatedButton>
-                    </div>
-                  </div>
-                  <AnimatePresence>
-                    {set.tracked && set.weight && lastEstimatedMax && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{
-                          height: {
-                            type: "spring",
-                            duration: 0.3,
-                          },
-                          opacity: {
-                            duration: 0.2,
-                          },
-                        }}
-                      >
-                        <div className="pt-1 pb-4 text-center text-sm italic">
-                          {repsToBeatMax(lastEstimatedMax, set.weight) ===
-                          Infinity ? (
-                            <p>Can't beat the previous 1RM at this weight!</p>
-                          ) : (
-                            <p>
-                              {repsToBeatMax(lastEstimatedMax, set.weight)} reps
-                              at this weight to beat previous 1RM
-                            </p>
-                          )}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              ))}
-            </div>
-          </div>
+        <Box mt="6">
+          <Text size="2" weight="medium" as="p">
+            Sets
+          </Text>
 
-          <div>
-            <button
+          <Grid columns="40px 1fr 1fr 1fr auto" align="center" gap="2">
+            <div />
+            <Text weight="light" size="1">
+              WEIGHT
+            </Text>
+            <Text weight="light" size="1">
+              REPS
+            </Text>
+            <Text weight="light" align="center" size="1">
+              FAILURE
+            </Text>
+            <div />
+
+            {sets.map((set, index) => (
+              <Fragment key={set.id}>
+                <Text size="1" weight="light">
+                  {index + 1}
+                </Text>
+                <TextField.Root
+                  size="3"
+                  placeholder="Weight"
+                  name="weight"
+                  inputMode="decimal"
+                  value={set.weight}
+                  autoFocus={set === sets.at(-1)}
+                  onChange={(e) => {
+                    setSets((sets) => {
+                      let newSets = [...sets];
+                      let currentSet = newSets[index];
+                      newSets[index] = {
+                        ...currentSet,
+                        weight: e.target.value,
+                      };
+                      return newSets;
+                    });
+                  }}
+                />
+                <TextField.Root
+                  size="3"
+                  placeholder="Reps"
+                  inputMode="numeric"
+                  name="reps"
+                  value={set.reps}
+                  onChange={(e) => {
+                    setSets((sets) => {
+                      let newSets = [...sets];
+                      let currentSet = newSets[index];
+                      newSets[index] = {
+                        ...currentSet,
+                        reps: e.target.value,
+                      };
+                      return newSets;
+                    });
+                  }}
+                />
+                <Flex justify="center" align="center">
+                  <Switch
+                    name="trackingSet"
+                    value={index}
+                    checked={set.tracked}
+                    onCheckedChange={() => {
+                      setSets((sets) =>
+                        sets.map((set, i) => ({
+                          ...set,
+                          tracked: i === index ? !set.tracked : set.tracked,
+                        }))
+                      );
+                    }}
+                  />
+                </Flex>
+                <Flex justify="end" align="center">
+                  <IconButton
+                    onClick={() => {
+                      setSets((sets) => sets.filter((s, i) => i !== index));
+                    }}
+                    disabled={sets.length === 1}
+                    size="3"
+                    color="gray"
+                    variant="soft"
+                    type="button"
+                  >
+                    <MinusIcon width="18" height="18" />
+                  </IconButton>
+                </Flex>
+              </Fragment>
+            ))}
+          </Grid>
+
+          <Flex mt="6" align="stretch" direction="column">
+            <Button
+              size="2"
+              color="gray"
+              variant="soft"
+              type="button"
               onClick={() => {
                 setSets((sets) => [
                   ...sets,
                   {
                     id: uuid(),
-                    weight: "",
+                    weight: sets[sets.length - 1].weight,
                     reps: sets[sets.length - 1].reps,
                     tracked: false,
                   },
                 ]);
               }}
-              type="button"
-              className="h-11 w-full rounded-md bg-gray-100 text-sm font-medium text-gray-700"
             >
-              + Add set
-            </button>
-          </div>
-        </div>
+              <PlusIcon />
+              Add set
+            </Button>
+          </Flex>
+        </Box>
 
-        <div>
-          <label className="space-y-2">
-            <span className="text-sm font-medium text-gray-500">Notes</span>
-            <textarea
+        <Box mt="6">
+          <label>
+            <Text mb="2" size="2" weight="medium" as="p">
+              Notes
+            </Text>
+
+            <TextArea
+              placeholder="How'd that feel?"
               defaultValue={entry?.notes || ""}
-              className="w-full border-gray-300"
               name="notes"
               rows={4}
-            ></textarea>
+            />
           </label>
-        </div>
+        </Box>
 
-        <div className="flex justify-end">
-          <AnimatedButton
-            isSaving={isSaving}
-            type="submit"
-            backgroundColor={colors.blue[500]}
-            highlightColor={colors.blue[600]}
-            className="rounded-md px-5 py-2 font-medium text-white"
-          >
+        <Flex mt="4" justify="end">
+          <Button size="3" type="submit" loading={isSaving}>
             Save
-          </AnimatedButton>
-        </div>
+          </Button>
+        </Flex>
       </Form>
 
       {lastEntry && (
@@ -248,7 +228,7 @@ export default function EntryForm({
           </div>
         </div>
       )}
-    </>
+    </Box>
   );
 }
 
