@@ -93,7 +93,7 @@ export default function Join() {
 
   return (
     <div className="flex min-h-full flex-col justify-center">
-      <div className="mx-auto mt-40 w-full max-w-md px-8">
+      <div className="mx-auto mt-36 w-full max-w-md px-8">
         <h1 className="text-2xl font-semibold">Sign up</h1>
         <Form method="post" className="mt-4 space-y-6">
           <div>
