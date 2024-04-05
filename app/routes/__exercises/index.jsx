@@ -1,9 +1,19 @@
-import { Box, Flex, Heading, Separator, Text } from "@radix-ui/themes";
+import {
+  Box,
+  Em,
+  Flex,
+  Heading,
+  Reset,
+  Separator,
+  Text,
+} from "@radix-ui/themes";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { useState } from "react";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import timeAgo from "~/utils/time-ago";
+import pluralize from "pluralize";
 
 export async function loader({ request }) {
   let userId = await requireUserId(request);
@@ -44,18 +54,37 @@ export default function ExercisesIndexPage() {
 }
 
 function EntryCard({ entry }) {
-  // let [expanded, setExpanded] = useState(false);
+  let [expanded, setExpanded] = useState(false);
 
   return (
     <>
-      <Flex justify="between" align="center">
-        <Text weight="bold" size="4">
-          {entry.exercise.name}
-        </Text>
-        <Text size="1" color="gray">
-          {timeAgo(entry.date)}
-        </Text>
-      </Flex>
+      <Reset>
+        <button onClick={() => setExpanded(!expanded)}>
+          <Flex justify="between" align="center">
+            <Text weight="bold" size="4">
+              {entry.exercise.name}
+            </Text>
+            <Text size="1" color="gray">
+              {timeAgo(entry.date)}
+            </Text>
+          </Flex>
+          <Box>
+            {entry.sets
+              .filter((set) => (!expanded ? set.tracked : true))
+              .map((set) => (
+                <Text as="p" key={set.id}>
+                  {set.weight} lbs – {pluralize("rep", set.reps, true)}
+                  {expanded && set.tracked && <span key={set.id}> 👈</span>}
+                </Text>
+              ))}
+            {expanded && entry.notes && (
+              <Text color="gray" size="2">
+                <Em>{entry.notes}</Em>
+              </Text>
+            )}
+          </Box>
+        </button>
+      </Reset>
 
       <Separator size="4" />
 
