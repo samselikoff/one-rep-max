@@ -234,12 +234,7 @@ export default function App() {
 
                 {user && (
                   <Form action="/logout" method="post">
-                    <Button
-                      color="gray"
-                      variant="ghost"
-                      type="submit"
-                      className="opacity-50"
-                    >
+                    <Button color="gray" variant="ghost" type="submit">
                       Sign out
                     </Button>
                   </Form>
