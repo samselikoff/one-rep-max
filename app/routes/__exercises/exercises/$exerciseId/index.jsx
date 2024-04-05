@@ -1,13 +1,4 @@
-import * as Icons from "@heroicons/react/24/outline";
-import { differenceInDays, format, parseISO, sub } from "date-fns";
-import { Link as RemixLink, useLoaderData, useParams } from "@remix-run/react";
-import { json } from "@remix-run/node";
-import { prisma } from "~/db.server";
-import { requireUserId } from "~/session.server";
-import timeAgo from "~/utils/time-ago";
-import pluralize from "pluralize";
-import estimatedMax from "~/utils/estimated-max";
-import Chart from "~/components/Chart";
+import { PlusIcon } from "@radix-ui/react-icons";
 import {
   Box,
   Em,
@@ -17,11 +8,18 @@ import {
   IconButton,
   Link,
   Separator,
-  Strong,
   Text,
 } from "@radix-ui/themes";
-import { PlusCircledIcon, PlusIcon } from "@radix-ui/react-icons";
+import { json } from "@remix-run/node";
+import { Link as RemixLink, useLoaderData, useParams } from "@remix-run/react";
+import { differenceInDays, format, parseISO, sub } from "date-fns";
+import pluralize from "pluralize";
 import { Fragment } from "react";
+import Chart from "~/components/Chart";
+import { prisma } from "~/db.server";
+import { requireUserId } from "~/session.server";
+import estimatedMax from "~/utils/estimated-max";
+import timeAgo from "~/utils/time-ago";
 
 export async function loader({ request, params }) {
   let userId = await requireUserId(request);
