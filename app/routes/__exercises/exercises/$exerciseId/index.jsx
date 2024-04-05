@@ -66,7 +66,7 @@ export default function ExerciseIndexPage() {
         <FrequencyStat entries={entries} />
       </Flex>
 
-      <Separator />
+      <Separator size="4" mt="6" />
 
       <div className="mt-6">
         <div className="flex justify-between">
