@@ -36,11 +36,10 @@ export default function ExercisesIndexPage() {
   let { entries } = useLoaderData();
 
   return (
-    <Box px="4" my="5" className="pb-safe-bottom">
+    <Box px="4" my="5">
       {entries.length > 0 ? (
         <>
           <Heading>Latest exercises</Heading>
-
           <Flex mt="6" direction="column" gap="4">
             {entries.map((entry) => (
               <EntryCard entry={entry} key={entry.id} />

@@ -217,7 +217,7 @@ export default function App() {
       <body className="h-full">
         <Theme accentColor="blue" radius="small">
           <Theme appearance="dark">
-            <header>
+            <header className="pt-safe-top">
               <Flex justify="between" align="baseline" p="4">
                 <Link
                   color="gray"
@@ -243,7 +243,7 @@ export default function App() {
             </header>
           </Theme>
 
-          <main>
+          <main className="pb-safe-bottom">
             <Outlet />
           </main>
         </Theme>
