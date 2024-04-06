@@ -43,3 +43,22 @@ let wathanPercentages = [
   61.4058, 60.9492, 60.5044, 60.071, 59.6484, 59.2361, 58.8336, 58.4405,
   58.0564, 57.681, 57.3138, 56.9546, 56.603, 56.2587, 55.9215, 55.5911, 55.2672,
 ].map((v) => v / 100);
+
+export function repsToBeatMax(max, weight) {
+  let reps = repsFromEstimatedMax(max, weight);
+  let repsToBeat = Math.max(Math.ceil(reps), 1);
+  let newMax = estimatedMax({ weight, reps: repsToBeat });
+
+  let x;
+  if (newMax < max) {
+    x = Infinity;
+  } else if (newMax === max && repsToBeat > 0) {
+    x = repsToBeat + 1;
+  } else if (newMax > max && repsToBeat > 0) {
+    x = repsToBeat;
+  } else {
+    x = 1;
+  }
+
+  return x;
+}

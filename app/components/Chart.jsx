@@ -195,7 +195,7 @@ function ChartInner({ data, width, height }) {
         {/* Line */}
         {data.map((d, i) => (
           <motion.circle
-            key={d.date}
+            key={i}
             r="5"
             cx={x(d.date)}
             cy={y(d.value)}

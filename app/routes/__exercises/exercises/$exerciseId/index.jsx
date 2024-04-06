@@ -1,13 +1,25 @@
-import * as Icons from "@heroicons/react/24/outline";
-import { differenceInDays, format, parseISO, sub } from "date-fns";
-import { Link, useLoaderData, useParams } from "@remix-run/react";
+import { PlusIcon } from "@radix-ui/react-icons";
+import {
+  Box,
+  Em,
+  Flex,
+  Grid,
+  Heading,
+  IconButton,
+  Link,
+  Separator,
+  Text,
+} from "@radix-ui/themes";
 import { json } from "@remix-run/node";
+import { Link as RemixLink, useLoaderData, useParams } from "@remix-run/react";
+import { differenceInDays, format, parseISO, sub } from "date-fns";
+import pluralize from "pluralize";
+import { Fragment } from "react";
+import Chart from "~/components/Chart";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
-import timeAgo from "~/utils/time-ago";
-import pluralize from "pluralize";
 import estimatedMax from "~/utils/estimated-max";
-import Chart from "~/components/Chart";
+import timeAgo from "~/utils/time-ago";
 
 export async function loader({ request, params }) {
   let userId = await requireUserId(request);
@@ -37,80 +49,98 @@ export default function ExerciseIndexPage() {
   let { exerciseId } = useParams();
 
   return (
-    <div className="mt-6 px-4">
-      <h1 className="text-3xl font-bold">{exercise.name}</h1>
+    <Box mt="5" px="4">
+      <Heading>{exercise.name}</Heading>
 
-      <p className="mt-6 text-center text-xs font-semibold uppercase text-gray-400">
+      <Text
+        as="p"
+        align="center"
+        mt="4"
+        size="1"
+        weight="medium"
+        color="gray"
+        className="uppercase"
+      >
         Total lifted (lbs)
         {/* One Rep Max (Est) */}
-      </p>
-      <div className="h-40 w-full text-blue-500">
-        <Chart entries={entries} />
-      </div>
+      </Text>
 
-      <div className="mt-6 flex justify-between border-b px-2 pb-8">
+      <Box height="160px" width="100%">
+        <Text color="blue">
+          <Chart entries={entries} />
+        </Text>
+      </Box>
+
+      <Grid mt="6" columns="3">
         <HeaviestSetStat entries={entries} />
         <OneRepMaxStat entries={entries} />
         <FrequencyStat entries={entries} />
-      </div>
+      </Grid>
 
-      <div className="mt-6">
-        <div className="flex justify-between">
-          <p className="text-xl font-semibold">All entries</p>
-          <Link
-            className="flex h-8 w-8 items-center justify-center whitespace-nowrap rounded-full bg-blue-500 text-sm font-medium text-white"
-            to={`/exercises/${exercise.id}/new`}
-          >
-            <Icons.PlusIcon className="h-5 w-5" />
-          </Link>
-        </div>
+      <Separator size="4" mt="6" />
+
+      <Box mt="6">
+        <Flex justify="between" align="center">
+          <Heading as="h2" size="5">
+            All entries
+          </Heading>
+
+          <IconButton asChild variant="ghost">
+            <RemixLink to={`/exercises/${exercise.id}/new`}>
+              <PlusIcon width="24" height="24" />
+            </RemixLink>
+          </IconButton>
+        </Flex>
 
         {entries.length > 0 ? (
-          <div className="divide-y">
+          <Flex mt="5" gap="4" direction="column">
             {entries.map((entry) => (
-              <div key={entry.id} className="py-4">
-                <div className="flex justify-between">
-                  <p className="text-[15px]">
-                    <span className="font-semibold">
+              <Fragment key={entry.id}>
+                <Box>
+                  <Flex gap="1" align="center">
+                    <Text size="3" weight="bold">
                       {format(parseISO(entry.date.substring(0, 10)), "MMMM do")}
-                    </span>
-                    <span className="px-1 font-medium text-gray-500">
-                      &middot;
-                    </span>
-                    <span className="text-sm text-gray-500">
+                    </Text>
+                    <span>&middot;</span>
+                    <Text size="1" color="gray" weight="medium">
                       {timeAgo(entry.date)}
-                    </span>
-                  </p>
-                </div>
-                <div className="mt-1">
-                  {entry.sets.map((set) => (
-                    <div key={set.id}>
-                      <p>
+                    </Text>
+                  </Flex>
+                  <Box mt="1">
+                    {entry.sets.map((set) => (
+                      <Text as="p" key={set.id}>
                         {set.weight} lbs – {pluralize("rep", set.reps, true)}
                         {set.tracked && " 👈"}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-                <p className="mt-2 text-sm italic text-gray-700">
-                  {entry.notes}
-                </p>
-                <div className="mt-4 text-right">
-                  <Link
-                    to={`/exercises/${exerciseId}/entries/${entry.id}/edit`}
-                    className="text-right text-sm text-gray-500 underline"
-                  >
-                    Edit this entry
-                  </Link>
-                </div>
-              </div>
+                      </Text>
+                    ))}
+                  </Box>
+
+                  <Text size="2" color="gray" mt="3" as="p">
+                    <Em>{entry.notes}</Em>
+                  </Text>
+
+                  <Flex mt="4" justify="end">
+                    <Link size="2" color="gray" underline="always" asChild>
+                      <RemixLink
+                        to={`/exercises/${exerciseId}/entries/${entry.id}/edit`}
+                      >
+                        Edit this entry
+                      </RemixLink>
+                    </Link>
+                  </Flex>
+                </Box>
+
+                <Separator size="4" color="gray" />
+              </Fragment>
             ))}
-          </div>
+          </Flex>
         ) : (
-          <p className="mt-6">No entries.</p>
+          <Text mt="6" as="p" color="gray">
+            No entries.
+          </Text>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 
@@ -125,32 +155,18 @@ function HeaviestSetStat({ entries }) {
     return entry.sets.includes(heaviestSet);
   });
 
-  return (
-    <div>
-      <p className="text-center text-xs font-semibold uppercase text-gray-500">
-        Heaviest set
-      </p>
-      {entryWithHeaviestSet ? (
-        <>
-          <p className="text-center font-semibold">
-            <span className="text-3xl text-blue-500">{heaviestSet.weight}</span>
-            <span className="pl-0.5 text-lg text-blue-500">lbs</span>
-          </p>
-          <p className="pt-0.5 text-center text-[10px] leading-none text-gray-500">
-            <span>{pluralize("rep", heaviestSet.reps, true)}</span>
-            <span className="px-0.5 font-medium">&middot;</span>
-            <span>{timeAgo(entryWithHeaviestSet.date)}</span>
-          </p>
-        </>
-      ) : (
-        <>
-          <p className="flex items-center text-3xl text-blue-500">
-            <span className="block h-1 w-8 bg-blue-500" />
-            &nbsp;
-          </p>
-        </>
-      )}
-    </div>
+  return entryWithHeaviestSet ? (
+    <Stat
+      title="Heaviest set"
+      stat={heaviestSet.weight}
+      statSuffix="lbs"
+      subItems={[
+        pluralize("rep", heaviestSet.reps, true),
+        timeAgo(entryWithHeaviestSet.date),
+      ]}
+    />
+  ) : (
+    <Stat title="Heaviest set" />
   );
 }
 
@@ -162,36 +178,18 @@ function OneRepMaxStat({ entries }) {
       return estimatedMax(a) > estimatedMax(b) ? -1 : 1;
     })[0];
 
-  return (
-    <div>
-      <p className="text-center text-xs font-semibold uppercase text-gray-500">
-        Top Est ORM
-      </p>
-      {highestEstimatesOneRepMaxSet ? (
-        <>
-          <p className="text-center font-semibold">
-            <span className="text-3xl text-blue-500">
-              {Math.floor(estimatedMax(highestEstimatesOneRepMaxSet))}
-            </span>
-            <span className="pl-0.5 text-lg text-blue-500">lbs</span>
-          </p>
-          <p className="pt-0.5 text-center text-xs text-[10px] leading-none text-gray-500">
-            <span>{highestEstimatesOneRepMaxSet.weight}lbs</span>
-            <span className="px-0.5 font-medium">&middot;</span>
-            <span>
-              {pluralize("rep", highestEstimatesOneRepMaxSet.reps, true)}
-            </span>
-          </p>
-        </>
-      ) : (
-        <>
-          <p className="flex items-center text-3xl text-blue-500">
-            <span className="block h-1 w-8 bg-blue-500" />
-            &nbsp;
-          </p>
-        </>
-      )}
-    </div>
+  return highestEstimatesOneRepMaxSet ? (
+    <Stat
+      title="Top Est ORM"
+      stat={Math.floor(estimatedMax(highestEstimatesOneRepMaxSet))}
+      statSuffix="lbs"
+      subItems={[
+        `${highestEstimatesOneRepMaxSet.weight}lbs`,
+        pluralize("rep", highestEstimatesOneRepMaxSet.reps, true),
+      ]}
+    />
+  ) : (
+    <Stat title="Top Est ORM" />
   );
 }
 
@@ -205,21 +203,52 @@ function FrequencyStat({ entries }) {
   });
 
   return (
-    <div>
-      <p className="text-center text-xs font-semibold uppercase text-gray-500">
-        Frequency
-      </p>
-      <p className="text-center font-semibold">
-        <span className="text-3xl text-blue-500">
-          {last30DaysEntries.length}
-        </span>
-        <span className="pl-0.5 text-lg text-blue-500">
-          {pluralize("lift", last30DaysEntries.length)}
-        </span>
-      </p>
-      <p className="pt-0.5 text-center text-xs text-[10px] leading-none text-gray-500">
-        <span>Past 30 days</span>
-      </p>
-    </div>
+    <Stat
+      title="Frequency"
+      stat={last30DaysEntries.length}
+      statSuffix={pluralize("lift", last30DaysEntries.length)}
+      subItems={["Past 30 days"]}
+    />
+  );
+}
+
+function Stat({ title, stat, statSuffix, subItems = [] }) {
+  let subItemsLabel = subItems
+    .map((item, i) => <Text key={i}>{item}</Text>)
+    .reduce((memo, item, i) => {
+      return memo === null
+        ? [item]
+        : [memo, <Text key={`dot-${i}`}>&middot;</Text>, item];
+    }, null);
+
+  return (
+    <Flex direction="column" align="center" gap="2">
+      <Text
+        mb="1"
+        className="uppercase"
+        size="1"
+        weight="bold"
+        color="gray"
+        trim="end"
+      >
+        {title}
+      </Text>
+
+      {stat ? (
+        <>
+          <Text size="7" color="blue" weight="bold" trim="both">
+            {stat}
+            <Text size="4"> {statSuffix}</Text>
+          </Text>
+          <Text size="1" color="gray" trim="both" mt="1">
+            <small>
+              <Flex gap="1">{subItemsLabel}</Flex>
+            </small>
+          </Text>
+        </>
+      ) : (
+        <Separator my="6" style={{ height: "3px" }} color="blue" size="2" />
+      )}
+    </Flex>
   );
 }

@@ -3,6 +3,8 @@ import { json, redirect } from "@remix-run/node";
 import EntryForm from "~/components/EntryForm";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
+import { Box, Heading } from "@radix-ui/themes";
+import { minDelay } from "~/utils/minDelay";
 
 export async function loader({ request, params }) {
   let userId = await requireUserId(request);
@@ -51,7 +53,7 @@ export async function action({ request, params }) {
     });
   });
 
-  await prisma.entry.create({ data });
+  await minDelay(prisma.entry.create({ data }), 750);
 
   return redirect(`/exercises/${exerciseId}`);
 }
@@ -60,14 +62,14 @@ export default function NewEntryPage() {
   let { lastEntry, exercise, lastTrackedEntry } = useLoaderData();
 
   return (
-    <div className="mt-6 px-4">
-      <h1 className="text-3xl font-bold">{exercise.name} – New</h1>
+    <Box px="4" mt="5" pb="7">
+      <Heading>{exercise.name} – New</Heading>
 
       <EntryForm
         exercise={exercise}
         lastEntry={lastEntry}
         lastTrackedEntry={lastTrackedEntry}
       />
-    </div>
+    </Box>
   );
 }

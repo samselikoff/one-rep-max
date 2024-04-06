@@ -1,3 +1,24 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+svg {
+  display: block;
+  vertical-align: middle;
+  overflow: visible;
+}
+
+pre {
+  margin: 0;
+}
+
 a,
 button {
   -webkit-tap-highlight-color: transparent;

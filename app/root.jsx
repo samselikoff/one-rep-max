@@ -1,3 +1,4 @@
+import { json } from "@remix-run/node";
 import {
   Form,
   Links,
@@ -8,8 +9,9 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { json } from "@remix-run/node";
 
+import { Button, Flex, Link, Theme } from "@radix-ui/themes";
+import radixThemesStylesheetUrl from "@radix-ui/themes/styles.css";
 import { getUser } from "./session.server";
 import globalStylesheetURL from "./styles/global.css";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
@@ -25,6 +27,7 @@ export function links() {
     },
     { rel: "apple-touch-icon", href: "apple-icon-180.png" },
     { rel: "stylesheet", href: tailwindStylesheetUrl },
+    { rel: "stylesheet", href: radixThemesStylesheetUrl },
     { rel: "stylesheet", href: globalStylesheetURL },
     { rel: "manifest", href: "/site.webmanifest" },
     {
@@ -212,34 +215,38 @@ export default function App() {
         <Links />
       </head>
       <body className="h-full">
-        <header className="bg-gray-900 px-4 pt-safe-top text-white">
-          <div className="flex h-[72px] items-center justify-between">
-            <h1 className="text-3xl font-bold">
-              <NavLink
-                end
-                className={({ isActive }) =>
-                  `${
-                    isActive ? "border-blue-500" : "border-transparent"
-                  } border-b-4`
-                }
-                to="."
-              >
-                One Rep Max
-              </NavLink>
-            </h1>
-            {user && (
-              <Form action="/logout" method="post">
-                <button type="submit" className="text-gray-500">
-                  Sign out
-                </button>
-              </Form>
-            )}
-          </div>
-        </header>
+        <Theme accentColor="blue" radius="small">
+          <Theme appearance="dark">
+            <header>
+              <Flex justify="between" align="baseline" p="4">
+                <Link
+                  color="gray"
+                  underline="none"
+                  highContrast
+                  size="7"
+                  weight="bold"
+                  asChild
+                >
+                  <NavLink end to=".">
+                    One Rep Max
+                  </NavLink>
+                </Link>
 
-        <main>
-          <Outlet />
-        </main>
+                {user && (
+                  <Form action="/logout" method="post">
+                    <Button color="gray" variant="ghost" type="submit">
+                      Sign out
+                    </Button>
+                  </Form>
+                )}
+              </Flex>
+            </header>
+          </Theme>
+
+          <main>
+            <Outlet />
+          </main>
+        </Theme>
 
         <ScrollRestoration />
         <Scripts />
