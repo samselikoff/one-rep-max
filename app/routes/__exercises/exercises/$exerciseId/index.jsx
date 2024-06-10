@@ -15,7 +15,7 @@ import { Link as RemixLink, useLoaderData, useParams } from "@remix-run/react";
 import { differenceInDays, format, parseISO, sub } from "date-fns";
 import pluralize from "pluralize";
 import { Fragment } from "react";
-import Chart from "~/components/Chart";
+import { OneRepMaxChart } from "~/components/charts";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import estimatedMax from "~/utils/estimated-max";
@@ -61,13 +61,13 @@ export default function ExerciseIndexPage() {
         color="gray"
         className="uppercase"
       >
-        Total lifted (lbs)
-        {/* One Rep Max (Est) */}
+        {/* Total lifted (lbs) */}
+        One Rep Max (Est)
       </Text>
 
       <Box height="160px" width="100%">
         <Text color="blue">
-          <Chart entries={entries} />
+          <OneRepMaxChart entries={entries} />
         </Text>
       </Box>
 
