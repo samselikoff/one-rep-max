@@ -15,6 +15,10 @@ import { requireUserId } from "~/session.server";
 import timeAgo from "~/utils/time-ago";
 import pluralize from "pluralize";
 import { AnimatePresence, motion } from "framer-motion";
+import {
+  ExerciseSettingsProvider,
+  usePreferredUnit,
+} from "~/components/exercise-settings";
 
 export async function loader({ request }) {
   let userId = await requireUserId(request);
@@ -22,7 +26,11 @@ export async function loader({ request }) {
   let entries = await prisma.entry.findMany({
     where: { userId },
     include: {
-      exercise: true,
+      exercise: {
+        include: {
+          exerciseSettings: true,
+        },
+      },
       sets: true,
     },
     orderBy: { date: "desc" },
@@ -42,7 +50,12 @@ export default function ExercisesIndexPage() {
           <Heading>Latest exercises</Heading>
           <Flex mt="6" direction="column" gap="4">
             {entries.map((entry) => (
-              <EntryCard entry={entry} key={entry.id} />
+              <ExerciseSettingsProvider
+                units={entry.exercise.exerciseSettings[0]?.unit || "pounds"}
+                key={entry.id}
+              >
+                <EntryCard entry={entry} />
+              </ExerciseSettingsProvider>
             ))}
           </Flex>
         </>
@@ -54,6 +67,7 @@ export default function ExercisesIndexPage() {
 }
 
 function EntryCard({ entry }) {
+  let { convertTo, suffix } = usePreferredUnit();
   let [expanded, setExpanded] = useState(false);
 
   return (
@@ -96,7 +110,8 @@ function EntryCard({ entry }) {
                         }}
                       >
                         <Text>
-                          {set.weight} lbs – {pluralize("rep", set.reps, true)}
+                          {convertTo(set.weight)} {suffix} –{" "}
+                          {pluralize("rep", set.reps, true)}
                         </Text>
                         <AnimatePresence>
                           {expanded && set.tracked && (
@@ -137,20 +152,6 @@ function EntryCard({ entry }) {
                 )}
               </AnimatePresence>
             </motion.div>
-
-            {/* {entry.sets
-              .filter((set) => (!expanded ? set.tracked : true))
-              .map((set) => (
-                <Text as="p" key={set.id}>
-                  {set.weight} lbs – {pluralize("rep", set.reps, true)}
-                  {expanded && set.tracked && <span key={set.id}> 👈</span>}
-                </Text>
-              ))}
-            {expanded && entry.notes && (
-              <Text color="gray" size="2">
-                <Em>{entry.notes}</Em>
-              </Text>
-            )} */}
           </Box>
         </button>
       </Reset>

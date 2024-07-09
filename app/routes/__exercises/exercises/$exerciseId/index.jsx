@@ -1,24 +1,35 @@
-import { PlusIcon } from "@radix-ui/react-icons";
+import { DotsHorizontalIcon, PlusIcon } from "@radix-ui/react-icons";
 import {
   Box,
+  Button,
   Em,
   Flex,
   Grid,
   Heading,
   IconButton,
   Link,
+  Popover,
+  SegmentedControl,
   Separator,
   Text,
 } from "@radix-ui/themes";
 import { json } from "@remix-run/node";
-import { Link as RemixLink, useLoaderData, useParams } from "@remix-run/react";
+import {
+  Form,
+  Link as RemixLink,
+  useLoaderData,
+  useParams,
+  useTransition,
+} from "@remix-run/react";
 import { differenceInDays, format, parseISO, sub } from "date-fns";
 import pluralize from "pluralize";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { OneRepMaxChart } from "~/components/charts";
+import { usePreferredUnit } from "~/components/exercise-settings";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import estimatedMax from "~/utils/estimated-max";
+import { minDelay } from "~/utils/minDelay";
 import timeAgo from "~/utils/time-ago";
 
 export async function loader({ request, params }) {
@@ -39,19 +50,114 @@ export async function loader({ request, params }) {
 
   let exercise = await prisma.exercise.findUnique({
     where: { id: params.exerciseId },
+    include: {
+      exerciseSettings: { where: { userId } },
+    },
   });
+
+  if (!exercise) {
+    throw new Response(null, {
+      status: 404,
+      statusText: "Not Found",
+    });
+  }
 
   return json({ exercise, entries });
 }
 
+export async function action({ request, params }) {
+  let userId = await requireUserId(request);
+  let formData = await request.formData();
+  let unit = formData.get("unit");
+
+  if (typeof unit !== "string") {
+    return null;
+  }
+
+  return await minDelay(
+    prisma.exerciseSettings.upsert({
+      create: {
+        unit,
+        userId,
+        exerciseId: params.exerciseId,
+      },
+      update: {
+        unit,
+      },
+      where: {
+        userId_exerciseId: {
+          userId,
+          exerciseId: params.exerciseId,
+        },
+      },
+    }),
+    750
+  );
+}
+
 export default function ExerciseIndexPage() {
+  let { convertTo, suffix } = usePreferredUnit();
   let { exercise, entries } = useLoaderData();
   let { exerciseId } = useParams();
 
+  let settings = exercise.exerciseSettings[0];
+  let [units, setUnits] = useState(settings ? settings.unit : "pounds");
+
+  let { state } = useTransition();
+  let isSaving = state === "submitting" || state === "loading";
+
   return (
     <Box mt="5" px="4">
-      <Heading>{exercise.name}</Heading>
-
+      <Flex justify="between" align="center">
+        <Heading>{exercise.name}</Heading>
+        <Popover.Root>
+          <Popover.Trigger>
+            <IconButton color="gray" radius="full" variant="surface" size="1">
+              <DotsHorizontalIcon />
+            </IconButton>
+          </Popover.Trigger>
+          <Popover.Content width="240px" align="end">
+            <Text as="p" weight="medium" align="center">
+              Settings
+            </Text>
+            <Box mt="3">
+              <Form method="post">
+                <Text as="label" size="2" weight="medium">
+                  Units
+                </Text>
+                <Text mt="0" as="p" color="gray" size="1">
+                  Update your preferred unit of weight for the current exercise.
+                </Text>
+                <Flex mt="2">
+                  <SegmentedControl.Root
+                    value={units}
+                    onValueChange={setUnits}
+                    style={{ width: "100%" }}
+                  >
+                    <SegmentedControl.Item name="unit" value="pounds">
+                      Pounds
+                    </SegmentedControl.Item>
+                    <SegmentedControl.Item name="unit" value="kilos">
+                      Kilos
+                    </SegmentedControl.Item>
+                  </SegmentedControl.Root>
+                  <input type="hidden" name="unit" value={units} />
+                </Flex>
+                <Flex mt="7" justify="between" align="center">
+                  <Popover.Close>
+                    <Button color="gray" variant="ghost">
+                      Cancel
+                    </Button>
+                  </Popover.Close>
+                  <Button loading={isSaving} type="submit">
+                    Update
+                  </Button>
+                </Flex>
+              </Form>
+            </Box>
+          </Popover.Content>
+        </Popover.Root>
+      </Flex>
       <Text
         as="p"
         align="center"
@@ -64,34 +170,28 @@ export default function ExerciseIndexPage() {
         {/* Total lifted (lbs) */}
         One Rep Max (Est)
       </Text>
-
       <Box height="160px" width="100%">
         <Text color="blue">
           <OneRepMaxChart entries={entries} />
         </Text>
       </Box>
-
       <Grid mt="6" columns="3">
         <HeaviestSetStat entries={entries} />
         <OneRepMaxStat entries={entries} />
         <FrequencyStat entries={entries} />
       </Grid>
-
       <Separator size="4" mt="6" />
-
       <Box mt="6">
         <Flex justify="between" align="center">
           <Heading as="h2" size="5">
             All entries
           </Heading>
-
           <IconButton asChild variant="ghost">
             <RemixLink to={`/exercises/${exercise.id}/new`}>
               <PlusIcon width="24" height="24" />
             </RemixLink>
           </IconButton>
         </Flex>
-
         {entries.length > 0 ? (
           <Flex mt="5" gap="4" direction="column">
             {entries.map((entry) => (
@@ -109,16 +209,15 @@ export default function ExerciseIndexPage() {
                   <Box mt="1">
                     {entry.sets.map((set) => (
                       <Text as="p" key={set.id}>
-                        {set.weight} lbs – {pluralize("rep", set.reps, true)}
+                        {convertTo(set.weight)} {suffix} –{" "}
+                        {pluralize("rep", set.reps, true)}
                         {set.tracked && " 👈"}
                       </Text>
                     ))}
                   </Box>
-
                   <Text size="2" color="gray" mt="3" as="p">
                     <Em>{entry.notes}</Em>
                   </Text>
-
                   <Flex mt="4" justify="end">
                     <Link size="2" color="gray" underline="always" asChild>
                       <RemixLink
@@ -129,7 +228,6 @@ export default function ExerciseIndexPage() {
                     </Link>
                   </Flex>
                 </Box>
-
                 <Separator size="4" color="gray" />
               </Fragment>
             ))}
@@ -145,6 +243,7 @@ export default function ExerciseIndexPage() {
 }
 
 function HeaviestSetStat({ entries }) {
+  let { convertTo, suffix } = usePreferredUnit();
   let allSets = entries.flatMap((entry) => entry.sets);
   let heaviestSet = allSets
     .filter((set) => set.reps > 0)
@@ -158,8 +257,8 @@ function HeaviestSetStat({ entries }) {
   return entryWithHeaviestSet ? (
     <Stat
       title="Heaviest set"
-      stat={heaviestSet.weight}
-      statSuffix="lbs"
+      stat={convertTo(heaviestSet.weight)}
+      statSuffix={suffix}
       subItems={[
         pluralize("rep", heaviestSet.reps, true),
         timeAgo(entryWithHeaviestSet.date),
@@ -171,6 +270,7 @@ function HeaviestSetStat({ entries }) {
 }
 
 function OneRepMaxStat({ entries }) {
+  let { convertTo, suffix } = usePreferredUnit();
   let allSets = entries.flatMap((entry) => entry.sets);
   let highestEstimatesOneRepMaxSet = allSets
     .filter((set) => set.reps > 0)
@@ -181,10 +281,10 @@ function OneRepMaxStat({ entries }) {
   return highestEstimatesOneRepMaxSet ? (
     <Stat
       title="Top Est ORM"
-      stat={Math.floor(estimatedMax(highestEstimatesOneRepMaxSet))}
-      statSuffix="lbs"
+      stat={convertTo(Math.floor(estimatedMax(highestEstimatesOneRepMaxSet)))}
+      statSuffix={suffix}
       subItems={[
-        `${highestEstimatesOneRepMaxSet.weight}lbs`,
+        `${convertTo(highestEstimatesOneRepMaxSet.weight)}${suffix}`,
         pluralize("rep", highestEstimatesOneRepMaxSet.reps, true),
       ]}
     />

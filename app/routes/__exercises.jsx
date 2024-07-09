@@ -4,7 +4,9 @@ import { NavLink, Outlet, useLoaderData, useParams } from "@remix-run/react";
 import { prisma } from "~/db.server";
 
 export async function loader() {
-  let exercises = await prisma.exercise.findMany();
+  let exercises = await prisma.exercise.findMany({
+    orderBy: { createdAt: "asc" },
+  });
 
   return json({ exercises });
 }
