@@ -16,7 +16,7 @@ import { Form, useTransition, Link as RemixLink } from "@remix-run/react";
 import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
 import { Fragment, useRef, useState } from "react";
 import { v4 as uuid } from "uuid";
-import { usePreferredUnit } from "~/routes/__exercises/exercises/$exerciseId";
+import { usePreferredUnit } from "./exercise-settings";
 
 export default function EntryForm({
   exercise,

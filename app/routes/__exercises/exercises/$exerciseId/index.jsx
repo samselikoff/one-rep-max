@@ -25,12 +25,12 @@ import { differenceInDays, format, parseISO, sub } from "date-fns";
 import pluralize from "pluralize";
 import { Fragment, useState } from "react";
 import { OneRepMaxChart } from "~/components/charts";
+import { usePreferredUnit } from "~/components/exercise-settings";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import estimatedMax from "~/utils/estimated-max";
 import { minDelay } from "~/utils/minDelay";
 import timeAgo from "~/utils/time-ago";
-import { usePreferredUnit } from "../$exerciseId";
 
 export async function loader({ request, params }) {
   let userId = await requireUserId(request);
