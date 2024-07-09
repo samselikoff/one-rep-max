@@ -16,6 +16,7 @@ import { Form, useTransition, Link as RemixLink } from "@remix-run/react";
 import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
 import { Fragment, useRef, useState } from "react";
 import { v4 as uuid } from "uuid";
+import { usePreferredUnit } from "~/routes/__exercises/exercises/$exerciseId";
 
 export default function EntryForm({
   exercise,
@@ -23,6 +24,7 @@ export default function EntryForm({
   lastEntry,
   lastTrackedEntry,
 }) {
+  let { convertTo, convertFrom, units } = usePreferredUnit();
   let formRef = useRef();
   let [sets, setSets] = useState(
     entry?.sets.length > 0
@@ -55,12 +57,18 @@ export default function EntryForm({
 
         <Box mt="6">
           <Grid columns="40px 1fr 1fr 1fr auto" align="center" gap="2">
-            <Text size="2" weight="medium" as="p">
-              Sets
+            <Text size="2" weight="medium">
+              Set
+            </Text>
+            <Text
+              size="2"
+              weight="medium"
+              style={{ textTransform: "capitalize" }}
+            >
+              {units}
             </Text>
             <div />
-            <div />
-            <Text weight="light" align="center" size="1">
+            <Text weight="medium" size="2" align="center">
               Failure
             </Text>
             <div />
@@ -73,9 +81,8 @@ export default function EntryForm({
                 <TextField.Root
                   size="3"
                   placeholder="Weight"
-                  name="weight"
                   inputMode="decimal"
-                  value={set.weight}
+                  value={convertTo(set.weight)}
                   autoFocus={set === sets.at(-1)}
                   onChange={(e) => {
                     setSets((sets) => {
@@ -83,12 +90,13 @@ export default function EntryForm({
                       let currentSet = newSets[index];
                       newSets[index] = {
                         ...currentSet,
-                        weight: e.target.value,
+                        weight: convertFrom(e.target.value),
                       };
                       return newSets;
                     });
                   }}
                 />
+                <input type="hidden" name="weight" value={set.weight} />
                 <TextField.Root
                   size="3"
                   placeholder="Reps"
