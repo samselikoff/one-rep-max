@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { createContext, useContext } from "react";
-import { kilosToPounds, poundsToKilos } from "~/utils/unit-fns";
 
 let ExerciseSettingsContext = createContext<undefined | { units: string }>(
   undefined
@@ -41,4 +40,16 @@ export function ExerciseSettingsProvider({
       {children}
     </ExerciseSettingsContext.Provider>
   );
+}
+
+function poundsToKilos(pounds: number) {
+  let kilos = pounds * 0.45359237;
+
+  return parseFloat(kilos.toFixed(0)); // rounding to 0 decimal places
+}
+
+function kilosToPounds(kilos: number) {
+  let pounds = kilos / 0.45359237;
+
+  return parseFloat(pounds.toFixed(0)); // rounding to 0 decimal places
 }
