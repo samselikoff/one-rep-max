@@ -5,7 +5,13 @@ import { json } from "@remix-run/node";
 import { createContext, useContext } from "react";
 import poundsToKilos from "~/utils/pounds-to-kilos";
 
-export async function loader({ request, params }) {
+export async function loader({
+  request,
+  params,
+}: {
+  request: Request;
+  params: { exerciseId: string };
+}) {
   let userId = await requireUserId(request);
 
   let exerciseSettings = await prisma.exerciseSettings.findUnique({
@@ -20,7 +26,7 @@ export async function loader({ request, params }) {
   return json({ exerciseSettings });
 }
 
-let ExerciseSettingsContext = createContext();
+let ExerciseSettingsContext = createContext({ units: "pounds" });
 
 export function usePreferredUnit() {
   let { units } = useContext(ExerciseSettingsContext);
