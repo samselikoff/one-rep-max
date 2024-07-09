@@ -8,12 +8,13 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  entries   Entry[]
-  password  Password?
+  id               String             @id @default(cuid())
+  email            String             @unique
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  entries          Entry[]
+  password         Password?
+  exerciseSettings ExerciseSettings[]
 }
 
 model Password {
@@ -23,11 +24,12 @@ model Password {
 }
 
 model Exercise {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  entries   Entry[]
+  id               String             @id @default(cuid())
+  name             String             @unique
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  entries          Entry[]
+  exerciseSettings ExerciseSettings[]
 }
 
 model Entry {
@@ -52,4 +54,17 @@ model Set {
   tracked   Boolean  @default(false)
   entryId   String
   entry     Entry    @relation(fields: [entryId], references: [id], onDelete: Cascade)
+}
+
+model ExerciseSettings {
+  id         String   @id @default(cuid())
+  unit       String   @default("pounds")
+  userId     String
+  exerciseId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, exerciseId])
 }
