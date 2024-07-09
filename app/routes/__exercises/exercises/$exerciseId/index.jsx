@@ -31,6 +31,7 @@ import estimatedMax from "~/utils/estimated-max";
 import { minDelay } from "~/utils/minDelay";
 import poundsToKilos from "~/utils/pounds-to-kilos";
 import timeAgo from "~/utils/time-ago";
+import { usePreferredUnit } from "../$exerciseId";
 
 export async function loader({ request, params }) {
   let userId = await requireUserId(request);
@@ -95,9 +96,8 @@ export async function action({ request, params }) {
   );
 }
 
-let ExerciseSettingsContext = createContext();
-
 export default function ExerciseIndexPage() {
+  let { convertTo, suffix } = usePreferredUnit();
   let { exercise, entries } = useLoaderData();
   let { exerciseId } = useParams();
 
@@ -106,152 +106,145 @@ export default function ExerciseIndexPage() {
 
   let { state } = useTransition();
   let isSaving = state === "submitting" || state === "loading";
-  let disabled = settings && settings.unit === units;
 
   return (
-    <ExerciseSettingsContext.Provider
-      value={{ units: settings?.unit || "pounds" }}
-    >
-      <Box mt="5" px="4">
-        <Flex justify="between" align="center">
-          <Heading>{exercise.name}</Heading>
-          <Popover.Root>
-            <Popover.Trigger>
-              <IconButton color="gray" radius="full" variant="surface" size="1">
-                <DotsHorizontalIcon />
-              </IconButton>
-            </Popover.Trigger>
-            <Popover.Content width="240px" align="end">
-              <Text as="p" weight="medium" align="center">
-                Settings
-              </Text>
-              <Box mt="3">
-                <Form method="post">
-                  <Text as="label" size="2">
-                    Units
-                  </Text>
-                  <Flex mt="1">
-                    <SegmentedControl.Root
-                      value={units}
-                      onValueChange={setUnits}
-                      style={{ width: "100%" }}
-                    >
-                      <SegmentedControl.Item name="unit" value="pounds">
-                        Pounds
-                      </SegmentedControl.Item>
-                      <SegmentedControl.Item name="unit" value="kilos">
-                        Kilos
-                      </SegmentedControl.Item>
-                    </SegmentedControl.Root>
-                    <input type="hidden" name="unit" value={units} />
-                  </Flex>
-                  <Flex mt="7" justify="between" align="center">
-                    <Popover.Close>
-                      <Button color="gray" variant="ghost">
-                        Cancel
-                      </Button>
-                    </Popover.Close>
-                    <Button
-                      disabled={disabled}
-                      loading={isSaving}
-                      type="submit"
-                    >
-                      Update
-                    </Button>
-                  </Flex>
-                </Form>
-              </Box>
-            </Popover.Content>
-          </Popover.Root>
-        </Flex>
-        <Text
-          as="p"
-          align="center"
-          mt="4"
-          size="1"
-          weight="medium"
-          color="gray"
-          className="uppercase"
-        >
-          {/* Total lifted (lbs) */}
-          One Rep Max (Est)
-        </Text>
-        <Box height="160px" width="100%">
-          <Text color="blue">
-            <OneRepMaxChart entries={entries} />
-          </Text>
-        </Box>
-        <Grid mt="6" columns="3">
-          <HeaviestSetStat entries={entries} />
-          <OneRepMaxStat entries={entries} />
-          <FrequencyStat entries={entries} />
-        </Grid>
-        <Separator size="4" mt="6" />
-        <Box mt="6">
-          <Flex justify="between" align="center">
-            <Heading as="h2" size="5">
-              All entries
-            </Heading>
-            <IconButton asChild variant="ghost">
-              <RemixLink to={`/exercises/${exercise.id}/new`}>
-                <PlusIcon width="24" height="24" />
-              </RemixLink>
+    <Box mt="5" px="4">
+      <Flex justify="between" align="center">
+        <Heading>{exercise.name}</Heading>
+        <Popover.Root>
+          <Popover.Trigger>
+            <IconButton color="gray" radius="full" variant="surface" size="1">
+              <DotsHorizontalIcon />
             </IconButton>
-          </Flex>
-          {entries.length > 0 ? (
-            <Flex mt="5" gap="4" direction="column">
-              {entries.map((entry) => (
-                <Fragment key={entry.id}>
-                  <Box>
-                    <Flex gap="1" align="center">
-                      <Text size="3" weight="bold">
-                        {format(
-                          parseISO(entry.date.substring(0, 10)),
-                          "MMMM do"
-                        )}
-                      </Text>
-                      <span>&middot;</span>
-                      <Text size="1" color="gray" weight="medium">
-                        {timeAgo(entry.date)}
-                      </Text>
-                    </Flex>
-                    <Box mt="1">
-                      {entry.sets.map((set) => (
-                        <Text as="p" key={set.id}>
-                          {set.weight} lbs – {pluralize("rep", set.reps, true)}
-                          {set.tracked && " 👈"}
-                        </Text>
-                      ))}
-                    </Box>
-                    <Text size="2" color="gray" mt="3" as="p">
-                      <Em>{entry.notes}</Em>
-                    </Text>
-                    <Flex mt="4" justify="end">
-                      <Link size="2" color="gray" underline="always" asChild>
-                        <RemixLink
-                          to={`/exercises/${exerciseId}/entries/${entry.id}/edit`}
-                        >
-                          Edit this entry
-                        </RemixLink>
-                      </Link>
-                    </Flex>
-                  </Box>
-                  <Separator size="4" color="gray" />
-                </Fragment>
-              ))}
-            </Flex>
-          ) : (
-            <Text mt="6" as="p" color="gray">
-              No entries.
+          </Popover.Trigger>
+          <Popover.Content width="240px" align="end">
+            <Text as="p" weight="medium" align="center">
+              Settings
             </Text>
-          )}
-        </Box>
+            <Box mt="3">
+              <Form method="post">
+                <Text as="label" size="2" weight="medium">
+                  Units
+                </Text>
+                <Text mt="0" as="p" color="gray" size="1">
+                  Update your preferred unit of weight for the current exercise.
+                </Text>
+                <Flex mt="2">
+                  <SegmentedControl.Root
+                    value={units}
+                    onValueChange={setUnits}
+                    style={{ width: "100%" }}
+                  >
+                    <SegmentedControl.Item name="unit" value="pounds">
+                      Pounds
+                    </SegmentedControl.Item>
+                    <SegmentedControl.Item name="unit" value="kilos">
+                      Kilos
+                    </SegmentedControl.Item>
+                  </SegmentedControl.Root>
+                  <input type="hidden" name="unit" value={units} />
+                </Flex>
+                <Flex mt="7" justify="between" align="center">
+                  <Popover.Close>
+                    <Button color="gray" variant="ghost">
+                      Cancel
+                    </Button>
+                  </Popover.Close>
+                  <Button loading={isSaving} type="submit">
+                    Update
+                  </Button>
+                </Flex>
+              </Form>
+            </Box>
+          </Popover.Content>
+        </Popover.Root>
+      </Flex>
+      <Text
+        as="p"
+        align="center"
+        mt="4"
+        size="1"
+        weight="medium"
+        color="gray"
+        className="uppercase"
+      >
+        {/* Total lifted (lbs) */}
+        One Rep Max (Est)
+      </Text>
+      <Box height="160px" width="100%">
+        <Text color="blue">
+          <OneRepMaxChart entries={entries} />
+        </Text>
       </Box>
-    </ExerciseSettingsContext.Provider>
+      <Grid mt="6" columns="3">
+        <HeaviestSetStat entries={entries} />
+        <OneRepMaxStat entries={entries} />
+        <FrequencyStat entries={entries} />
+      </Grid>
+      <Separator size="4" mt="6" />
+      <Box mt="6">
+        <Flex justify="between" align="center">
+          <Heading as="h2" size="5">
+            All entries
+          </Heading>
+          <IconButton asChild variant="ghost">
+            <RemixLink to={`/exercises/${exercise.id}/new`}>
+              <PlusIcon width="24" height="24" />
+            </RemixLink>
+          </IconButton>
+        </Flex>
+        {entries.length > 0 ? (
+          <Flex mt="5" gap="4" direction="column">
+            {entries.map((entry) => (
+              <Fragment key={entry.id}>
+                <Box>
+                  <Flex gap="1" align="center">
+                    <Text size="3" weight="bold">
+                      {format(parseISO(entry.date.substring(0, 10)), "MMMM do")}
+                    </Text>
+                    <span>&middot;</span>
+                    <Text size="1" color="gray" weight="medium">
+                      {timeAgo(entry.date)}
+                    </Text>
+                  </Flex>
+                  <Box mt="1">
+                    {entry.sets.map((set) => (
+                      <Text as="p" key={set.id}>
+                        {convertTo(set.weight)} {suffix} –{" "}
+                        {pluralize("rep", set.reps, true)}
+                        {set.tracked && " 👈"}
+                      </Text>
+                    ))}
+                  </Box>
+                  <Text size="2" color="gray" mt="3" as="p">
+                    <Em>{entry.notes}</Em>
+                  </Text>
+                  <Flex mt="4" justify="end">
+                    <Link size="2" color="gray" underline="always" asChild>
+                      <RemixLink
+                        to={`/exercises/${exerciseId}/entries/${entry.id}/edit`}
+                      >
+                        Edit this entry
+                      </RemixLink>
+                    </Link>
+                  </Flex>
+                </Box>
+                <Separator size="4" color="gray" />
+              </Fragment>
+            ))}
+          </Flex>
+        ) : (
+          <Text mt="6" as="p" color="gray">
+            No entries.
+          </Text>
+        )}
+      </Box>
+    </Box>
   );
 }
 
 function HeaviestSetStat({ entries }) {
+  let { convertTo, suffix } = usePreferredUnit();
   let allSets = entries.flatMap((entry) => entry.sets);
   let heaviestSet = allSets
     .filter((set) => set.reps > 0)
@@ -262,17 +255,11 @@ function HeaviestSetStat({ entries }) {
     return entry.sets.includes(heaviestSet);
   });
 
-  let stat = heaviestSet.weight;
-  let { units } = useContext(ExerciseSettingsContext);
-  if (units === "kilos") {
-    stat = poundsToKilos(stat);
-  }
-
   return entryWithHeaviestSet ? (
     <Stat
       title="Heaviest set"
-      stat={stat}
-      statSuffix={units === "kilos" ? "kg" : "lbs"}
+      stat={convertTo(heaviestSet.weight)}
+      statSuffix={suffix}
       subItems={[
         pluralize("rep", heaviestSet.reps, true),
         timeAgo(entryWithHeaviestSet.date),
@@ -284,6 +271,7 @@ function HeaviestSetStat({ entries }) {
 }
 
 function OneRepMaxStat({ entries }) {
+  let { convertTo, suffix } = usePreferredUnit();
   let allSets = entries.flatMap((entry) => entry.sets);
   let highestEstimatesOneRepMaxSet = allSets
     .filter((set) => set.reps > 0)
@@ -294,10 +282,10 @@ function OneRepMaxStat({ entries }) {
   return highestEstimatesOneRepMaxSet ? (
     <Stat
       title="Top Est ORM"
-      stat={Math.floor(estimatedMax(highestEstimatesOneRepMaxSet))}
-      statSuffix="lbs"
+      stat={convertTo(Math.floor(estimatedMax(highestEstimatesOneRepMaxSet)))}
+      statSuffix={suffix}
       subItems={[
-        `${highestEstimatesOneRepMaxSet.weight}lbs`,
+        `${convertTo(highestEstimatesOneRepMaxSet.weight)}${suffix}`,
         pluralize("rep", highestEstimatesOneRepMaxSet.reps, true),
       ]}
     />
