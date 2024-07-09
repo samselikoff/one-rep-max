@@ -23,13 +23,12 @@ import {
 } from "@remix-run/react";
 import { differenceInDays, format, parseISO, sub } from "date-fns";
 import pluralize from "pluralize";
-import { createContext, Fragment, useContext, useState } from "react";
+import { Fragment, useState } from "react";
 import { OneRepMaxChart } from "~/components/charts";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import estimatedMax from "~/utils/estimated-max";
 import { minDelay } from "~/utils/minDelay";
-import poundsToKilos from "~/utils/pounds-to-kilos";
 import timeAgo from "~/utils/time-ago";
 import { usePreferredUnit } from "../$exerciseId";
 
