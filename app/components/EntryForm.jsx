@@ -24,7 +24,7 @@ export default function EntryForm({
   lastEntry,
   lastTrackedEntry,
 }) {
-  let { convertTo, convertFrom, units } = usePreferredUnit();
+  let { convertTo, convertFrom, suffix, units } = usePreferredUnit();
   let formRef = useRef();
   let [sets, setSets] = useState(
     entry?.sets.length > 0
@@ -214,7 +214,7 @@ export default function EntryForm({
             <Box mt="4">
               {lastEntry.sets.map((set) => (
                 <Text color="gray" key={set.id} as="p">
-                  {set.weight} lbs - {set.reps} reps
+                  {convertTo(set.weight)} {suffix} - {set.reps} reps
                 </Text>
               ))}
             </Box>
