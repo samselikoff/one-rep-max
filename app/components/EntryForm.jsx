@@ -1,18 +1,5 @@
 import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  Grid,
-  IconButton,
-  Link,
-  Switch,
-  Text,
-  TextArea,
-  TextField,
-} from "@radix-ui/themes";
-import { Form, useTransition, Link as RemixLink } from "@remix-run/react";
+import { Form, Link as RemixLink, useTransition } from "@remix-run/react";
 import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
 import { Fragment, useRef, useState } from "react";
 import { v4 as uuid } from "uuid";
@@ -100,13 +87,11 @@ export default function EntryForm({
                     });
                   }}
                 />
-                <Flex justify="center" align="center">
-                  <Switch
-                    name="trackingSet"
-                    size="3"
-                    value={index}
+                <div className="flex items-center justify-center">
+                  <input
+                    type="checkbox"
                     checked={set.tracked}
-                    onCheckedChange={() => {
+                    onChange={(e) => {
                       setSets((sets) =>
                         sets.map((set, i) => ({
                           ...set,
@@ -114,31 +99,29 @@ export default function EntryForm({
                         }))
                       );
                     }}
+                    name="trackingSet"
                   />
-                </Flex>
-                <Flex justify="end" align="center">
-                  <IconButton
+                </div>
+
+                <div className="items-center justify-end">
+                  <button
                     onClick={() => {
                       setSets((sets) => sets.filter((s, i) => i !== index));
                     }}
                     disabled={sets.length === 1}
-                    size="2"
-                    color="gray"
-                    variant="soft"
+                    className="rounded bg-gray-100 p-2 disabled:opacity-50"
                     type="button"
                   >
                     <MinusIcon width="18" height="18" />
-                  </IconButton>
-                </Flex>
+                  </button>
+                </div>
               </Fragment>
             ))}
           </div>
 
-          <Flex mt="7" align="stretch" direction="column">
-            <Button
-              size="3"
-              color="gray"
-              variant="soft"
+          <div className="mt-7">
+            <button
+              className="inline-flex w-full items-center justify-center gap-3 rounded bg-gray-200 py-1.5 px-2.5"
               type="button"
               onClick={() => {
                 setSets((sets) => [
@@ -154,57 +137,60 @@ export default function EntryForm({
             >
               <PlusIcon />
               Add set
-            </Button>
-          </Flex>
+            </button>
+          </div>
         </div>
 
-        <Box mt="6">
+        <div className="mt-6">
           <label>
-            <Text mb="2" size="2" weight="medium" as="p">
-              Notes
-            </Text>
+            <p className="text-sm font-medium">Notes</p>
 
-            <TextArea
+            <textarea
+              className="mt-2 w-full border p-3"
               placeholder="How'd that feel?"
               defaultValue={entry?.notes || ""}
               name="notes"
               rows={4}
             />
           </label>
-        </Box>
+        </div>
 
-        <Flex mt="4" justify="between" align="center">
-          <Link asChild size="2" weight="medium">
-            <RemixLink to={`/exercises/${exercise.id}`}>Cancel</RemixLink>
-          </Link>
+        <div className="mt-4 flex items-center justify-between">
+          <RemixLink
+            className="text-sm font-medium text-blue-500"
+            to={`/exercises/${exercise.id}`}
+          >
+            Cancel
+          </RemixLink>
 
-          <Button size="3" type="submit" loading={isSaving}>
+          <button
+            type="submit"
+            className="rounded bg-blue-500 py-1.5 px-3 font-medium text-white disabled:opacity-50"
+            disabled={isSaving}
+          >
             Save
-          </Button>
-        </Flex>
+          </button>
+        </div>
       </Form>
 
       {lastEntry && (
-        <Box pt="8">
-          <Card variant="classic">
-            <Flex justify="between">
-              <Text size="1" color="gray">
-                Previous {exercise.name}
-              </Text>
-              <Text size="1" color="gray">
-                {formatDistanceToNow(parseISO(lastEntry.date.substring(0, 10)))}{" "}
-                ago
-              </Text>
-            </Flex>
-            <Box mt="4">
-              {lastEntry.sets.map((set) => (
-                <Text color="gray" key={set.id} as="p">
-                  {convertTo(set.weight)} {suffix} - {set.reps} reps
-                </Text>
-              ))}
-            </Box>
-          </Card>
-        </Box>
+        <div className="mt-10 border p-2">
+          <div className="flex justify-between">
+            <p className="text-xs text-gray-500">Previous {exercise.name}</p>
+            <p className="text-xs text-gray-500">
+              {formatDistanceToNow(parseISO(lastEntry.date.substring(0, 10)))}{" "}
+              ago
+            </p>
+          </div>
+
+          <div className="mt-4">
+            {lastEntry.sets.map((set) => (
+              <p className="text-gray-600" key={set.id}>
+                {convertTo(set.weight)} {suffix} - {set.reps} reps
+              </p>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
