@@ -1,9 +1,11 @@
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import EntryForm from "~/components/EntryForm";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import { minDelay } from "~/utils/minDelay";
+import Header from "~/components/header";
+import { ChevronLeftIcon } from "@radix-ui/react-icons";
 
 export async function loader({ request, params }) {
   let userId = await requireUserId(request);
@@ -61,14 +63,41 @@ export default function NewEntryPage() {
   let { lastEntry, exercise, lastTrackedEntry } = useLoaderData();
 
   return (
-    <div className="mt-5 px-4 pb-8">
-      <h1 className="text-2xl font-bold">{exercise.name} – New</h1>
+    <>
+      <header className="bg-gray-900 pt-safe-top">
+        <div className="flex items-start justify-between px-2 pt-4 pb-8">
+          <Link
+            className="inline-flex items-center text-xs font-medium text-blue-500"
+            to={`/exercises/${exercise.id}`}
+          >
+            <ChevronLeftIcon width="20" height="20" />
+            Summary
+          </Link>
 
-      <EntryForm
-        exercise={exercise}
-        lastEntry={lastEntry}
-        lastTrackedEntry={lastTrackedEntry}
-      />
-    </div>
+          <div className="flex h-5 items-center">
+            <p className="text-xs font-medium text-blue-500">Today</p>
+          </div>
+
+          <div className="absolute left-1/2 -translate-x-1/2 text-center leading-none">
+            <h1 className="text-sm font-semibold text-white">
+              {exercise.name}
+            </h1>
+            <span className="text-xs font-medium leading-none text-gray-400">
+              Log
+            </span>
+          </div>
+        </div>
+      </header>
+
+      <main className="pb-safe-bottom">
+        <div className="mt-5 px-4 pb-8">
+          <EntryForm
+            exercise={exercise}
+            lastEntry={lastEntry}
+            lastTrackedEntry={lastTrackedEntry}
+          />
+        </div>
+      </main>
+    </>
   );
 }

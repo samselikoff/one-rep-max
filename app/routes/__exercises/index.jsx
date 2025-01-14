@@ -60,14 +60,14 @@ export default function ExercisesIndexPage() {
 
       <main className="pb-safe-bottom">
         <div className="overflow-x-auto bg-gray-900 pb-2 [scrollbar-width:none]">
-          <div className="flex">
+          <div className="flex gap-2">
             {exercises.map((exercise) => (
               <NavLink
                 className={`${
                   params.exerciseId === exercise.id
                     ? "border-blue-500 text-white"
                     : "border-transparent text-gray-400"
-                } whitespace-nowrap border-b-2 px-4 py-2 text-sm font-medium`}
+                } whitespace-nowrap border-b-2 px-2 py-2 text-sm font-medium`}
                 key={exercise.id}
                 to={`/exercises/${exercise.id}`}
               >

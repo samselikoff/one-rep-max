@@ -106,7 +106,7 @@ export default function ExerciseIndexPage() {
           to="/"
         >
           <ChevronLeftIcon width="20" height="20" />
-          Summary
+          Home
         </Link>
 
         <Link to={`/exercises/${exercise.id}/new`}>
@@ -190,7 +190,7 @@ export default function ExerciseIndexPage() {
           </div>
           <hr className="mt-8" />
           <div className="mt-8">
-            <h2 className="text-xl font-bold">All entries</h2>
+            <h2 className="text-xl font-bold">Logs</h2>
             {entries.length > 0 ? (
               <div className="mt-6 flex flex-col gap-4">
                 {entries.map((entry) => (
