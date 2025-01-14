@@ -11,6 +11,7 @@ import {
   usePreferredUnit,
 } from "~/components/exercise-settings";
 import { useOptionalUser } from "~/utils";
+import Header from "~/components/header";
 
 export async function loader({ request }) {
   let userId = await requireUserId(request);
@@ -43,21 +44,19 @@ export default function ExercisesIndexPage() {
 
   return (
     <>
-      <header className="bg-gray-900 pt-safe-top">
-        <div className="flex items-center justify-between p-4">
-          <NavLink className="text-2xl font-semibold text-white" end to=".">
-            One Rep Max
-          </NavLink>
+      <Header>
+        <NavLink className="text-2xl font-semibold text-white" end to=".">
+          One Rep Max
+        </NavLink>
 
-          {user && (
-            <Form action="/logout" method="post">
-              <button className="text-sm text-gray-400" type="submit">
-                Sign out
-              </button>
-            </Form>
-          )}
-        </div>
-      </header>
+        {user && (
+          <Form action="/logout" method="post">
+            <button className="text-sm text-gray-400" type="submit">
+              Sign out
+            </button>
+          </Form>
+        )}
+      </Header>
 
       <main className="pb-safe-bottom">
         <div className="overflow-x-auto bg-gray-900 pb-2 [scrollbar-width:none]">
