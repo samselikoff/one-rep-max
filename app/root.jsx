@@ -211,7 +211,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="h-full">
+      <body className="h-full antialiased">
         <header className="bg-gray-900 pt-safe-top">
           <div className="flex items-center justify-between p-4">
             <NavLink className="text-2xl font-semibold text-white" end to=".">
