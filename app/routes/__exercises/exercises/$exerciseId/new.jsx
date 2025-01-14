@@ -61,7 +61,6 @@ export async function action({ request, params }) {
 
 export default function NewEntryPage() {
   let { lastEntry, exercise, lastTrackedEntry } = useLoaderData();
-  let dateRef = useRef();
 
   return (
     <>
@@ -72,25 +71,18 @@ export default function NewEntryPage() {
             to={`/exercises/${exercise.id}`}
           >
             <ChevronLeftIcon width="20" height="20" />
-            Summary
+            Back
           </Link>
 
           <div className="relative flex h-5 items-center">
             <button
               onClick={() => {
-                dateRef.current.showPicker();
+                //
               }}
               className="text-xs font-medium text-blue-500"
             >
               Today
             </button>
-            <input
-              ref={dateRef}
-              className="invisible absolute"
-              type="date"
-              name=""
-              id=""
-            />
           </div>
 
           <div className="absolute left-1/2 -translate-x-1/2 text-center leading-none">
