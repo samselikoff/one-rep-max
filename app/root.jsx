@@ -25,6 +25,8 @@ export function links() {
     { rel: "apple-touch-icon", href: "apple-icon-180.png" },
     { rel: "stylesheet", href: tailwindStylesheetUrl },
     { rel: "stylesheet", href: globalStylesheetURL },
+    { rel: "preconnect", href: "https://rsms.me/" },
+    { rel: "stylesheet", href: "https://rsms.me/inter/inter.css" },
     { rel: "manifest", href: "/site.webmanifest" },
     {
       rel: "apple-touch-startup-image",

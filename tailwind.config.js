@@ -1,4 +1,5 @@
 const colors = require("tailwindcss/colors");
+const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
   content: ["./app/**/*.{ts,tsx,jsx,js}"],
@@ -7,6 +8,9 @@ module.exports = {
       colors: {
         gray: colors.zinc,
         blue: colors.sky,
+      },
+      fontFamily: {
+        sans: ["Inter", ...defaultTheme.fontFamily.sans],
       },
       spacing: {
         "safe-top": "env(safe-area-inset-top)",
