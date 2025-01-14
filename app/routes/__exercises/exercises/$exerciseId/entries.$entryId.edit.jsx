@@ -87,7 +87,7 @@ export default function EditEntryPage() {
 
   return (
     <Box px="4" mt="5" pb="7">
-      <Heading>{exercise.name} – Edit</Heading>
+      <h1 className="text-2xl font-bold">{exercise.name} – Edit</h1>
 
       <EntryForm
         entry={entry}

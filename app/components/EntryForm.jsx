@@ -39,49 +39,34 @@ export default function EntryForm({
   let isSaving = state === "submitting" || state === "loading";
 
   return (
-    <Box mt="4">
+    <div className="mt-4">
       <Form method="post" ref={formRef}>
         <label>
-          <Text size="2" weight="medium" as="div" mb="2">
-            Date
-          </Text>
+          <div className="text-sm font-medium">Date</div>
 
-          <TextField.Root
+          <input
             type="date"
-            size="3"
-            placeholder="Search the docs…"
+            className="mt-2 w-full rounded border p-2"
             defaultValue={format(defaultDate, "yyyy-MM-dd")}
             name="date"
           />
         </label>
 
-        <Box mt="6">
-          <Grid columns="40px 1fr 1fr 1fr auto" align="center" gap="2">
-            <Text size="2" weight="medium">
-              Set
-            </Text>
-            <Text
-              size="2"
-              weight="medium"
-              style={{ textTransform: "capitalize" }}
-            >
-              {units}
-            </Text>
+        <div className="mt-6">
+          <div className="grid grid-cols-[40px_1fr_1fr_1fr_auto] items-center gap-2">
+            <p className="text-sm font-medium">Set</p>
+            <p className="text-sm font-medium capitalize">{units}</p>
             <div />
-            <Text weight="medium" size="2" align="center">
-              Failure
-            </Text>
+            <p className="text-center text-sm font-medium">Failure</p>
             <div />
 
             {sets.map((set, index) => (
               <Fragment key={set.id}>
-                <Text size="3" color="gray" ml="2" className="tabular-nums">
-                  {index + 1}
-                </Text>
-                <TextField.Root
-                  size="3"
+                <p className="ml-1.5 tabular-nums text-gray-500">{index + 1}</p>
+                <input
                   placeholder="Weight"
                   inputMode="decimal"
+                  className="w-full rounded border px-2.5 py-1.5"
                   value={convertTo(set.weight)}
                   autoFocus={set === sets.at(-1)}
                   onChange={(e) => {
@@ -97,11 +82,11 @@ export default function EntryForm({
                   }}
                 />
                 <input type="hidden" name="weight" value={set.weight} />
-                <TextField.Root
-                  size="3"
+                <input
                   placeholder="Reps"
                   inputMode="numeric"
                   name="reps"
+                  className="w-full rounded border px-2.5 py-1.5"
                   value={set.reps}
                   onChange={(e) => {
                     setSets((sets) => {
@@ -147,7 +132,7 @@ export default function EntryForm({
                 </Flex>
               </Fragment>
             ))}
-          </Grid>
+          </div>
 
           <Flex mt="7" align="stretch" direction="column">
             <Button
@@ -171,7 +156,7 @@ export default function EntryForm({
               Add set
             </Button>
           </Flex>
-        </Box>
+        </div>
 
         <Box mt="6">
           <label>
@@ -221,6 +206,6 @@ export default function EntryForm({
           </Card>
         </Box>
       )}
-    </Box>
+    </div>
   );
 }
