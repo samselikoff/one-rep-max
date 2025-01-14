@@ -1,18 +1,13 @@
-import { json } from "@remix-run/node";
 import {
-  Form,
   Links,
   LiveReload,
   Meta,
-  NavLink,
   Outlet,
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { getUser } from "./session.server";
 import globalStylesheetURL from "./styles/global.css";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
-import { useOptionalUser } from "./utils";
 
 export function links() {
   return [
@@ -197,15 +192,7 @@ export function meta() {
   };
 }
 
-export async function loader({ request }) {
-  return json({
-    user: await getUser(request),
-  });
-}
-
 export default function App() {
-  let user = useOptionalUser();
-
   return (
     <html lang="en" className="h-full">
       <head>
@@ -213,22 +200,6 @@ export default function App() {
         <Links />
       </head>
       <body className="h-full antialiased">
-        <header className="bg-gray-900 pt-safe-top">
-          <div className="flex items-center justify-between p-4">
-            <NavLink className="text-2xl font-semibold text-white" end to=".">
-              One Rep Max
-            </NavLink>
-
-            {user && (
-              <Form action="/logout" method="post">
-                <button className="text-sm text-gray-400" type="submit">
-                  Sign out
-                </button>
-              </Form>
-            )}
-          </div>
-        </header>
-
         <main className="pb-safe-bottom">
           <Outlet />
         </main>
