@@ -1,5 +1,5 @@
 import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
-import { Form, Link as RemixLink, useTransition } from "@remix-run/react";
+import { Form, Link, useTransition } from "@remix-run/react";
 import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
 import { Fragment, useRef, useState } from "react";
 import { v4 as uuid } from "uuid";
@@ -157,12 +157,12 @@ export default function EntryForm({
         </div>
 
         <div className="mt-4 flex items-center justify-between">
-          <RemixLink
+          <Link
             className="text-sm font-medium text-blue-500"
             to={`/exercises/${exercise.id}`}
           >
             Cancel
-          </RemixLink>
+          </Link>
 
           <button
             type="submit"

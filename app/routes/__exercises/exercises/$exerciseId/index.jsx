@@ -3,7 +3,7 @@ import * as Popover from "@radix-ui/react-popover";
 import { json } from "@remix-run/node";
 import {
   Form,
-  Link as RemixLink,
+  Link,
   useLoaderData,
   useParams,
   useTransition,
@@ -173,9 +173,9 @@ export default function ExerciseIndexPage() {
       <div className="mt-8">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold">All entries</h2>
-          <RemixLink to={`/exercises/${exercise.id}/new`}>
+          <Link to={`/exercises/${exercise.id}/new`}>
             <PlusIcon className="text-blue-500" width="24" height="24" />
-          </RemixLink>
+          </Link>
         </div>
 
         {entries.length > 0 ? (
@@ -208,12 +208,12 @@ export default function ExerciseIndexPage() {
                   </p>
 
                   <div className="mt-4 flex justify-end">
-                    <RemixLink
+                    <Link
                       className="text-sm text-gray-500 underline decoration-gray-300 decoration-1 underline-offset-2"
                       to={`/exercises/${exerciseId}/entries/${entry.id}/edit`}
                     >
                       Edit this entry
-                    </RemixLink>
+                    </Link>
                   </div>
                 </div>
                 <hr />

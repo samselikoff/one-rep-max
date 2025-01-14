@@ -4,7 +4,6 @@ import EntryForm from "~/components/EntryForm";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import { minDelay } from "~/utils/minDelay";
-import { Box, Button, Heading } from "@radix-ui/themes";
 import { TrashIcon } from "@radix-ui/react-icons";
 
 export async function loader({ request, params }) {
