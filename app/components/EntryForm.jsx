@@ -90,6 +90,8 @@ export default function EntryForm({
                 <div className="flex items-center justify-center">
                   <input
                     type="checkbox"
+                    name="trackingSet"
+                    value={index}
                     checked={set.tracked}
                     onChange={(e) => {
                       setSets((sets) =>
@@ -99,7 +101,6 @@ export default function EntryForm({
                         }))
                       );
                     }}
-                    name="trackingSet"
                   />
                 </div>
 
