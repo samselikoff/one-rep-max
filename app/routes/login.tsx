@@ -5,12 +5,7 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import {
-  Form,
-  Link as RemixLink,
-  useActionData,
-  useSearchParams,
-} from "@remix-run/react";
+import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 
 import { createUserSession, getUserId } from "~/session.server";
 import { verifyLogin } from "~/models/user.server";
@@ -170,7 +165,7 @@ export default function LoginPage() {
 
         <div className="mt-16 text-sm text-gray-500">
           Don't have an account?{" "}
-          <RemixLink
+          <Link
             className="font-medium text-blue-500 underline decoration-blue-200 underline-offset-2"
             to={{
               pathname: "/join",
@@ -178,7 +173,7 @@ export default function LoginPage() {
             }}
           >
             Sign up
-          </RemixLink>
+          </Link>
         </div>
       </Form>
     </div>
