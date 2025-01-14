@@ -66,7 +66,7 @@ function EntryCard({ entry }) {
       <button className="text-left" onClick={() => setExpanded(!expanded)}>
         <div className="flex items-center justify-between">
           <p className="text-lg font-bold">{entry.exercise.name}</p>
-          <p className="text-xs text-gray-400">{timeAgo(entry.date)}</p>
+          <p className="text-xs text-gray-500">{timeAgo(entry.date)}</p>
         </div>
 
         <div>
