@@ -109,7 +109,7 @@ export default function ExerciseIndexPage() {
   return (
     <div className="mt-5 px-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{exercise.name}</h1>
+        <h1 className="text-2xl font-bold">{exercise.name}</h1>
 
         {/* TODO */}
         <Popover.Root>
@@ -168,49 +168,51 @@ export default function ExerciseIndexPage() {
       <div className="h-[160px] w-full text-blue-500">
         <OneRepMaxChart entries={entries} />
       </div>
-      <Grid mt="6" columns="3">
+      <div className="mt-6 grid grid-cols-3">
         <HeaviestSetStat entries={entries} />
         <OneRepMaxStat entries={entries} />
         <FrequencyStat entries={entries} />
-      </Grid>
-      <Separator size="4" mt="6" />
-      <Box mt="6">
-        <Flex justify="between" align="center">
-          <Heading as="h2" size="5">
-            All entries
-          </Heading>
-          <IconButton asChild variant="ghost">
-            <RemixLink to={`/exercises/${exercise.id}/new`}>
-              <PlusIcon width="24" height="24" />
-            </RemixLink>
-          </IconButton>
-        </Flex>
+      </div>
+
+      <hr className="mt-8" />
+
+      <div className="mt-8">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold">All entries</h2>
+          <RemixLink to={`/exercises/${exercise.id}/new`}>
+            <PlusIcon className="text-blue-500" width="24" height="24" />
+          </RemixLink>
+        </div>
+
         {entries.length > 0 ? (
-          <Flex mt="5" gap="4" direction="column">
+          <div className="mt-6 flex flex-col gap-4">
             {entries.map((entry) => (
               <Fragment key={entry.id}>
-                <Box>
-                  <Flex gap="1" align="center">
-                    <Text size="3" weight="bold">
+                <div>
+                  <div className="flex items-center gap-1">
+                    <p className="font-bold">
                       {format(parseISO(entry.date.substring(0, 10)), "MMMM do")}
-                    </Text>
+                    </p>
                     <span>&middot;</span>
-                    <Text size="1" color="gray" weight="medium">
+                    <p className="text-xs font-medium text-gray-500">
                       {timeAgo(entry.date)}
-                    </Text>
-                  </Flex>
-                  <Box mt="1">
+                    </p>
+                  </div>
+
+                  <div className="mt-1">
                     {entry.sets.map((set) => (
-                      <Text as="p" key={set.id}>
+                      <p key={set.id}>
                         {convertTo(set.weight)} {suffix} –{" "}
                         {pluralize("rep", set.reps, true)}
                         {set.tracked && " 👈"}
-                      </Text>
+                      </p>
                     ))}
-                  </Box>
-                  <Text size="2" color="gray" mt="3" as="p">
-                    <Em>{entry.notes}</Em>
-                  </Text>
+                  </div>
+
+                  <p className="mt-3 text-gray-500">
+                    <em>{entry.notes}</em>
+                  </p>
+
                   <Flex mt="4" justify="end">
                     <Link size="2" color="gray" underline="always" asChild>
                       <RemixLink
@@ -220,17 +222,17 @@ export default function ExerciseIndexPage() {
                       </RemixLink>
                     </Link>
                   </Flex>
-                </Box>
-                <Separator size="4" color="gray" />
+                </div>
+                <hr />
               </Fragment>
             ))}
-          </Flex>
+          </div>
         ) : (
           <Text mt="6" as="p" color="gray">
             No entries.
           </Text>
         )}
-      </Box>
+      </div>
     </div>
   );
 }
@@ -315,33 +317,22 @@ function Stat({ title, stat, statSuffix, subItems = [] }) {
     }, null);
 
   return (
-    <Flex direction="column" align="center" gap="2">
-      <Text
-        mb="1"
-        className="uppercase"
-        size="1"
-        weight="bold"
-        color="gray"
-        trim="end"
-      >
-        {title}
-      </Text>
+    <div className="flex flex-col items-center gap-1">
+      <p className="text-xs font-bold uppercase text-gray-500">{title}</p>
 
       {stat ? (
         <>
-          <Text size="7" color="blue" weight="bold" trim="both">
+          <p className="text-2xl font-bold text-blue-500">
             {stat}
-            <Text size="4"> {statSuffix}</Text>
-          </Text>
-          <Text size="1" color="gray" trim="both" mt="1">
-            <small>
-              <Flex gap="1">{subItemsLabel}</Flex>
-            </small>
-          </Text>
+            <span className="ml-0.5 text-sm font-medium">{statSuffix}</span>
+          </p>
+          <div className="text-xs text-gray-500">
+            <div className="flex gap-1">{subItemsLabel}</div>
+          </div>
         </>
       ) : (
-        <Separator my="6" style={{ height: "3px" }} color="blue" size="2" />
+        <hr className="my-8 w-8 border-t-2 border-blue-200" />
       )}
-    </Flex>
+    </div>
   );
 }
