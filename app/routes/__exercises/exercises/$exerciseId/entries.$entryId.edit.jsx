@@ -96,15 +96,15 @@ export default function EditEntryPage() {
         lastTrackedEntry={lastTrackedEntry}
       />
 
-      <Box mt="6">
+      <div className="mt-6">
         <Form method="post">
           <input type="hidden" name="_method" value="delete" />
-          <Button variant="soft" color="gray">
+          <button className="inline-flex items-center gap-2 rounded bg-gray-100 px-3 py-1.5 text-sm text-gray-500">
             <TrashIcon width="18" height="18" />
             Delete entry
-          </Button>
+          </button>
         </Form>
-      </Box>
+      </div>
     </div>
   );
 }
