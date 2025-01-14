@@ -107,9 +107,11 @@ export default function ExerciseIndexPage() {
   let isSaving = state === "submitting" || state === "loading";
 
   return (
-    <Box mt="5" px="4">
-      <Flex justify="between" align="center">
-        <Heading>{exercise.name}</Heading>
+    <div className="mt-5 px-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">{exercise.name}</h1>
+
+        {/* TODO */}
         <Popover.Root>
           <Popover.Trigger>
             <IconButton color="gray" radius="full" variant="surface" size="1">
@@ -157,24 +159,15 @@ export default function ExerciseIndexPage() {
             </Box>
           </Popover.Content>
         </Popover.Root>
-      </Flex>
-      <Text
-        as="p"
-        align="center"
-        mt="4"
-        size="1"
-        weight="medium"
-        color="gray"
-        className="uppercase"
-      >
+      </div>
+
+      <p className="mt-4 text-center text-xs font-medium uppercase text-gray-500">
         {/* Total lifted (lbs) */}
         One Rep Max (Est)
-      </Text>
-      <Box height="160px" width="100%">
-        <Text color="blue">
-          <OneRepMaxChart entries={entries} />
-        </Text>
-      </Box>
+      </p>
+      <div className="h-[160px] w-full text-blue-500">
+        <OneRepMaxChart entries={entries} />
+      </div>
       <Grid mt="6" columns="3">
         <HeaviestSetStat entries={entries} />
         <OneRepMaxStat entries={entries} />
@@ -238,7 +231,7 @@ export default function ExerciseIndexPage() {
           </Text>
         )}
       </Box>
-    </Box>
+    </div>
   );
 }
 
