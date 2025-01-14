@@ -7,6 +7,7 @@ import { usePreferredUnit } from "./exercise-settings";
 
 export default function EntryForm({
   exercise,
+  dateString,
   entry = null,
   lastEntry,
   lastTrackedEntry,
@@ -18,9 +19,6 @@ export default function EntryForm({
       ? entry.sets
       : [{ id: uuid(), weight: "", reps: "", tracked: false }]
   );
-  let defaultDate = entry
-    ? parseISO(entry.date.substring(0, 10))
-    : startOfToday();
 
   let { state } = useTransition();
   let isSaving = state === "submitting" || state === "loading";
@@ -28,16 +26,7 @@ export default function EntryForm({
   return (
     <div className="mt-4">
       <Form method="post" ref={formRef}>
-        <label>
-          <div className="text-sm font-medium">Date</div>
-
-          <input
-            type="date"
-            className="mt-2 w-full rounded border p-2"
-            defaultValue={format(defaultDate, "yyyy-MM-dd")}
-            name="date"
-          />
-        </label>
+        <input type="hidden" name="date" value={dateString} />
 
         <div className="mt-6">
           <div className="flex flex-col gap-6">

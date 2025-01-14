@@ -1,11 +1,26 @@
 import { ChevronLeftIcon } from "@radix-ui/react-icons";
 import { json, redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import { useRef } from "react";
 import EntryForm from "~/components/EntryForm";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import { minDelay } from "~/utils/minDelay";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import {
+  format,
+  formatRelative,
+  isSameDay,
+  parse,
+  startOfToday,
+} from "date-fns";
+import { useState } from "react";
 
 export async function loader({ request, params }) {
   let userId = await requireUserId(request);
@@ -61,6 +76,13 @@ export async function action({ request, params }) {
 
 export default function NewEntryPage() {
   let { lastEntry, exercise, lastTrackedEntry } = useLoaderData();
+  const [dateString, setDateString] = useState(
+    format(startOfToday(), "yyyy-MM-dd")
+  );
+  const date = parse(dateString, "yyyy-MM-dd", new Date());
+  const dateLabel = isSameDay(date, startOfToday())
+    ? "Today"
+    : format(date, "M/d/yy");
 
   return (
     <>
@@ -75,14 +97,21 @@ export default function NewEntryPage() {
           </Link>
 
           <div className="relative flex h-5 items-center">
-            <button
-              onClick={() => {
-                //
-              }}
-              className="text-xs font-medium text-blue-500"
-            >
-              Today
-            </button>
+            <Dialog>
+              <DialogTrigger className="text-xs font-medium text-blue-500">
+                {dateLabel}
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Date</DialogTitle>
+                </DialogHeader>
+                <input
+                  type="date"
+                  value={dateString}
+                  onChange={(e) => setDateString(e.target.value)}
+                />
+              </DialogContent>
+            </Dialog>
           </div>
 
           <div className="absolute left-1/2 -translate-x-1/2 text-center leading-none">
@@ -99,6 +128,7 @@ export default function NewEntryPage() {
       <main className="pb-safe-bottom">
         <div className="mt-5 px-4 pb-8">
           <EntryForm
+            dateString={dateString}
             exercise={exercise}
             lastEntry={lastEntry}
             lastTrackedEntry={lastTrackedEntry}
