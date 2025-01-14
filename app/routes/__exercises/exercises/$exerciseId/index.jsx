@@ -2,15 +2,10 @@ import { DotsHorizontalIcon, PlusIcon } from "@radix-ui/react-icons";
 import {
   Box,
   Button,
-  Em,
   Flex,
-  Grid,
-  Heading,
   IconButton,
-  Link,
   Popover,
   SegmentedControl,
-  Separator,
   Text,
 } from "@radix-ui/themes";
 import { json } from "@remix-run/node";
@@ -209,28 +204,25 @@ export default function ExerciseIndexPage() {
                     ))}
                   </div>
 
-                  <p className="mt-3 text-gray-500">
+                  <p className="mt-3 text-sm text-gray-500">
                     <em>{entry.notes}</em>
                   </p>
 
-                  <Flex mt="4" justify="end">
-                    <Link size="2" color="gray" underline="always" asChild>
-                      <RemixLink
-                        to={`/exercises/${exerciseId}/entries/${entry.id}/edit`}
-                      >
-                        Edit this entry
-                      </RemixLink>
-                    </Link>
-                  </Flex>
+                  <div className="mt-4 flex justify-end">
+                    <RemixLink
+                      className="text-sm text-gray-500 underline decoration-gray-300 decoration-1 underline-offset-2"
+                      to={`/exercises/${exerciseId}/entries/${entry.id}/edit`}
+                    >
+                      Edit this entry
+                    </RemixLink>
+                  </div>
                 </div>
                 <hr />
               </Fragment>
             ))}
           </div>
         ) : (
-          <Text mt="6" as="p" color="gray">
-            No entries.
-          </Text>
+          <p className="mt-6 text-gray-500">No entries.</p>
         )}
       </div>
     </div>
