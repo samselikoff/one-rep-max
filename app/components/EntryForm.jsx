@@ -46,22 +46,63 @@ export default function EntryForm({
                 key={set.id}
                 className="relative flex justify-between rounded-lg bg-gray-100 py-4 px-3"
               >
-                <div className="absolute -top-2.5 left-2 rounded-full bg-white py-0.5 px-1.5 text-xs text-gray-500 ring-1 ring-black/5">
+                <button className="absolute -top-2.5 left-2 rounded-full bg-white py-0.5 px-2 text-xs text-gray-500 ring-1 ring-black/5">
                   Warm-up
-                </div>
+                </button>
                 <div className="flex gap-4">
-                  <div className="flex items-end gap-0.5">
-                    <span className="text-3xl font-semibold tracking-tight">
-                      {convertTo(set.weight)}
-                    </span>
+                  <div className="flex items-end">
+                    <div className="relative">
+                      <span className="invisible text-3xl font-semibold tabular-nums tracking-tight">
+                        {convertTo(set.weight) || 0}
+                      </span>
+                      <input
+                        value={set.weight ? convertTo(set.weight) : ""}
+                        placeholder="_"
+                        className="absolute inset-0 bg-transparent text-3xl font-semibold tracking-tight"
+                        inputMode="decimal"
+                        // autoFocus={set === sets.at(-1)}
+                        onChange={(e) => {
+                          setSets((sets) => {
+                            let newSets = [...sets];
+                            let currentSet = newSets[index];
+                            newSets[index] = {
+                              ...currentSet,
+                              weight: convertFrom(e.target.value),
+                            };
+                            return newSets;
+                          });
+                        }}
+                      />
+                      <input type="hidden" name="weight" value={set.weight} />
+                    </div>
                     <span className="pb-1 text-sm font-medium text-gray-500">
                       {units === "pounds" ? "lbs" : "kilos"}
                     </span>
                   </div>
-                  <div className="flex items-end gap-0.5">
-                    <span className="text-3xl font-semibold tracking-tight">
-                      {set.reps}
-                    </span>
+                  <div className="flex items-end">
+                    <div className="relative">
+                      <span className="invisible text-3xl font-semibold tabular-nums tracking-tight">
+                        {set.reps || 0}
+                      </span>
+                      <input
+                        className="absolute inset-0 bg-transparent text-3xl font-semibold tracking-tight"
+                        placeholder="_"
+                        value={set.reps}
+                        inputMode="numeric"
+                        name="reps"
+                        onChange={(e) => {
+                          setSets((sets) => {
+                            let newSets = [...sets];
+                            let currentSet = newSets[index];
+                            newSets[index] = {
+                              ...currentSet,
+                              reps: e.target.value,
+                            };
+                            return newSets;
+                          });
+                        }}
+                      />
+                    </div>
                     <span className="pb-1 text-sm font-medium text-gray-500">
                       reps
                     </span>
@@ -74,7 +115,7 @@ export default function EntryForm({
             ))}
           </div>
 
-          <div className="grid grid-cols-[40px_1fr_1fr_1fr_auto] items-center gap-2">
+          {/* <div className="grid grid-cols-[40px_1fr_1fr_1fr_auto] items-center gap-2">
             <p className="text-sm font-medium">Set</p>
             <p className="text-sm font-medium capitalize">{units}</p>
             <div />
@@ -89,7 +130,6 @@ export default function EntryForm({
                   inputMode="decimal"
                   className="w-full rounded border px-2.5 py-1.5"
                   value={convertTo(set.weight)}
-                  autoFocus={set === sets.at(-1)}
                   onChange={(e) => {
                     setSets((sets) => {
                       let newSets = [...sets];
@@ -152,7 +192,7 @@ export default function EntryForm({
                 </div>
               </Fragment>
             ))}
-          </div>
+          </div> */}
 
           <div className="mt-7">
             <button
