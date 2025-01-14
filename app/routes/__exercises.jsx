@@ -17,7 +17,7 @@ export default function ExercisesLayout() {
   return (
     <>
       <div className="overflow-x-auto bg-gray-900 pb-2 [scrollbar-width:none]">
-        <div className="flex gap-2">
+        <div className="flex">
           {exercises.map((exercise) => (
             <NavLink
               className={`${

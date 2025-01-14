@@ -61,7 +61,7 @@ export default function NewEntryPage() {
   let { lastEntry, exercise, lastTrackedEntry } = useLoaderData();
 
   return (
-    <div className="mt-5 mb-8 px-4">
+    <div className="mt-5 px-4 pb-8">
       <h1 className="text-2xl font-bold">{exercise.name} – New</h1>
 
       <EntryForm
