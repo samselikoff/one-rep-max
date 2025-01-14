@@ -86,7 +86,7 @@ export default function EditEntryPage() {
   let { entry, lastEntry, exercise, lastTrackedEntry } = useLoaderData();
 
   return (
-    <Box px="4" mt="5" pb="7">
+    <div className="mt-5 px-4 pb-8">
       <h1 className="text-2xl font-bold">{exercise.name} – Edit</h1>
 
       <EntryForm
@@ -105,6 +105,6 @@ export default function EditEntryPage() {
           </Button>
         </Form>
       </Box>
-    </Box>
+    </div>
   );
 }
