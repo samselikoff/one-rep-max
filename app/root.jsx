@@ -10,8 +10,6 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
-import { Button, Flex, Link, Theme } from "@radix-ui/themes";
-import radixThemesStylesheetUrl from "@radix-ui/themes/styles.css";
 import { getUser } from "./session.server";
 import globalStylesheetURL from "./styles/global.css";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
@@ -27,7 +25,6 @@ export function links() {
     },
     { rel: "apple-touch-icon", href: "apple-icon-180.png" },
     { rel: "stylesheet", href: tailwindStylesheetUrl },
-    { rel: "stylesheet", href: radixThemesStylesheetUrl },
     { rel: "stylesheet", href: globalStylesheetURL },
     { rel: "manifest", href: "/site.webmanifest" },
     {
@@ -215,38 +212,25 @@ export default function App() {
         <Links />
       </head>
       <body className="h-full">
-        <Theme accentColor="blue" radius="small">
-          <Theme appearance="dark">
-            <header className="pt-safe-top">
-              <Flex justify="between" align="baseline" p="4">
-                <Link
-                  color="gray"
-                  underline="none"
-                  highContrast
-                  size="7"
-                  weight="bold"
-                  asChild
-                >
-                  <NavLink end to=".">
-                    One Rep Max
-                  </NavLink>
-                </Link>
+        <header className="bg-gray-900 pt-safe-top">
+          <div className="flex items-center justify-between p-4">
+            <NavLink className="text-2xl font-semibold text-white" end to=".">
+              One Rep Max
+            </NavLink>
 
-                {user && (
-                  <Form action="/logout" method="post">
-                    <Button color="gray" variant="ghost" type="submit">
-                      Sign out
-                    </Button>
-                  </Form>
-                )}
-              </Flex>
-            </header>
-          </Theme>
+            {user && (
+              <Form action="/logout" method="post">
+                <button className="text-sm text-gray-400" type="submit">
+                  Sign out
+                </button>
+              </Form>
+            )}
+          </div>
+        </header>
 
-          <main className="pb-safe-bottom">
-            <Outlet />
-          </main>
-        </Theme>
+        <main className="pb-safe-bottom">
+          <Outlet />
+        </main>
 
         <ScrollRestoration />
         <Scripts />
