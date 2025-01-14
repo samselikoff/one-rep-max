@@ -4,7 +4,6 @@ import EntryForm from "~/components/EntryForm";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import { minDelay } from "~/utils/minDelay";
-import { Box, Button, Heading } from "@radix-ui/themes";
 import { TrashIcon } from "@radix-ui/react-icons";
 
 export async function loader({ request, params }) {
@@ -86,8 +85,8 @@ export default function EditEntryPage() {
   let { entry, lastEntry, exercise, lastTrackedEntry } = useLoaderData();
 
   return (
-    <Box px="4" mt="5" pb="7">
-      <Heading>{exercise.name} – Edit</Heading>
+    <div className="mt-5 px-4 pb-8">
+      <h1 className="text-2xl font-bold">{exercise.name} – Edit</h1>
 
       <EntryForm
         entry={entry}
@@ -96,15 +95,15 @@ export default function EditEntryPage() {
         lastTrackedEntry={lastTrackedEntry}
       />
 
-      <Box mt="6">
+      <div className="mt-6">
         <Form method="post">
           <input type="hidden" name="_method" value="delete" />
-          <Button variant="soft" color="gray">
+          <button className="inline-flex items-center gap-2 rounded bg-gray-100 px-3 py-1.5 text-sm text-gray-500">
             <TrashIcon width="18" height="18" />
             Delete entry
-          </Button>
+          </button>
         </Form>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

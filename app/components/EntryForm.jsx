@@ -1,18 +1,5 @@
 import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  Grid,
-  IconButton,
-  Link,
-  Switch,
-  Text,
-  TextArea,
-  TextField,
-} from "@radix-ui/themes";
-import { Form, useTransition, Link as RemixLink } from "@remix-run/react";
+import { Form, Link, useTransition } from "@remix-run/react";
 import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
 import { Fragment, useRef, useState } from "react";
 import { v4 as uuid } from "uuid";
@@ -39,49 +26,34 @@ export default function EntryForm({
   let isSaving = state === "submitting" || state === "loading";
 
   return (
-    <Box mt="4">
+    <div className="mt-4">
       <Form method="post" ref={formRef}>
         <label>
-          <Text size="2" weight="medium" as="div" mb="2">
-            Date
-          </Text>
+          <div className="text-sm font-medium">Date</div>
 
-          <TextField.Root
+          <input
             type="date"
-            size="3"
-            placeholder="Search the docs…"
+            className="mt-2 w-full rounded border p-2"
             defaultValue={format(defaultDate, "yyyy-MM-dd")}
             name="date"
           />
         </label>
 
-        <Box mt="6">
-          <Grid columns="40px 1fr 1fr 1fr auto" align="center" gap="2">
-            <Text size="2" weight="medium">
-              Set
-            </Text>
-            <Text
-              size="2"
-              weight="medium"
-              style={{ textTransform: "capitalize" }}
-            >
-              {units}
-            </Text>
+        <div className="mt-6">
+          <div className="grid grid-cols-[40px_1fr_1fr_1fr_auto] items-center gap-2">
+            <p className="text-sm font-medium">Set</p>
+            <p className="text-sm font-medium capitalize">{units}</p>
             <div />
-            <Text weight="medium" size="2" align="center">
-              Failure
-            </Text>
+            <p className="text-center text-sm font-medium">Failure</p>
             <div />
 
             {sets.map((set, index) => (
               <Fragment key={set.id}>
-                <Text size="3" color="gray" ml="2" className="tabular-nums">
-                  {index + 1}
-                </Text>
-                <TextField.Root
-                  size="3"
+                <p className="ml-1.5 tabular-nums text-gray-500">{index + 1}</p>
+                <input
                   placeholder="Weight"
                   inputMode="decimal"
+                  className="w-full rounded border px-2.5 py-1.5"
                   value={convertTo(set.weight)}
                   autoFocus={set === sets.at(-1)}
                   onChange={(e) => {
@@ -97,11 +69,11 @@ export default function EntryForm({
                   }}
                 />
                 <input type="hidden" name="weight" value={set.weight} />
-                <TextField.Root
-                  size="3"
+                <input
                   placeholder="Reps"
                   inputMode="numeric"
                   name="reps"
+                  className="w-full rounded border px-2.5 py-1.5"
                   value={set.reps}
                   onChange={(e) => {
                     setSets((sets) => {
@@ -115,13 +87,13 @@ export default function EntryForm({
                     });
                   }}
                 />
-                <Flex justify="center" align="center">
-                  <Switch
+                <div className="flex items-center justify-center">
+                  <input
+                    type="checkbox"
                     name="trackingSet"
-                    size="3"
                     value={index}
                     checked={set.tracked}
-                    onCheckedChange={() => {
+                    onChange={(e) => {
                       setSets((sets) =>
                         sets.map((set, i) => ({
                           ...set,
@@ -130,30 +102,27 @@ export default function EntryForm({
                       );
                     }}
                   />
-                </Flex>
-                <Flex justify="end" align="center">
-                  <IconButton
+                </div>
+
+                <div className="items-center justify-end">
+                  <button
                     onClick={() => {
                       setSets((sets) => sets.filter((s, i) => i !== index));
                     }}
                     disabled={sets.length === 1}
-                    size="2"
-                    color="gray"
-                    variant="soft"
+                    className="rounded bg-gray-100 p-2 disabled:opacity-50"
                     type="button"
                   >
                     <MinusIcon width="18" height="18" />
-                  </IconButton>
-                </Flex>
+                  </button>
+                </div>
               </Fragment>
             ))}
-          </Grid>
+          </div>
 
-          <Flex mt="7" align="stretch" direction="column">
-            <Button
-              size="3"
-              color="gray"
-              variant="soft"
+          <div className="mt-7">
+            <button
+              className="inline-flex w-full items-center justify-center gap-3 rounded bg-gray-200 py-1.5 px-2.5"
               type="button"
               onClick={() => {
                 setSets((sets) => [
@@ -169,58 +138,61 @@ export default function EntryForm({
             >
               <PlusIcon />
               Add set
-            </Button>
-          </Flex>
-        </Box>
+            </button>
+          </div>
+        </div>
 
-        <Box mt="6">
+        <div className="mt-6">
           <label>
-            <Text mb="2" size="2" weight="medium" as="p">
-              Notes
-            </Text>
+            <p className="text-sm font-medium">Notes</p>
 
-            <TextArea
+            <textarea
+              className="mt-2 w-full border p-3"
               placeholder="How'd that feel?"
               defaultValue={entry?.notes || ""}
               name="notes"
               rows={4}
             />
           </label>
-        </Box>
+        </div>
 
-        <Flex mt="4" justify="between" align="center">
-          <Link asChild size="2" weight="medium">
-            <RemixLink to={`/exercises/${exercise.id}`}>Cancel</RemixLink>
+        <div className="mt-4 flex items-center justify-between">
+          <Link
+            className="text-sm font-medium text-blue-500"
+            to={`/exercises/${exercise.id}`}
+          >
+            Cancel
           </Link>
 
-          <Button size="3" type="submit" loading={isSaving}>
+          <button
+            type="submit"
+            className="rounded bg-blue-500 py-1.5 px-3 font-medium text-white disabled:opacity-50"
+            disabled={isSaving}
+          >
             Save
-          </Button>
-        </Flex>
+          </button>
+        </div>
       </Form>
 
       {lastEntry && (
-        <Box pt="8">
-          <Card variant="classic">
-            <Flex justify="between">
-              <Text size="1" color="gray">
-                Previous {exercise.name}
-              </Text>
-              <Text size="1" color="gray">
-                {formatDistanceToNow(parseISO(lastEntry.date.substring(0, 10)))}{" "}
-                ago
-              </Text>
-            </Flex>
-            <Box mt="4">
-              {lastEntry.sets.map((set) => (
-                <Text color="gray" key={set.id} as="p">
-                  {convertTo(set.weight)} {suffix} - {set.reps} reps
-                </Text>
-              ))}
-            </Box>
-          </Card>
-        </Box>
+        <div className="mt-10 border p-2">
+          <div className="flex justify-between">
+            <p className="text-xs text-gray-500">Previous {exercise.name}</p>
+            <p className="text-xs text-gray-500">
+              {formatDistanceToNow(parseISO(lastEntry.date.substring(0, 10)))}{" "}
+              ago
+            </p>
+          </div>
+
+          <div className="mt-4">
+            {lastEntry.sets.map((set) => (
+              <p className="text-gray-600" key={set.id}>
+                {convertTo(set.weight)} {suffix} - {set.reps} reps
+              </p>
+            ))}
+          </div>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }

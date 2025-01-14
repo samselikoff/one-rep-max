@@ -5,27 +5,11 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import {
-  Form,
-  Link as RemixLink,
-  useActionData,
-  useSearchParams,
-} from "@remix-run/react";
+import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 
 import { createUserSession, getUserId } from "~/session.server";
 import { verifyLogin } from "~/models/user.server";
 import { validateEmail } from "~/utils";
-import {
-  Box,
-  Button,
-  Callout,
-  Container,
-  Flex,
-  Heading,
-  Link,
-  Text,
-  TextField,
-} from "@radix-ui/themes";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
 export let loader: LoaderFunction = async ({ request }) => {
@@ -106,22 +90,20 @@ export default function LoginPage() {
   }, [actionData]);
 
   return (
-    <Container mt="9" size="1" px="4">
-      <Heading mb="6">Sign in</Heading>
+    <div className="mt-12 px-4">
+      <h1 className="text-2xl font-bold">Sign in</h1>
 
-      <Form method="post">
-        <label htmlFor="email">
-          <Text size="2" weight="medium" mb="2">
-            Email address
-          </Text>
+      <Form className="mt-6" method="post">
+        <label htmlFor="email" className="text-sm font-medium">
+          Email address
         </label>
 
-        <Box mt="2">
-          <TextField.Root
+        <div className="mt-2">
+          <input
+            className="w-full rounded border border-gray-300 py-1.5 px-2.5"
             ref={emailRef}
             id="email"
             required
-            size="3"
             autoFocus={true}
             name="email"
             type="email"
@@ -131,67 +113,69 @@ export default function LoginPage() {
           />
 
           {actionData?.errors?.email && (
-            <Callout.Root size="1" color="red" mt="2" id="email-error">
-              <Callout.Icon>
-                <ExclamationTriangleIcon />
-              </Callout.Icon>
-              <Callout.Text>{actionData.errors.email}</Callout.Text>
-            </Callout.Root>
+            <div
+              className="mt-2 flex items-center gap-2 rounded bg-red-50 px-3.5 py-2.5 text-sm text-red-500"
+              id="email-error"
+            >
+              <ExclamationTriangleIcon />
+              <p>{actionData.errors.email}</p>
+            </div>
           )}
-        </Box>
+        </div>
 
-        <Box mt="2">
-          <label htmlFor="password">
-            <Text size="2" weight="medium" mb="2">
-              Password
-            </Text>
+        <div className="mt-4">
+          <label htmlFor="password" className="text-sm font-medium">
+            Password
           </label>
 
-          <Box mt="2">
-            <TextField.Root
+          <div className="mt-2">
+            <input
               id="password"
               ref={passwordRef}
+              className="w-full rounded border border-gray-300 py-1.5 px-2.5"
               name="password"
               type="password"
-              size="3"
               autoComplete="current-password"
               aria-invalid={actionData?.errors?.password ? true : undefined}
               aria-describedby="password-error"
             />
 
             {actionData?.errors?.password && (
-              <Callout.Root size="1" color="red" mt="2" id="password-error">
-                <Callout.Icon>
-                  <ExclamationTriangleIcon />
-                </Callout.Icon>
-                <Callout.Text>{actionData.errors.password}</Callout.Text>
-              </Callout.Root>
+              <div
+                className="mt-2 flex items-center gap-2 rounded bg-red-50 px-3.5 py-2.5 text-sm text-red-500"
+                id="password-error"
+              >
+                <ExclamationTriangleIcon />
+                <p>{actionData.errors.password}</p>
+              </div>
             )}
-          </Box>
-        </Box>
+          </div>
+        </div>
 
         <input type="hidden" name="redirectTo" value={redirectTo} />
 
-        <Flex align="stretch" direction="column" mt="5">
-          <Button size="3" type="submit">
+        <div className="mt-5">
+          <button
+            className="w-full rounded bg-blue-500 py-1.5 font-medium text-white"
+            type="submit"
+          >
             Log in
-          </Button>
-        </Flex>
+          </button>
+        </div>
 
-        <Text size="2" mt="9" as="p">
-          <Text color="gray">Don't have an account? </Text>
-          <Link asChild underline="always">
-            <RemixLink
-              to={{
-                pathname: "/join",
-                search: searchParams.toString(),
-              }}
-            >
-              Sign up
-            </RemixLink>
+        <div className="mt-16 text-sm text-gray-500">
+          Don't have an account?{" "}
+          <Link
+            className="font-medium text-blue-500 underline decoration-blue-200 underline-offset-2"
+            to={{
+              pathname: "/join",
+              search: searchParams.toString(),
+            }}
+          >
+            Sign up
           </Link>
-        </Text>
+        </div>
       </Form>
-    </Container>
+    </div>
   );
 }

@@ -3,7 +3,6 @@ import { json, redirect } from "@remix-run/node";
 import EntryForm from "~/components/EntryForm";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
-import { Box, Heading } from "@radix-ui/themes";
 import { minDelay } from "~/utils/minDelay";
 
 export async function loader({ request, params }) {
@@ -62,14 +61,14 @@ export default function NewEntryPage() {
   let { lastEntry, exercise, lastTrackedEntry } = useLoaderData();
 
   return (
-    <Box px="4" mt="5" pb="7">
-      <Heading>{exercise.name} – New</Heading>
+    <div className="mt-5 px-4 pb-8">
+      <h1 className="text-2xl font-bold">{exercise.name} – New</h1>
 
       <EntryForm
         exercise={exercise}
         lastEntry={lastEntry}
         lastTrackedEntry={lastTrackedEntry}
       />
-    </Box>
+    </div>
   );
 }

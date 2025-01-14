@@ -1,34 +1,15 @@
-import * as React from "react";
 import type {
   ActionFunction,
   LoaderFunction,
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-
-import {
-  Form,
-  Link as RemixLink,
-  useSearchParams,
-  useActionData,
-} from "@remix-run/react";
-
-import { getUserId, createUserSession } from "~/session.server";
-
+import * as React from "react";
+import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import { createUserSession, getUserId } from "~/session.server";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { createUser, getUserByEmail } from "~/models/user.server";
 import { validateEmail } from "~/utils";
-import {
-  Box,
-  Button,
-  Callout,
-  Container,
-  Flex,
-  Heading,
-  Link,
-  Text,
-  TextField,
-} from "@radix-ui/themes";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
 export let loader: LoaderFunction = async ({ request }) => {
   let userId = await getUserId(request);
@@ -109,21 +90,19 @@ export default function Join() {
   }, [actionData]);
 
   return (
-    <Container mt="9" size="1" px="4">
-      <Heading mb="6">Sign up</Heading>
+    <div className="mt-12 px-4">
+      <h1 className="text-2xl font-bold">Sign up</h1>
 
-      <Form method="post">
-        <label htmlFor="email">
-          <Text size="2" weight="medium" mb="2">
-            Email address
-          </Text>
+      <Form method="post" className="mt-6">
+        <label htmlFor="email" className="text-sm font-medium">
+          Email address
         </label>
 
-        <Box mt="2">
-          <TextField.Root
+        <div className="mt-2">
+          <input
             ref={emailRef}
+            className="w-full rounded border border-gray-300 py-1.5 px-2.5"
             id="email"
-            size="3"
             required
             autoFocus={true}
             name="email"
@@ -134,65 +113,67 @@ export default function Join() {
           />
 
           {actionData?.errors?.email && (
-            <Callout.Root size="1" color="red" mt="2" id="email-error">
-              <Callout.Icon>
-                <ExclamationTriangleIcon />
-              </Callout.Icon>
-              <Callout.Text>{actionData.errors.email}</Callout.Text>
-            </Callout.Root>
+            <div
+              className="mt-2 flex items-center gap-2 rounded bg-red-50 px-3.5 py-2.5 text-sm text-red-500"
+              id="email-error"
+            >
+              <ExclamationTriangleIcon />
+              {actionData.errors.email}
+            </div>
           )}
-        </Box>
+        </div>
 
-        <Box mt="2">
-          <label htmlFor="password">
-            <Text size="2" weight="medium" mb="2">
-              Password
-            </Text>
+        <div className="mt-4">
+          <label htmlFor="password" className="text-sm font-medium">
+            Password
           </label>
 
-          <Box mt="2">
-            <TextField.Root
+          <div className="mt-2">
+            <input
               id="password"
-              size="3"
               ref={passwordRef}
+              className="w-full rounded border border-gray-300 py-1.5 px-2.5"
               name="password"
               type="password"
               autoComplete="new-password"
             />
 
             {actionData?.errors?.password && (
-              <Callout.Root size="1" color="red" mt="2" id="password-error">
-                <Callout.Icon>
-                  <ExclamationTriangleIcon />
-                </Callout.Icon>
-                <Callout.Text>{actionData.errors.password}</Callout.Text>
-              </Callout.Root>
+              <div
+                className="mt-2 flex items-center gap-2 rounded bg-red-50 px-3.5 py-2.5 text-sm text-red-500"
+                id="password-error"
+              >
+                <ExclamationTriangleIcon />
+                {actionData.errors.password}
+              </div>
             )}
-          </Box>
-        </Box>
+          </div>
+        </div>
 
         <input type="hidden" name="redirectTo" value={redirectTo} />
 
-        <Flex align="stretch" direction="column" mt="5">
-          <Button size="3" type="submit">
+        <div className="mt-5">
+          <button
+            className="w-full rounded bg-blue-500 py-1.5 font-medium text-white"
+            type="submit"
+          >
             Create Account
-          </Button>
-        </Flex>
+          </button>
+        </div>
 
-        <Text as="p" mt="9" size="2">
-          <Text color="gray">Already have an account? </Text>
-          <Link asChild underline="always">
-            <RemixLink
-              to={{
-                pathname: "/login",
-                search: searchParams.toString(),
-              }}
-            >
-              Log in
-            </RemixLink>
+        <div className="mt-16 text-sm text-gray-500">
+          Already have an account?{" "}
+          <Link
+            className="font-medium text-blue-500 underline decoration-blue-200 underline-offset-2"
+            to={{
+              pathname: "/login",
+              search: searchParams.toString(),
+            }}
+          >
+            Log in
           </Link>
-        </Text>
+        </div>
       </Form>
-    </Container>
+    </div>
   );
 }
