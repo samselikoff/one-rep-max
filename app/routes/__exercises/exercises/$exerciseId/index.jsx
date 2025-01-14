@@ -1,13 +1,5 @@
 import { DotsHorizontalIcon, PlusIcon } from "@radix-ui/react-icons";
-import {
-  Box,
-  Button,
-  Flex,
-  IconButton,
-  Popover,
-  SegmentedControl,
-  Text,
-} from "@radix-ui/themes";
+import * as Popover from "@radix-ui/react-popover";
 import { json } from "@remix-run/node";
 import {
   Form,
@@ -18,7 +10,7 @@ import {
 } from "@remix-run/react";
 import { differenceInDays, format, parseISO, sub } from "date-fns";
 import pluralize from "pluralize";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { OneRepMaxChart } from "~/components/charts";
 import { usePreferredUnit } from "~/components/exercise-settings";
 import { prisma } from "~/db.server";
@@ -96,7 +88,7 @@ export default function ExerciseIndexPage() {
   let { exerciseId } = useParams();
 
   let settings = exercise.exerciseSettings[0];
-  let [units, setUnits] = useState(settings ? settings.unit : "pounds");
+  const defaultUnit = settings ? settings.unit : "pounds";
 
   let { state } = useTransition();
   let isSaving = state === "submitting" || state === "loading";
@@ -108,51 +100,58 @@ export default function ExerciseIndexPage() {
 
         {/* TODO */}
         <Popover.Root>
-          <Popover.Trigger>
-            <IconButton color="gray" radius="full" variant="surface" size="1">
-              <DotsHorizontalIcon />
-            </IconButton>
+          <Popover.Trigger className="rounded-full border border-gray-300 p-1">
+            <DotsHorizontalIcon />
           </Popover.Trigger>
-          <Popover.Content width="240px" align="end">
-            <Text as="p" weight="medium" align="center">
-              Settings
-            </Text>
-            <Box mt="3">
-              <Form method="post">
-                <Text as="label" size="2" weight="medium">
-                  Units
-                </Text>
-                <Text mt="0" as="p" color="gray" size="1">
-                  Update your preferred unit of weight for the current exercise.
-                </Text>
-                <Flex mt="2">
-                  <SegmentedControl.Root
-                    value={units}
-                    onValueChange={setUnits}
-                    style={{ width: "100%" }}
-                  >
-                    <SegmentedControl.Item name="unit" value="pounds">
+          <Popover.Portal>
+            <Popover.Content
+              className="w-[240px] rounded border bg-white p-4 shadow-xl shadow-black/25"
+              align="end"
+            >
+              <p className="text-center font-medium">Settings</p>
+              <div className="mt-2">
+                <Form method="post">
+                  <p className="text-sm font-medium">Units</p>
+                  <p className="text-xs text-gray-500">
+                    Update your preferred unit of weight for the current
+                    exercise.
+                  </p>
+                  <div className="mt-4 flex gap-6 text-sm">
+                    <label className="flex items-center gap-1">
+                      <input
+                        type="radio"
+                        defaultChecked={defaultUnit === "pounds"}
+                        value="pounds"
+                        name="unit"
+                      />
                       Pounds
-                    </SegmentedControl.Item>
-                    <SegmentedControl.Item name="unit" value="kilos">
+                    </label>
+                    <label className="flex items-center gap-1">
+                      <input
+                        type="radio"
+                        defaultChecked={defaultUnit === "kilos"}
+                        value="kilos"
+                        name="unit"
+                      />
                       Kilos
-                    </SegmentedControl.Item>
-                  </SegmentedControl.Root>
-                  <input type="hidden" name="unit" value={units} />
-                </Flex>
-                <Flex mt="7" justify="between" align="center">
-                  <Popover.Close>
-                    <Button color="gray" variant="ghost">
+                    </label>
+                  </div>
+                  <div className="mt-8 flex items-center justify-between">
+                    <Popover.Close className="text-sm text-gray-500">
                       Cancel
-                    </Button>
-                  </Popover.Close>
-                  <Button loading={isSaving} type="submit">
-                    Update
-                  </Button>
-                </Flex>
-              </Form>
-            </Box>
-          </Popover.Content>
+                    </Popover.Close>
+                    <button
+                      type="submit"
+                      disabled={isSaving}
+                      className="rounded bg-blue-500 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+                    >
+                      Update
+                    </button>
+                  </div>
+                </Form>
+              </div>
+            </Popover.Content>
+          </Popover.Portal>
         </Popover.Root>
       </div>
 
@@ -301,11 +300,11 @@ function FrequencyStat({ entries }) {
 
 function Stat({ title, stat, statSuffix, subItems = [] }) {
   let subItemsLabel = subItems
-    .map((item, i) => <Text key={i}>{item}</Text>)
+    .map((item, i) => <p key={i}>{item}</p>)
     .reduce((memo, item, i) => {
       return memo === null
         ? [item]
-        : [memo, <Text key={`dot-${i}`}>&middot;</Text>, item];
+        : [memo, <p key={`dot-${i}`}>&middot;</p>, item];
     }, null);
 
   return (
