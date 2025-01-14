@@ -44,25 +44,25 @@ export default function EntryForm({
             {sets.map((set, index) => (
               <div
                 key={set.id}
-                className="relative flex justify-between rounded bg-gray-200 py-4 px-3"
+                className="relative flex justify-between rounded-lg bg-gray-100 py-4 px-3"
               >
-                <div className="absolute -top-3 left-2 rounded-full bg-white py-0.5 px-1.5 text-xs text-gray-500 ring-1 ring-black/5">
+                <div className="absolute -top-2.5 left-2 rounded-full bg-white py-0.5 px-1.5 text-xs text-gray-500 ring-1 ring-black/5">
                   Warm-up
                 </div>
                 <div className="flex gap-4">
                   <div className="flex items-end gap-0.5">
-                    <span className="text-3xl font-bold tracking-tight">
+                    <span className="text-3xl font-semibold tracking-tight">
                       {convertTo(set.weight)}
                     </span>
-                    <span className="text-sm font-medium text-gray-500">
+                    <span className="pb-1 text-sm font-medium text-gray-500">
                       {units === "pounds" ? "lbs" : "kilos"}
                     </span>
                   </div>
                   <div className="flex items-end gap-0.5">
-                    <span className="text-3xl font-bold tracking-tight">
+                    <span className="text-3xl font-semibold tracking-tight">
                       {set.reps}
                     </span>
-                    <span className="text-sm font-medium text-gray-500">
+                    <span className="pb-1 text-sm font-medium text-gray-500">
                       reps
                     </span>
                   </div>
