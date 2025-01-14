@@ -8,6 +8,8 @@ import {
 } from "@remix-run/react";
 import globalStylesheetURL from "./styles/global.css";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
+import { json } from "@remix-run/server-runtime";
+import { getUser } from "./session.server";
 
 export function links() {
   return [
@@ -180,6 +182,12 @@ export function links() {
         "(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
     },
   ];
+}
+
+export async function loader({ request }) {
+  return json({
+    user: await getUser(request),
+  });
 }
 
 export function meta() {

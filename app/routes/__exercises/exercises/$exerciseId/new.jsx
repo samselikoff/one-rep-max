@@ -1,11 +1,10 @@
-import { Link, useLoaderData } from "@remix-run/react";
+import { ChevronLeftIcon } from "@radix-ui/react-icons";
 import { json, redirect } from "@remix-run/node";
+import { Link, useLoaderData } from "@remix-run/react";
 import EntryForm from "~/components/EntryForm";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import { minDelay } from "~/utils/minDelay";
-import Header from "~/components/header";
-import { ChevronLeftIcon } from "@radix-ui/react-icons";
 
 export async function loader({ request, params }) {
   let userId = await requireUserId(request);
