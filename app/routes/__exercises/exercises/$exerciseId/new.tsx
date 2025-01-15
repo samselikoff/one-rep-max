@@ -1,28 +1,27 @@
 import { ChevronLeftIcon } from "@radix-ui/react-icons";
 import { json, redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
+import { format, isSameDay, parse, startOfToday } from "date-fns";
+import { useState } from "react";
 import EntryForm from "~/components/EntryForm";
-import { prisma } from "~/db.server";
-import { requireUserId } from "~/session.server";
-import { minDelay } from "~/utils/minDelay";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import {
-  format,
-  formatRelative,
-  isSameDay,
-  parse,
-  startOfToday,
-} from "date-fns";
-import { useState } from "react";
+import { prisma } from "~/db.server";
+import { requireUserId } from "~/session.server";
+import { minDelay } from "~/utils/minDelay";
 
-export async function loader({ request, params }) {
+export async function loader({
+  request,
+  params,
+}: {
+  request: Request;
+  params: { exerciseId: string };
+}) {
   let userId = await requireUserId(request);
 
   let exercise = await prisma.exercise.findFirst({
@@ -45,12 +44,21 @@ export async function loader({ request, params }) {
   return json({ lastEntry, exercise, lastTrackedEntry });
 }
 
-export async function action({ request, params }) {
+export async function action({
+  request,
+  params,
+}: {
+  request: Request;
+  params: { exerciseId: string };
+}) {
   let userId = await requireUserId(request);
   let formData = await request.formData();
   let exerciseId = params.exerciseId;
   let date = formData.get("date");
   let notes = formData.get("notes");
+  if (typeof notes !== "string") {
+    throw new Error("invalid");
+  }
   let weights = formData.getAll("weight");
   let reps = formData.getAll("reps");
   let trackingSetIndexes = formData.getAll("trackingSet").map((i) => +i);
@@ -59,7 +67,9 @@ export async function action({ request, params }) {
     exerciseId,
     date: `${date}T00:00:00.000Z`,
     notes,
-    sets: { create: [] },
+    sets: {
+      create: [] as { weight: number; reps: number; tracked: boolean }[],
+    },
   };
   weights.forEach((weight, index) => {
     data.sets.create.push({
@@ -75,7 +85,11 @@ export async function action({ request, params }) {
 }
 
 export default function NewEntryPage() {
-  let { lastEntry, exercise, lastTrackedEntry } = useLoaderData();
+  let { lastEntry, exercise, lastTrackedEntry } =
+    useLoaderData<typeof loader>();
+  if (!exercise) {
+    throw new Error("invalid");
+  }
   const [dateString, setDateString] = useState(
     format(startOfToday(), "yyyy-MM-dd")
   );
@@ -87,7 +101,7 @@ export default function NewEntryPage() {
   return (
     <>
       <header className="bg-gray-900 pt-safe-top">
-        <div className="flex items-start justify-between px-2 pt-4 pb-8">
+        <div className="flex items-start justify-between px-2 pb-8 pt-4">
           <Link
             className="inline-flex items-center text-xs font-medium text-blue-500"
             to={`/exercises/${exercise.id}`}

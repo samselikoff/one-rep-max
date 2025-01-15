@@ -11,11 +11,17 @@ export default function EntryForm({
   entry = null,
   lastEntry,
   lastTrackedEntry,
+}: {
+  exercise: { id: string; name: string };
+  dateString: string;
+  entry?: Entry | null;
+  lastEntry: Entry | null;
+  lastTrackedEntry?: Entry | null;
 }) {
   let { convertTo, convertFrom, suffix, units } = usePreferredUnit();
-  let formRef = useRef();
+  let formRef = useRef(null);
   let [sets, setSets] = useState(
-    entry?.sets.length > 0
+    entry && entry.sets.length > 0
       ? entry.sets
       : [{ id: uuid(), weight: "", reps: "", tracked: false }]
   );
@@ -33,9 +39,9 @@ export default function EntryForm({
             {sets.map((set, index) => (
               <div
                 key={set.id}
-                className="relative flex justify-between rounded-lg bg-gray-100 py-4 px-3"
+                className="relative flex justify-between rounded-lg bg-gray-100 px-3 py-4"
               >
-                <button className="absolute -top-2.5 left-2 rounded-full bg-white py-0.5 px-2 text-xs text-gray-500 ring-1 ring-black/5">
+                <button className="absolute -top-2.5 left-2 rounded-full bg-white px-2 py-0.5 text-xs text-gray-500 ring-1 ring-black/5">
                   Warm-up
                 </button>
                 <div className="flex gap-4">
@@ -185,7 +191,7 @@ export default function EntryForm({
 
           <div className="mt-7">
             <button
-              className="inline-flex w-full items-center justify-center gap-3 rounded bg-gray-200 py-1.5 px-2.5"
+              className="inline-flex w-full items-center justify-center gap-3 rounded bg-gray-200 px-2.5 py-1.5"
               type="button"
               onClick={() => {
                 setSets((sets) => [
@@ -229,7 +235,7 @@ export default function EntryForm({
 
           <button
             type="submit"
-            className="rounded bg-blue-500 py-1.5 px-3 font-medium text-white disabled:opacity-50"
+            className="rounded bg-blue-500 px-3 py-1.5 font-medium text-white disabled:opacity-50"
             disabled={isSaving}
           >
             Save
@@ -259,3 +265,26 @@ export default function EntryForm({
     </div>
   );
 }
+
+type Entry = {
+  id: string;
+  date: string;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  userId: string;
+  exerciseId: string;
+  sets: Set[];
+};
+
+type Set = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  weight: string | null;
+  reps: number;
+  tracked: boolean;
+  complete: boolean;
+  kind: string;
+  entryId: string;
+};
