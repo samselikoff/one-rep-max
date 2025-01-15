@@ -23,7 +23,16 @@ export default function EntryForm({
   let [sets, setSets] = useState(
     entry && entry.sets.length > 0
       ? entry.sets
-      : [{ id: uuid(), weight: "", reps: "", tracked: false }]
+      : [
+          {
+            id: uuid(),
+            weight: null,
+            reps: null,
+            tracked: false,
+            complete: false,
+            kind: "warm-up",
+          },
+        ]
   );
 
   let { state } = useTransition();
@@ -48,10 +57,10 @@ export default function EntryForm({
                   <div className="flex items-end">
                     <div className="relative">
                       <span className="invisible text-3xl font-semibold tabular-nums tracking-tight">
-                        {convertTo(set.weight) || 0}
+                        {convertTo(set.weight ? +set.weight : 0)}
                       </span>
                       <input
-                        value={set.weight ? convertTo(set.weight) : ""}
+                        value={set.weight ? convertTo(+set.weight) : ""}
                         placeholder="_"
                         className="absolute inset-0 bg-transparent text-3xl font-semibold tracking-tight"
                         inputMode="decimal"
@@ -62,13 +71,17 @@ export default function EntryForm({
                             let currentSet = newSets[index];
                             newSets[index] = {
                               ...currentSet,
-                              weight: convertFrom(e.target.value),
+                              weight: `${convertFrom(+e.target.value)}`,
                             };
                             return newSets;
                           });
                         }}
                       />
-                      <input type="hidden" name="weight" value={set.weight} />
+                      <input
+                        type="hidden"
+                        name="weight"
+                        value={set.weight || ""}
+                      />
                     </div>
                     <span className="pb-1 text-sm font-medium text-gray-500">
                       {units === "pounds" ? "lbs" : "kilos"}
@@ -82,7 +95,7 @@ export default function EntryForm({
                       <input
                         className="absolute inset-0 bg-transparent text-3xl font-semibold tracking-tight"
                         placeholder="_"
-                        value={set.reps}
+                        value={set.reps ? set.reps : ""}
                         inputMode="numeric"
                         name="reps"
                         onChange={(e) => {
@@ -91,7 +104,7 @@ export default function EntryForm({
                             let currentSet = newSets[index];
                             newSets[index] = {
                               ...currentSet,
-                              reps: e.target.value,
+                              reps: +e.target.value,
                             };
                             return newSets;
                           });
@@ -201,6 +214,8 @@ export default function EntryForm({
                     weight: sets[sets.length - 1].weight,
                     reps: sets[sets.length - 1].reps,
                     tracked: false,
+                    complete: false,
+                    kind: sets[sets.length - 1].kind,
                   },
                 ]);
               }}
@@ -256,7 +271,8 @@ export default function EntryForm({
           <div className="mt-4">
             {lastEntry.sets.map((set) => (
               <p className="text-gray-600" key={set.id}>
-                {convertTo(set.weight)} {suffix} - {set.reps} reps
+                {convertTo(set.weight ? +set.weight : 0)} {suffix} - {set.reps}{" "}
+                reps
               </p>
             ))}
           </div>
@@ -270,8 +286,6 @@ type Entry = {
   id: string;
   date: string;
   notes: string | null;
-  createdAt: string;
-  updatedAt: string;
   userId: string;
   exerciseId: string;
   sets: Set[];
@@ -279,12 +293,10 @@ type Entry = {
 
 type Set = {
   id: string;
-  createdAt: string;
-  updatedAt: string;
   weight: string | null;
-  reps: number;
+  reps: number | null;
   tracked: boolean;
   complete: boolean;
   kind: string;
-  entryId: string;
+  entryId?: string;
 };
