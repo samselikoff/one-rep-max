@@ -1,8 +1,10 @@
+import { parseWithZod } from "@conform-to/zod";
 import { ChevronLeftIcon } from "@radix-ui/react-icons";
 import { json, redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { format, isSameDay, parse, startOfToday } from "date-fns";
 import { useState } from "react";
+import { z } from "zod";
 import EntryForm from "~/components/EntryForm";
 import {
   Dialog,
@@ -53,12 +55,23 @@ export async function action({
 }) {
   let userId = await requireUserId(request);
   let formData = await request.formData();
-  let exerciseId = params.exerciseId;
-  let date = formData.get("date");
-  let notes = formData.get("notes");
-  if (typeof notes !== "string") {
+
+  const submission = parseWithZod(formData, {
+    schema: z.object({
+      complete: z.array(z.boolean()),
+      notes: z.string().optional(),
+    }),
+  });
+
+  if (submission.status !== "success") {
+    console.error(submission.error);
     throw new Error("invalid");
   }
+
+  const { complete, notes } = submission.value;
+
+  let exerciseId = params.exerciseId;
+  let date = formData.get("date");
   let weights = formData.getAll("weight");
   let reps = formData.getAll("reps");
   let trackingSetIndexes = formData.getAll("trackingSet").map((i) => +i);
@@ -68,16 +81,24 @@ export async function action({
     date: `${date}T00:00:00.000Z`,
     notes,
     sets: {
-      create: [] as { weight: number; reps: number; tracked: boolean }[],
+      create: [] as {
+        weight: number;
+        complete: boolean;
+        reps: number;
+        tracked: boolean;
+      }[],
     },
   };
   weights.forEach((weight, index) => {
     data.sets.create.push({
       weight: +weight,
       reps: +reps[index],
+      complete: complete[index],
       tracked: trackingSetIndexes.includes(index),
     });
   });
+
+  console.log(JSON.stringify(data, null, 2));
 
   await minDelay(prisma.entry.create({ data }), 750);
 

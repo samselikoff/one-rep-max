@@ -1,8 +1,10 @@
 import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
+import * as Checkbox from "@radix-ui/react-checkbox";
 import { Form, Link, useTransition } from "@remix-run/react";
 import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
 import { Fragment, useRef, useState } from "react";
 import { v4 as uuid } from "uuid";
+import { CheckIcon } from "@heroicons/react/16/solid";
 import { usePreferredUnit } from "./exercise-settings";
 
 export default function EntryForm({
@@ -117,7 +119,14 @@ export default function EntryForm({
                   </div>
                 </div>
                 <div>
-                  <div className="h-8 w-8 rounded-full bg-blue-500" />
+                  <Checkbox.Root
+                    name="complete"
+                    className="inline-flex size-8 items-center justify-center rounded-full border-2 bg-white"
+                  >
+                    <Checkbox.Indicator className="inline-flex size-6 items-center justify-center rounded-full bg-blue-500">
+                      <CheckIcon className="size-4 text-white" />
+                    </Checkbox.Indicator>
+                  </Checkbox.Root>
                 </div>
               </div>
             ))}
