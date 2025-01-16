@@ -59,85 +59,6 @@ export default function EntryForm({
             ))}
           </div>
 
-          {/* <div className="grid grid-cols-[40px_1fr_1fr_1fr_auto] items-center gap-2">
-            <p className="text-sm font-medium">Set</p>
-            <p className="text-sm font-medium capitalize">{units}</p>
-            <div />
-            <p className="text-center text-sm font-medium">Failure</p>
-            <div />
-
-            {sets.map((set, index) => (
-              <Fragment key={set.id}>
-                <p className="ml-1.5 tabular-nums text-gray-500">{index + 1}</p>
-                <input
-                  placeholder="Weight"
-                  inputMode="decimal"
-                  className="w-full rounded border px-2.5 py-1.5"
-                  value={convertTo(set.weight)}
-                  onChange={(e) => {
-                    setSets((sets) => {
-                      let newSets = [...sets];
-                      let currentSet = newSets[index];
-                      newSets[index] = {
-                        ...currentSet,
-                        weight: convertFrom(e.target.value),
-                      };
-                      return newSets;
-                    });
-                  }}
-                />
-                <input type="hidden" name="weight" value={set.weight} />
-                <input
-                  placeholder="Reps"
-                  inputMode="numeric"
-                  name="reps"
-                  className="w-full rounded border px-2.5 py-1.5"
-                  value={set.reps}
-                  onChange={(e) => {
-                    setSets((sets) => {
-                      let newSets = [...sets];
-                      let currentSet = newSets[index];
-                      newSets[index] = {
-                        ...currentSet,
-                        reps: e.target.value,
-                      };
-                      return newSets;
-                    });
-                  }}
-                />
-                <div className="flex items-center justify-center">
-                  <input
-                    type="checkbox"
-                    name="trackingSet"
-                    value={index}
-                    checked={set.tracked}
-                    onChange={(e) => {
-                      setSets((sets) =>
-                        sets.map((set, i) => ({
-                          ...set,
-                          tracked: i === index ? !set.tracked : set.tracked,
-                        }))
-                      );
-                    }}
-                  />
-                </div>
-
-                <div className="items-center justify-end">
-                  <button
-                    onClick={() => {
-                      setSets((sets) => sets.filter((s, i) => i !== index));
-                    }}
-                    disabled={sets.length === 1}
-                    className="rounded bg-gray-100 p-2 disabled:opacity-50"
-                    type="button"
-                  >
-                    <MinusIcon width="18" height="18" />
-                  </button>
-                </div>
-              </Fragment>
-            ))}
-          </div> */}
-
           <div className="mt-7">
             <button
               className="inline-flex w-full items-center justify-center gap-3 rounded bg-gray-200 px-2.5 py-1.5"
@@ -170,7 +91,7 @@ export default function EntryForm({
                 onClick={() => setIsShowingNotes(true)}
                 type="button"
               >
-                Add notes
+                Show notes
               </button>
               <input type="hidden" name="notes" value={entry?.notes || ""} />
             </>

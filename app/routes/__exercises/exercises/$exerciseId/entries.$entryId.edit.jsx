@@ -33,8 +33,6 @@ export async function loader({ request, params }) {
     entry.sets.some((s) => s.tracked)
   );
 
-  console.log(entry);
-
   return json({ entry, lastEntry, exercise, lastTrackedEntry });
 }
 
