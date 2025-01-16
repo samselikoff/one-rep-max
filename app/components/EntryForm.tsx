@@ -39,6 +39,7 @@ export default function EntryForm({
 
   let { state } = useTransition();
   let isSaving = state === "submitting" || state === "loading";
+  const [isShowingNotes, setIsShowingNotes] = useState(false);
 
   return (
     <div className="mt-4">
@@ -162,17 +163,30 @@ export default function EntryForm({
         </div>
 
         <div className="mt-6">
-          <label>
-            <p className="text-sm font-medium">Notes</p>
+          {!isShowingNotes ? (
+            <>
+              <button
+                className="text-xs text-gray-400 underline underline-offset-2"
+                onClick={() => setIsShowingNotes(true)}
+                type="button"
+              >
+                Add notes
+              </button>
+              <input type="hidden" name="notes" value={entry?.notes || ""} />
+            </>
+          ) : (
+            <label>
+              <p className="text-sm font-medium">Notes</p>
 
-            <textarea
-              className="mt-2 w-full border p-3"
-              placeholder="How'd that feel?"
-              defaultValue={entry?.notes || ""}
-              name="notes"
-              rows={4}
-            />
-          </label>
+              <textarea
+                className="mt-2 w-full border p-3"
+                placeholder="How'd that feel?"
+                defaultValue={entry?.notes || ""}
+                name="notes"
+                rows={4}
+              />
+            </label>
+          )}
         </div>
 
         <div className="mt-4 flex items-center justify-between">
@@ -251,7 +265,7 @@ function SetRow({
   return (
     <div
       key={set.id}
-      className="relative flex justify-between rounded-lg bg-gray-100 px-3 py-4"
+      className="relative flex items-center justify-between rounded-lg bg-gray-100 px-3 py-4"
     >
       <button
         type="button"
