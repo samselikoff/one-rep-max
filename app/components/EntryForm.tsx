@@ -20,7 +20,7 @@ export default function EntryForm({
   lastEntry: Entry | null;
   lastTrackedEntry?: Entry | null;
 }) {
-  let { convertTo, convertFrom, suffix, units } = usePreferredUnit();
+  let { convertTo, suffix } = usePreferredUnit();
   let formRef = useRef(null);
   let [sets, setSets] = useState(
     entry && entry.sets.length > 0
@@ -48,87 +48,13 @@ export default function EntryForm({
         <div className="mt-6">
           <div className="flex flex-col gap-6">
             {sets.map((set, index) => (
-              <div
+              <SetRow
+                set={set}
                 key={set.id}
-                className="relative flex justify-between rounded-lg bg-gray-100 px-3 py-4"
-              >
-                <button className="absolute -top-2.5 left-2 rounded-full bg-white px-2 py-0.5 text-xs text-gray-500 ring-1 ring-black/5">
-                  Warm-up
-                </button>
-                <div className="flex gap-4">
-                  <div className="flex items-end">
-                    <div className="relative">
-                      <span className="invisible text-3xl font-semibold tabular-nums tracking-tight">
-                        {convertTo(set.weight ? +set.weight : 0)}
-                      </span>
-                      <input
-                        value={set.weight ? convertTo(+set.weight) : ""}
-                        placeholder="_"
-                        className="absolute inset-0 bg-transparent text-3xl font-semibold tracking-tight"
-                        inputMode="decimal"
-                        // autoFocus={set === sets.at(-1)}
-                        onChange={(e) => {
-                          setSets((sets) => {
-                            let newSets = [...sets];
-                            let currentSet = newSets[index];
-                            newSets[index] = {
-                              ...currentSet,
-                              weight: `${convertFrom(+e.target.value)}`,
-                            };
-                            return newSets;
-                          });
-                        }}
-                      />
-                      <input
-                        type="hidden"
-                        name="weight"
-                        value={set.weight || ""}
-                      />
-                    </div>
-                    <span className="pb-1 text-sm font-medium text-gray-500">
-                      {units === "pounds" ? "lbs" : "kilos"}
-                    </span>
-                  </div>
-                  <div className="flex items-end">
-                    <div className="relative">
-                      <span className="invisible text-3xl font-semibold tabular-nums tracking-tight">
-                        {set.reps || 0}
-                      </span>
-                      <input
-                        className="absolute inset-0 bg-transparent text-3xl font-semibold tracking-tight"
-                        placeholder="_"
-                        value={set.reps ? set.reps : ""}
-                        inputMode="numeric"
-                        name="reps"
-                        onChange={(e) => {
-                          setSets((sets) => {
-                            let newSets = [...sets];
-                            let currentSet = newSets[index];
-                            newSets[index] = {
-                              ...currentSet,
-                              reps: +e.target.value,
-                            };
-                            return newSets;
-                          });
-                        }}
-                      />
-                    </div>
-                    <span className="pb-1 text-sm font-medium text-gray-500">
-                      reps
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <Checkbox.Root
-                    name="complete"
-                    className="inline-flex size-8 items-center justify-center rounded-full border-2 bg-white"
-                  >
-                    <Checkbox.Indicator className="inline-flex size-6 items-center justify-center rounded-full bg-blue-500">
-                      <CheckIcon className="size-4 text-white" />
-                    </Checkbox.Indicator>
-                  </Checkbox.Root>
-                </div>
-              </div>
+                setSets={setSets}
+                sets={sets}
+                index={index}
+              />
             ))}
           </div>
 
@@ -260,7 +186,12 @@ export default function EntryForm({
           <button
             type="submit"
             className="rounded bg-blue-500 px-3 py-1.5 font-medium text-white disabled:opacity-50"
-            disabled={isSaving}
+            disabled={
+              isSaving ||
+              sets[0].weight === null ||
+              sets[0].reps === null ||
+              sets[0].weight === ""
+            }
           >
             Save
           </button>
@@ -287,6 +218,147 @@ export default function EntryForm({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function SetRow({
+  set,
+  setSets,
+  sets,
+  index,
+}: {
+  set: Set;
+  setSets: React.Dispatch<React.SetStateAction<Set[]>>;
+  sets: Set[];
+  index: number;
+}) {
+  let { convertTo, convertFrom, units } = usePreferredUnit();
+  let label = "";
+  if (set.kind === "warm-up") {
+    label = "Warm-up";
+  } else {
+    let workingSetNumber =
+      sets
+        .filter((s) => s.kind === "working-set" || s.kind === "failure")
+        .findIndex((s) => s.id === set.id) + 1;
+    label = `Working Set ${workingSetNumber}`;
+    if (set.kind === "failure") {
+      label += " – Failure";
+    }
+  }
+
+  return (
+    <div
+      key={set.id}
+      className="relative flex justify-between rounded-lg bg-gray-100 px-3 py-4"
+    >
+      <button
+        type="button"
+        onClick={() => {
+          setSets((sets) => {
+            let newSets = [...sets];
+            let currentSet = newSets[index];
+            let kinds = ["warm-up", "working-set", "failure"];
+            let currentKindIndex = kinds.indexOf(currentSet.kind);
+            let newKindIndex = (currentKindIndex + 1) % kinds.length;
+
+            newSets[index] = {
+              ...currentSet,
+              kind: kinds[newKindIndex],
+            };
+            return newSets;
+          });
+        }}
+        className="absolute -top-2.5 left-2 rounded-full bg-white px-2 py-0.5 text-xs text-gray-500 ring-1 ring-black/5"
+      >
+        {label}
+      </button>
+      <input type="hidden" name="kind" value={set.kind} />
+      <div className="flex gap-4">
+        <div className="flex items-end gap-1">
+          <div className="relative">
+            <span className="invisible text-3xl font-semibold tracking-tight">
+              {convertTo(set.weight ? +set.weight : 0)}
+            </span>
+            <input
+              value={set.weight ? convertTo(+set.weight) : ""}
+              placeholder="_"
+              className="absolute inset-0 bg-transparent text-3xl font-semibold tracking-tight"
+              inputMode="decimal"
+              // autoFocus={set === sets.at(-1)}
+              onChange={(e) => {
+                setSets((sets) => {
+                  let newSets = [...sets];
+                  let currentSet = newSets[index];
+                  newSets[index] = {
+                    ...currentSet,
+                    weight:
+                      e.target.value === ""
+                        ? null
+                        : `${convertFrom(+e.target.value)}`,
+                  };
+                  return newSets;
+                });
+              }}
+            />
+            <input type="hidden" name="weight" value={set.weight || ""} />
+          </div>
+          <span className="pb-1 text-sm font-medium text-gray-500">
+            {units === "pounds" ? "lbs" : "kilos"}
+          </span>
+        </div>
+
+        <div className="flex items-end gap-1">
+          <div className="relative">
+            <span className="invisible text-3xl font-semibold tracking-tight">
+              {set.reps || 0}
+            </span>
+            <input
+              className="absolute inset-0 bg-transparent text-3xl font-semibold tracking-tight"
+              placeholder="_"
+              value={set.reps ? set.reps : ""}
+              inputMode="numeric"
+              name="reps"
+              onChange={(e) => {
+                setSets((sets) => {
+                  let newSets = [...sets];
+                  let currentSet = newSets[index];
+                  newSets[index] = {
+                    ...currentSet,
+                    reps: e.target.value === "" ? null : +e.target.value,
+                  };
+                  return newSets;
+                });
+              }}
+            />
+          </div>
+          <span className="pb-1 text-sm font-medium text-gray-500">reps</span>
+        </div>
+      </div>
+      <div className="flex">
+        <Checkbox.Root
+          name="complete"
+          checked={set.complete}
+          onCheckedChange={() => {
+            setSets((sets) => {
+              let newSets = [...sets];
+              let currentSet = newSets[index];
+
+              newSets[index] = {
+                ...currentSet,
+                complete: !set.complete,
+              };
+              return newSets;
+            });
+          }}
+          className="inline-flex size-8 items-center justify-center rounded-full border-2 bg-white"
+        >
+          <Checkbox.Indicator className="inline-flex size-6 items-center justify-center rounded-full bg-blue-500">
+            <CheckIcon className="size-4 text-white" />
+          </Checkbox.Indicator>
+        </Checkbox.Root>
+      </div>
     </div>
   );
 }

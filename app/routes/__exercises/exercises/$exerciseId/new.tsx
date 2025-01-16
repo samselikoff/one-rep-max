@@ -59,6 +59,7 @@ export async function action({
   const submission = parseWithZod(formData, {
     schema: z.object({
       complete: z.array(z.boolean()),
+      kind: z.array(z.string()),
       notes: z.string().optional(),
     }),
   });
@@ -68,7 +69,7 @@ export async function action({
     throw new Error("invalid");
   }
 
-  const { complete, notes } = submission.value;
+  const { complete, notes, kind } = submission.value;
 
   let exerciseId = params.exerciseId;
   let date = formData.get("date");
@@ -86,6 +87,7 @@ export async function action({
         complete: boolean;
         reps: number;
         tracked: boolean;
+        kind: string;
       }[],
     },
   };
@@ -95,10 +97,9 @@ export async function action({
       reps: +reps[index],
       complete: complete[index],
       tracked: trackingSetIndexes.includes(index),
+      kind: kind[index],
     });
   });
-
-  console.log(JSON.stringify(data, null, 2));
 
   await minDelay(prisma.entry.create({ data }), 750);
 
