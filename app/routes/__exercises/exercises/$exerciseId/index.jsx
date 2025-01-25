@@ -1,10 +1,7 @@
-import {
-  ChevronLeftIcon,
-  DotsHorizontalIcon,
-  PlusIcon,
-} from "@radix-ui/react-icons";
+import { PlusIcon } from "@heroicons/react/16/solid";
+import { ChevronLeftIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
 import * as Popover from "@radix-ui/react-popover";
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import {
   Form,
   Link,
@@ -13,6 +10,7 @@ import {
   useTransition,
 } from "@remix-run/react";
 import { differenceInDays, format, parseISO, sub } from "date-fns";
+import assert from "assert";
 import pluralize from "pluralize";
 import { Fragment } from "react";
 import { OneRepMaxChart } from "~/components/charts";
@@ -60,31 +58,50 @@ export async function loader({ request, params }) {
 export async function action({ request, params }) {
   let userId = await requireUserId(request);
   let formData = await request.formData();
-  let unit = formData.get("unit");
+  let { _action, ...rest } = Object.fromEntries(formData);
 
-  if (typeof unit !== "string") {
-    return null;
-  }
+  switch (_action) {
+    case "UPDATE_EXERCISE_SETTINGS":
+      let { unit } = rest;
+      assert(typeof unit === "string");
 
-  return await minDelay(
-    prisma.exerciseSettings.upsert({
-      create: {
-        unit,
-        userId,
-        exerciseId: params.exerciseId,
-      },
-      update: {
-        unit,
-      },
-      where: {
-        userId_exerciseId: {
-          userId,
+      await minDelay(
+        prisma.exerciseSettings.upsert({
+          create: {
+            unit,
+            userId,
+            exerciseId: params.exerciseId,
+          },
+          update: {
+            unit,
+          },
+          where: {
+            userId_exerciseId: {
+              userId,
+              exerciseId: params.exerciseId,
+            },
+          },
+        }),
+        750
+      );
+
+      return redirect(`/exercises/${params.exerciseId}`);
+
+    case "CREATE_ENTRY":
+      const newEntry = await prisma.entry.create({
+        data: {
           exerciseId: params.exerciseId,
+          userId,
+          date: new Date(),
         },
-      },
-    }),
-    750
-  );
+      });
+      return redirect(
+        `/exercises/${params.exerciseId}/entries/${newEntry.id}/edit`
+      );
+
+    default:
+      throw new Error("Unimplemented");
+  }
 }
 
 export default function ExerciseIndexPage() {
@@ -109,10 +126,6 @@ export default function ExerciseIndexPage() {
           Home
         </Link>
 
-        <Link to={`/exercises/${exercise.id}/new`}>
-          <PlusIcon className="text-blue-500" width="20" height="20" />
-        </Link>
-
         <h1 className="absolute left-1/2 -translate-x-1/2 text-sm font-semibold text-white">
           {exercise.name}
         </h1>
@@ -133,6 +146,11 @@ export default function ExerciseIndexPage() {
                   <p className="text-center font-medium">Settings</p>
                   <div className="mt-2">
                     <Form method="post">
+                      <input
+                        type="hidden"
+                        name="_action"
+                        value="UPDATE_EXERCISE_SETTINGS"
+                      />
                       <p className="text-sm font-medium">Units</p>
                       <p className="text-xs text-gray-500">
                         Update your preferred unit of weight for the current
@@ -190,7 +208,17 @@ export default function ExerciseIndexPage() {
           </div>
           <hr className="mt-8" />
           <div className="mt-8">
-            <h2 className="text-xl font-bold">Logs</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold">Logs</h2>
+
+              <Form method="post">
+                <button type="submit">
+                  <PlusIcon className="text-blue-500" width="20" height="20" />
+                </button>
+                <input type="hidden" name="_action" value="CREATE_ENTRY" />
+              </Form>
+            </div>
+
             {entries.length > 0 ? (
               <div className="mt-6 flex flex-col gap-4">
                 {entries.map((entry) => (
