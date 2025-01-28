@@ -184,10 +184,7 @@ function SetRow({
   }
 
   return (
-    <div
-      key={set.id}
-      className="relative flex items-center justify-between rounded-lg bg-gray-100 px-3 py-4"
-    >
+    <div className="relative flex items-center justify-between rounded-lg bg-gray-100 px-3 py-4">
       <button
         type="button"
         onClick={() => {
@@ -209,7 +206,11 @@ function SetRow({
       >
         {label}
       </button>
-      <input type="hidden" name="kind" value={set.kind} />
+      <input
+        type="hidden"
+        name={`sets.create[${index}]kind`}
+        value={set.kind}
+      />
       <div className="flex gap-4">
         <div className="flex items-end gap-1">
           <div className="relative">
@@ -237,7 +238,11 @@ function SetRow({
                 });
               }}
             />
-            <input type="hidden" name="weight" value={set.weight || ""} />
+            <input
+              type="hidden"
+              name={`sets.create[${index}]weight`}
+              value={set.weight || ""}
+            />
           </div>
           <span className="pb-1 text-sm font-medium text-gray-500">
             {units === "pounds" ? "lbs" : "kilos"}
@@ -254,7 +259,7 @@ function SetRow({
               placeholder="_"
               value={set.reps ? set.reps : ""}
               inputMode="numeric"
-              name="reps"
+              name={`sets.create[${index}]reps`}
               onChange={(e) => {
                 setSets((sets) => {
                   let newSets = [...sets];
@@ -273,7 +278,7 @@ function SetRow({
       </div>
       <div className="flex">
         <Checkbox.Root
-          name="complete"
+          name={`sets.create[${index}]complete`}
           checked={set.complete}
           onCheckedChange={() => {
             setSets((sets) => {
