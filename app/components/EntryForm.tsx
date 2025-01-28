@@ -110,14 +110,7 @@ export default function EntryForm({
           )}
         </div>
 
-        <div className="mt-4 flex items-center justify-between">
-          <Link
-            className="text-sm font-medium text-blue-500"
-            to={`/exercises/${exercise.id}`}
-          >
-            Cancel
-          </Link>
-
+        <div className="mt-4 flex items-center justify-end">
           <button
             type="submit"
             className="rounded bg-blue-500 px-3 py-1.5 font-medium text-white disabled:opacity-50"

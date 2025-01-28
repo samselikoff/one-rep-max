@@ -56,7 +56,7 @@ export async function loader({ request, params }: LoaderArgs) {
 }
 
 export async function action({ request, params }: ActionArgs) {
-  let userId = await requireUserId(request);
+  await requireUserId(request);
   let exerciseId = params.exerciseId;
   let formData = await request.formData();
 
@@ -83,13 +83,11 @@ export async function action({ request, params }: ActionArgs) {
         }),
       }),
     });
+
     if (submission.status !== "success") {
       console.error(submission.error);
       throw new Error("invalid");
     }
-
-    // console.log(JSON.stringify(submission, null, 2));
-    // return null;
 
     await prisma.set.deleteMany({
       where: { entryId: params.entryId },
@@ -167,16 +165,16 @@ export default function EditEntryPage() {
             lastEntry={lastEntry}
             lastTrackedEntry={lastTrackedEntry}
           />
-        </div>
 
-        <div className="mt-6">
-          <Form method="post">
-            <input type="hidden" name="_method" value="delete" />
-            <button className="inline-flex items-center gap-2 rounded bg-gray-100 px-3 py-1.5 text-sm text-gray-500">
-              <TrashIcon width="18" height="18" />
-              Delete entry
-            </button>
-          </Form>
+          <div className="mt-12">
+            <Form method="post">
+              <input type="hidden" name="_method" value="delete" />
+              <button className="inline-flex items-center gap-2 rounded bg-gray-100 px-3 py-1.5 text-sm text-gray-500">
+                <TrashIcon width="18" height="18" />
+                Delete entry
+              </button>
+            </Form>
+          </div>
         </div>
       </main>
     </>
