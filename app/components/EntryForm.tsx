@@ -257,10 +257,25 @@ function SetRow({
                 setSets((sets) => {
                   let newSets = [...sets];
                   let currentSet = newSets[index];
+                  let newReps = e.target.value === "" ? null : +e.target.value;
+                  let isLastSet = index === sets.length - 1;
+
                   newSets[index] = {
                     ...currentSet,
-                    reps: e.target.value === "" ? null : +e.target.value,
+                    reps: newReps,
                   };
+
+                  if (newReps !== null && isLastSet) {
+                    newSets[index + 1] = {
+                      id: uuid(),
+                      weight: "",
+                      reps: null,
+                      tracked: false,
+                      complete: false,
+                      kind: sets[sets.length - 1].kind,
+                    };
+                  }
+
                   return newSets;
                 });
               }}
