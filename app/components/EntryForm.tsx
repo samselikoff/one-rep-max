@@ -59,6 +59,10 @@ export default function EntryForm({
             ))}
           </div>
 
+          <div className="relative mt-8">
+            <input className="absolute opacity-0" placeholder="aa" />
+          </div>
+
           <div className="mt-7">
             <button
               className="inline-flex w-full items-center justify-center gap-3 rounded bg-gray-200 px-2.5 py-1.5"
@@ -206,16 +210,15 @@ function SetRow({
       />
       <div className="flex gap-4">
         <div className="flex items-end gap-1">
-          <div className="relative">
-            <span className="invisible text-3xl font-semibold tracking-tight">
+          <div className="relative flex overflow-hidden">
+            <span className="invisible font-mono text-3xl font-semibold leading-[36px] tracking-tight">
               {convertTo(set.weight ? +set.weight : 0)}
             </span>
             <input
               value={set.weight ? convertTo(+set.weight) : ""}
               placeholder="_"
-              className="absolute inset-0 bg-transparent text-3xl font-semibold tracking-tight"
+              className="absolute h-[36px] w-[calc(100%+2px)] bg-transparent font-mono text-3xl font-semibold tabular-nums tracking-tight focus:outline-none"
               inputMode="decimal"
-              // autoFocus={set === sets.at(-1)}
               onChange={(e) => {
                 setSets((sets) => {
                   let newSets = [...sets];
@@ -243,12 +246,12 @@ function SetRow({
         </div>
 
         <div className="flex items-end gap-1">
-          <div className="relative">
-            <span className="invisible text-3xl font-semibold tracking-tight">
+          <div className="relative flex">
+            <div className="invisible font-mono text-3xl font-semibold leading-[36px]">
               {set.reps || 0}
-            </span>
+            </div>
             <input
-              className="absolute inset-0 bg-transparent text-3xl font-semibold tracking-tight"
+              className="absolute h-[36px] w-[calc(100%+2px)] bg-transparent font-mono text-3xl font-semibold focus:outline-none"
               placeholder="_"
               value={set.reps ? set.reps : ""}
               inputMode="numeric"
