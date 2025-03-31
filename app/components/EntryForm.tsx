@@ -6,6 +6,8 @@ import { Fragment, useRef, useState } from "react";
 import { v4 as uuid } from "uuid";
 import { CheckIcon } from "@heroicons/react/16/solid";
 import { usePreferredUnit } from "./exercise-settings";
+import * as Dialog from "@radix-ui/react-dialog";
+import { WheelSlider } from "./wheel-slider";
 
 export default function EntryForm({
   exercise,
@@ -36,10 +38,13 @@ export default function EntryForm({
           },
         ]
   );
+  const [selectedSetId, setSelectedSetId] = useState<null | string>(
+    "cm8wv5fq61072g7ovgr2bod98"
+  );
+  const selectedSet = sets.find((s) => s.id === selectedSetId);
 
   let { state } = useTransition();
   let isSaving = state === "submitting" || state === "loading";
-  const [isShowingNotes, setIsShowingNotes] = useState(false);
 
   return (
     <div className="mt-4">
@@ -78,6 +83,8 @@ export default function EntryForm({
                 setSets={setSets}
                 sets={sets}
                 index={index}
+                onSelect={() => setSelectedSetId(set.id)}
+                isSelected={selectedSetId === set.id}
               />
             ))}
           </div>
@@ -140,6 +147,43 @@ export default function EntryForm({
         </div>
       </Form>
 
+      {selectedSet && (
+        <Dialog.Root open modal={false}>
+          <Dialog.Portal>
+            <div className="fixed inset-x-0 bottom-0 bg-gray-100 ">
+              <Dialog.Content
+                aria-describedby={undefined}
+                className="border-t p-4 focus:outline-none"
+              >
+                <Dialog.Title>Set {sets.indexOf(selectedSet) + 1}</Dialog.Title>
+
+                <div>
+                  {/* <p>Weight</p> */}
+                  {/* <p className="text-center text-lg">{selectedSet.weight}</p> */}
+
+                  <div className="mb-4 text-center font-mono text-2xl tabular-nums">
+                    {selectedSet.weight} lbs
+                  </div>
+                  <div className="mt-2 pb-8">
+                    <WheelSlider
+                      value={+selectedSet.weight}
+                      onChange={(v) => {
+                        setSets((sets) =>
+                          sets.map((s) => ({
+                            ...s,
+                            weight: s.id === selectedSetId ? `${v}` : s.weight,
+                          }))
+                        );
+                      }}
+                    />
+                  </div>
+                </div>
+              </Dialog.Content>
+            </div>
+          </Dialog.Portal>
+        </Dialog.Root>
+      )}
+
       {lastEntry && (
         <div className="mt-10 border p-2">
           <div className="flex justify-between">
@@ -169,11 +213,15 @@ function SetRow({
   setSets,
   sets,
   index,
+  onSelect,
+  isSelected,
 }: {
   set: Set;
   setSets: React.Dispatch<React.SetStateAction<Set[]>>;
   sets: Set[];
   index: number;
+  onSelect: () => void;
+  isSelected: boolean;
 }) {
   let { convertTo, convertFrom, units } = usePreferredUnit();
   let label = "";
@@ -193,7 +241,11 @@ function SetRow({
   };
 
   return (
-    <div className="px-0 py-4">
+    <button
+      onClick={onSelect}
+      type="button"
+      className={`block py-4 text-left ${isSelected ? "bg-gray-100" : ""}`}
+    >
       <input
         type="hidden"
         name={`sets.create[${index}]kind`}
@@ -284,29 +336,28 @@ function SetRow({
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            setSets((sets) => {
-              let newSets = [...sets];
-              let currentSet = newSets[index];
-              let kinds = ["warm-up", "working-set", "failure"];
-              let currentKindIndex = kinds.indexOf(currentSet.kind);
-              let newKindIndex = (currentKindIndex + 1) % kinds.length;
+        <div
+          // onClick={() => {
+          //   setSets((sets) => {
+          //     let newSets = [...sets];
+          //     let currentSet = newSets[index];
+          //     let kinds = ["warm-up", "working-set", "failure"];
+          //     let currentKindIndex = kinds.indexOf(currentSet.kind);
+          //     let newKindIndex = (currentKindIndex + 1) % kinds.length;
 
-              newSets[index] = {
-                ...currentSet,
-                kind: kinds[newKindIndex],
-              };
-              return newSets;
-            });
-          }}
+          //     newSets[index] = {
+          //       ...currentSet,
+          //       kind: kinds[newKindIndex],
+          //     };
+          //     return newSets;
+          //   });
+          // }}
           className={`rounded-md px-2 py-0.5 text-xs font-medium ${
             labelClasses[set.kind]
           }`}
         >
           {label}
-        </button>
+        </div>
 
         {/* <div className="flex">
           <Checkbox.Root
@@ -358,7 +409,7 @@ function SetRow({
           {label}
         </button> */}
       </div>
-    </div>
+    </button>
   );
 }
 
