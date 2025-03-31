@@ -186,6 +186,12 @@ function SetRow({
     }
   }
 
+  const labelClasses = {
+    "warm-up": "bg-amber-400/20 text-amber-700",
+    "working-set": "bg-green-400/20 text-green-700",
+    failure: "bg-red-400/20 text-red-700",
+  };
+
   return (
     <div className="px-0 py-4">
       <input
@@ -193,6 +199,12 @@ function SetRow({
         name={`sets.create[${index}]kind`}
         value={set.kind}
       />
+
+      <div>
+        <p className="text-xs font-medium leading-5 text-gray-400">
+          Set {index + 1}
+        </p>
+      </div>
       <div className="flex items-center justify-between">
         <div className="flex gap-4">
           <div className="flex items-end gap-1">
@@ -271,7 +283,32 @@ function SetRow({
             <span className="pb-1 text-sm font-medium text-gray-500">reps</span>
           </div>
         </div>
-        <div className="flex">
+
+        <button
+          type="button"
+          onClick={() => {
+            setSets((sets) => {
+              let newSets = [...sets];
+              let currentSet = newSets[index];
+              let kinds = ["warm-up", "working-set", "failure"];
+              let currentKindIndex = kinds.indexOf(currentSet.kind);
+              let newKindIndex = (currentKindIndex + 1) % kinds.length;
+
+              newSets[index] = {
+                ...currentSet,
+                kind: kinds[newKindIndex],
+              };
+              return newSets;
+            });
+          }}
+          className={`rounded-md px-2 py-0.5 text-xs font-medium ${
+            labelClasses[set.kind]
+          }`}
+        >
+          {label}
+        </button>
+
+        {/* <div className="flex">
           <Checkbox.Root
             name={`sets.create[${index}]complete`}
             checked={set.complete}
@@ -293,13 +330,13 @@ function SetRow({
               <CheckIcon className="size-4 text-white" />
             </Checkbox.Indicator>
           </Checkbox.Root>
-        </div>
+        </div> */}
       </div>
       <div className="mt-2 flex items-center gap-3">
-        <p className="text-xs font-medium leading-5 text-gray-400">
+        {/* <p className="text-xs font-medium leading-5 text-gray-400">
           Set {index + 1}
-        </p>
-        <button
+        </p> */}
+        {/* <button
           type="button"
           onClick={() => {
             setSets((sets) => {
@@ -319,7 +356,7 @@ function SetRow({
           className="rounded-full bg-white px-2 py-0.5 text-xs text-gray-500 ring-1 ring-black/5"
         >
           {label}
-        </button>
+        </button> */}
       </div>
     </div>
   );
