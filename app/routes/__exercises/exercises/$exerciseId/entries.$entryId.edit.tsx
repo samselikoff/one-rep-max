@@ -117,17 +117,39 @@ export default function EditEntryPage() {
 
   return (
     <>
-      <header className="bg-gray-900 pt-safe-top">
+      <header className="fixed inset-x-0 top-0 z-10 bg-gray-900 pt-safe-top">
         <div className="flex items-start justify-between px-2 pb-8 pt-4">
           <Link
-            className="inline-flex items-center text-xs font-medium text-blue-500"
+            className="inline-flex items-center text-sm font-medium text-blue-500"
             to={`/exercises/${exercise.id}`}
           >
             <ChevronLeftIcon width="20" height="20" />
             Back
           </Link>
 
-          <div className="relative flex h-5 items-center">
+          {/* <div className="relative flex h-5 items-center">
+            <Dialog>
+              <DialogTrigger className="text-sm font-medium text-blue-500">
+                {dateLabel}
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Date</DialogTitle>
+                </DialogHeader>
+                <input
+                  type="date"
+                  value={dateString}
+                  onChange={(e) => setDateString(e.target.value)}
+                />
+              </DialogContent>
+            </Dialog>
+          </div> */}
+
+          <div className="absolute left-1/2 -translate-x-1/2 text-center leading-none">
+            <h1 className="font-semibold leading-5 text-white">
+              {exercise.name}
+            </h1>
+
             <Dialog>
               <DialogTrigger className="text-xs font-medium text-blue-500">
                 {dateLabel}
@@ -143,20 +165,14 @@ export default function EditEntryPage() {
                 />
               </DialogContent>
             </Dialog>
-          </div>
-
-          <div className="absolute left-1/2 -translate-x-1/2 text-center leading-none">
-            <h1 className="text-sm font-semibold text-white">
-              {exercise.name}
-            </h1>
-            <span className="text-xs font-medium leading-none text-gray-400">
+            {/* <span className="text-xs font-medium leading-none text-gray-400">
               Log
-            </span>
+            </span> */}
           </div>
         </div>
       </header>
 
-      <main className="pb-safe-bottom">
+      <main className="relative mt-[68px] pb-safe-bottom">
         <div className="mt-5 px-4 pb-8">
           <EntryForm
             entry={entry}

@@ -43,11 +43,34 @@ export default function EntryForm({
 
   return (
     <div className="mt-4">
-      <Form method="post" ref={formRef}>
+      <Form
+        method="post"
+        ref={formRef}
+        onBlur={(event) => {
+          const nextFocused = event.relatedTarget || document.activeElement;
+
+          if (!event.currentTarget.contains(nextFocused)) {
+            setSets((sets) => {
+              const lastSet = sets.at(-1);
+
+              if (
+                sets.length > 1 &&
+                lastSet &&
+                lastSet.weight === null &&
+                lastSet.reps === null
+              ) {
+                return sets.slice(0, -1);
+              } else {
+                return sets;
+              }
+            });
+          }
+        }}
+      >
         <input type="hidden" name="date" value={dateString} />
 
         <div className="mt-6">
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col divide-y">
             {sets.map((set, index) => (
               <SetRow
                 set={set}
@@ -59,11 +82,11 @@ export default function EntryForm({
             ))}
           </div>
 
-          <div className="relative mt-8">
-            <input className="absolute opacity-0" placeholder="aa" />
+          <div className="relative">
+            <input className="opacity-0" placeholder="aa" />
           </div>
 
-          <div className="mt-7">
+          {/* <div className="mt-7">
             <button
               className="inline-flex w-full items-center justify-center gap-3 rounded bg-gray-200 px-2.5 py-1.5"
               type="button"
@@ -84,34 +107,21 @@ export default function EntryForm({
               <PlusIcon />
               Add set
             </button>
-          </div>
+          </div> */}
         </div>
 
         <div className="mt-6">
-          {!isShowingNotes ? (
-            <>
-              <button
-                className="text-xs text-gray-400 underline underline-offset-2"
-                onClick={() => setIsShowingNotes(true)}
-                type="button"
-              >
-                Show notes
-              </button>
-              <input type="hidden" name="notes" value={entry?.notes || ""} />
-            </>
-          ) : (
-            <label>
-              <p className="text-sm font-medium">Notes</p>
+          <label>
+            <p className="text-sm font-medium">Notes</p>
 
-              <textarea
-                className="mt-2 w-full border p-3"
-                placeholder="How'd that feel?"
-                defaultValue={entry?.notes || ""}
-                name="notes"
-                rows={4}
-              />
-            </label>
-          )}
+            <textarea
+              className="mt-2 w-full border p-3"
+              placeholder="How'd that feel?"
+              defaultValue={entry?.notes || ""}
+              name="notes"
+              rows={4}
+            />
+          </label>
         </div>
 
         <div className="mt-4 flex items-center justify-end">
@@ -170,145 +180,146 @@ function SetRow({
   if (set.kind === "warm-up") {
     label = "Warm-up";
   } else {
-    let workingSetNumber =
-      sets
-        .filter((s) => s.kind === "working-set" || s.kind === "failure")
-        .findIndex((s) => s.id === set.id) + 1;
-    label = `Working Set ${workingSetNumber}`;
+    label = `Working set`;
     if (set.kind === "failure") {
       label += " – Failure";
     }
   }
 
   return (
-    <div className="relative flex items-center justify-between rounded-lg bg-gray-100 px-3 py-4">
-      <button
-        type="button"
-        onClick={() => {
-          setSets((sets) => {
-            let newSets = [...sets];
-            let currentSet = newSets[index];
-            let kinds = ["warm-up", "working-set", "failure"];
-            let currentKindIndex = kinds.indexOf(currentSet.kind);
-            let newKindIndex = (currentKindIndex + 1) % kinds.length;
-
-            newSets[index] = {
-              ...currentSet,
-              kind: kinds[newKindIndex],
-            };
-            return newSets;
-          });
-        }}
-        className="absolute -top-2.5 left-2 rounded-full bg-white px-2 py-0.5 text-xs text-gray-500 ring-1 ring-black/5"
-      >
-        {label}
-      </button>
+    <div className="px-0 py-4">
       <input
         type="hidden"
         name={`sets.create[${index}]kind`}
         value={set.kind}
       />
-      <div className="flex gap-4">
-        <div className="flex items-end gap-1">
-          <div className="relative flex overflow-hidden">
-            <span className="invisible font-mono text-3xl font-semibold leading-[36px] tracking-tight">
-              {convertTo(set.weight ? +set.weight : 0)}
-            </span>
-            <input
-              value={set.weight ? convertTo(+set.weight) : ""}
-              placeholder="_"
-              className="absolute h-[36px] w-[calc(100%+2px)] bg-transparent font-mono text-3xl font-semibold tabular-nums tracking-tight focus:outline-none"
-              inputMode="decimal"
-              onChange={(e) => {
-                setSets((sets) => {
-                  let newSets = [...sets];
-                  let currentSet = newSets[index];
-                  newSets[index] = {
-                    ...currentSet,
-                    weight:
-                      e.target.value === ""
-                        ? null
-                        : `${convertFrom(+e.target.value)}`,
-                  };
-                  return newSets;
-                });
-              }}
-            />
-            <input
-              type="hidden"
-              name={`sets.create[${index}]weight`}
-              value={set.weight || ""}
-            />
-          </div>
-          <span className="pb-1 text-sm font-medium text-gray-500">
-            {units === "pounds" ? "lbs" : "kilos"}
-          </span>
-        </div>
-
-        <div className="flex items-end gap-1">
-          <div className="relative flex">
-            <div className="invisible font-mono text-3xl font-semibold leading-[36px]">
-              {set.reps || 0}
-            </div>
-            <input
-              className="absolute h-[36px] w-[calc(100%+2px)] bg-transparent font-mono text-3xl font-semibold focus:outline-none"
-              placeholder="_"
-              value={set.reps ? set.reps : ""}
-              inputMode="numeric"
-              name={`sets.create[${index}]reps`}
-              onChange={(e) => {
-                setSets((sets) => {
-                  let newSets = [...sets];
-                  let currentSet = newSets[index];
-                  let newReps = e.target.value === "" ? null : +e.target.value;
-                  let isLastSet = index === sets.length - 1;
-
-                  newSets[index] = {
-                    ...currentSet,
-                    reps: newReps,
-                  };
-
-                  if (newReps !== null && isLastSet) {
-                    newSets[index + 1] = {
-                      id: uuid(),
-                      weight: "",
-                      reps: null,
-                      tracked: false,
-                      complete: false,
-                      kind: sets[sets.length - 1].kind,
+      <div className="flex items-center justify-between">
+        <div className="flex gap-4">
+          <div className="flex items-end gap-1">
+            <div className="relative flex overflow-hidden">
+              <span className="invisible font-mono text-3xl font-semibold leading-[36px] tracking-tight">
+                {convertTo(set.weight ? +set.weight : 0)}
+              </span>
+              <input
+                value={set.weight ? convertTo(+set.weight) : ""}
+                placeholder="_"
+                className="absolute h-[36px] w-[calc(100%+2px)] bg-transparent font-mono text-3xl font-semibold tabular-nums tracking-tight focus:outline-none"
+                inputMode="decimal"
+                onChange={(e) => {
+                  setSets((sets) => {
+                    let newSets = [...sets];
+                    let currentSet = newSets[index];
+                    newSets[index] = {
+                      ...currentSet,
+                      weight:
+                        e.target.value === ""
+                          ? null
+                          : `${convertFrom(+e.target.value)}`,
                     };
-                  }
-
-                  return newSets;
-                });
-              }}
-            />
+                    return newSets;
+                  });
+                }}
+              />
+              <input
+                type="hidden"
+                name={`sets.create[${index}]weight`}
+                value={set.weight || ""}
+              />
+            </div>
+            <span className="pb-1 text-sm font-medium text-gray-500">
+              {units === "pounds" ? "lbs" : "kilos"}
+            </span>
           </div>
-          <span className="pb-1 text-sm font-medium text-gray-500">reps</span>
+          <div className="flex items-end gap-1">
+            <div className="relative flex">
+              <div className="invisible font-mono text-3xl font-semibold leading-[36px]">
+                {set.reps || 0}
+              </div>
+              <input
+                className="absolute h-[36px] w-[calc(100%+2px)] bg-transparent font-mono text-3xl font-semibold focus:outline-none"
+                placeholder="_"
+                value={set.reps ? set.reps : ""}
+                inputMode="numeric"
+                name={`sets.create[${index}]reps`}
+                onChange={(e) => {
+                  setSets((sets) => {
+                    let newSets = [...sets];
+                    let currentSet = newSets[index];
+                    let newReps =
+                      e.target.value === "" ? null : +e.target.value;
+                    let isLastSet = index === sets.length - 1;
+                    newSets[index] = {
+                      ...currentSet,
+                      reps: newReps,
+                    };
+
+                    if (newReps !== null && isLastSet) {
+                      newSets[index + 1] = {
+                        id: uuid(),
+                        weight: null,
+                        reps: null,
+                        tracked: false,
+                        complete: false,
+                        kind: sets[sets.length - 1].kind,
+                      };
+                    }
+                    return newSets;
+                  });
+                }}
+              />
+            </div>
+            <span className="pb-1 text-sm font-medium text-gray-500">reps</span>
+          </div>
+        </div>
+        <div className="flex">
+          <Checkbox.Root
+            name={`sets.create[${index}]complete`}
+            checked={set.complete}
+            onCheckedChange={() => {
+              setSets((sets) => {
+                let newSets = [...sets];
+                let currentSet = newSets[index];
+
+                newSets[index] = {
+                  ...currentSet,
+                  complete: !set.complete,
+                };
+                return newSets;
+              });
+            }}
+            className="inline-flex size-8 items-center justify-center rounded-full border-2 bg-white"
+          >
+            <Checkbox.Indicator className="inline-flex size-6 items-center justify-center rounded-full bg-blue-500">
+              <CheckIcon className="size-4 text-white" />
+            </Checkbox.Indicator>
+          </Checkbox.Root>
         </div>
       </div>
-      <div className="flex">
-        <Checkbox.Root
-          name={`sets.create[${index}]complete`}
-          checked={set.complete}
-          onCheckedChange={() => {
+      <div className="mt-2 flex items-center gap-3">
+        <p className="text-xs font-medium leading-5 text-gray-400">
+          Set {index + 1}
+        </p>
+        <button
+          type="button"
+          onClick={() => {
             setSets((sets) => {
               let newSets = [...sets];
               let currentSet = newSets[index];
+              let kinds = ["warm-up", "working-set", "failure"];
+              let currentKindIndex = kinds.indexOf(currentSet.kind);
+              let newKindIndex = (currentKindIndex + 1) % kinds.length;
 
               newSets[index] = {
                 ...currentSet,
-                complete: !set.complete,
+                kind: kinds[newKindIndex],
               };
               return newSets;
             });
           }}
-          className="inline-flex size-8 items-center justify-center rounded-full border-2 bg-white"
+          className="rounded-full bg-white px-2 py-0.5 text-xs text-gray-500 ring-1 ring-black/5"
         >
-          <Checkbox.Indicator className="inline-flex size-6 items-center justify-center rounded-full bg-blue-500">
-            <CheckIcon className="size-4 text-white" />
-          </Checkbox.Indicator>
-        </Checkbox.Root>
+          {label}
+        </button>
       </div>
     </div>
   );

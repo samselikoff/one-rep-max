@@ -119,14 +119,14 @@ export default function ExerciseIndexPage() {
     <>
       <Header>
         <Link
-          className="inline-flex items-center text-xs font-medium text-blue-500"
+          className="inline-flex items-center text-sm font-medium text-blue-500"
           to="/"
         >
           <ChevronLeftIcon width="20" height="20" />
           Home
         </Link>
 
-        <h1 className="absolute left-1/2 -translate-x-1/2 text-sm font-semibold text-white">
+        <h1 className="absolute left-1/2 -translate-x-1/2 font-semibold leading-5 text-white">
           {exercise.name}
         </h1>
       </Header>
