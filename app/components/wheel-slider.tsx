@@ -18,25 +18,38 @@ export function WheelSlider({
   value: number;
   onChange: (v: number) => void;
 }) {
-  // const [value, setValue] = useState(70);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const itemCount = 101; // 0 through 100
+  const min = 0;
+  const max = 100;
+  const step = 5;
+
+  // const steps = (max - min) / step;
+  const values = Array.from(
+    { length: Math.floor((max - min) / step) + 1 },
+    (_, i) => min + i * step
+  );
+  const selectedIndex = values.indexOf(value);
+
   const itemWidth = 40; // in pixels
 
   useEffect(() => {
     if (!scrollContainerRef.current) return;
 
     const { scrollLeft } = scrollContainerRef.current;
-    const internalValue = Math.floor(scrollLeft / itemWidth);
+    const internalIndex = Math.floor(scrollLeft / itemWidth);
+    const internalValue = values[internalIndex];
+
     if (internalValue !== value) {
-      scrollContainerRef.current.scrollLeft = value * itemWidth + itemWidth / 2;
+      scrollContainerRef.current.scrollLeft =
+        selectedIndex * itemWidth + itemWidth / 2;
     }
-  }, [value]);
+  }, [selectedIndex, value, values]);
 
   const handleScroll = (e) => {
     const { scrollLeft } = e.target;
-    const newValue = Math.floor(scrollLeft / itemWidth);
+    const newIndex = Math.floor(scrollLeft / itemWidth);
+    const newValue = values[newIndex];
 
     if (newValue !== value) {
       onChange(newValue);
@@ -51,20 +64,20 @@ export function WheelSlider({
           onScroll={handleScroll}
           className="flex snap-x snap-mandatory snap-always overflow-x-auto pb-3 pl-[50%] pr-[50%]"
         >
-          {Array.from({ length: itemCount }).map((_, i) => (
+          {values.map((value) => (
             <div
-              key={i}
+              key={value}
               className="flex shrink-0 snap-center flex-col items-center justify-end"
               style={{ width: itemWidth }}
             >
               <div className="relative mb-1 flex h-8 w-full items-end justify-center">
-                <div className="h-1/2 w-px bg-gray-400" />
+                <div className="h-1/2 w-px bg-gray-300" />
               </div>
-              <span className="text-xs">{i}</span>
+              <span className="text-xs">{value}</span>
             </div>
           ))}
         </div>
-        <div className="absolute left-1/2 top-0 h-8 w-[2px] -translate-x-1/2 transform bg-red-500" />
+        <div className="absolute left-1/2 top-0 h-8 w-[2px] -translate-x-1/2 transform bg-gray-700" />
       </div>
     </div>
   );
