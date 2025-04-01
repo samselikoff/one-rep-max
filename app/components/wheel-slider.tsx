@@ -49,19 +49,22 @@ export function WheelSlider({
         <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className="flex snap-x snap-mandatory snap-always overflow-x-auto pl-[50%] pr-[50%]"
+          className="flex snap-x snap-mandatory snap-always overflow-x-auto pb-3 pl-[50%] pr-[50%]"
         >
           {Array.from({ length: itemCount }).map((_, i) => (
             <div
               key={i}
-              className="shrink-0 snap-center border-l border-gray-300 py-2.5"
+              className="flex shrink-0 snap-center flex-col items-center justify-end"
               style={{ width: itemWidth }}
             >
-              {i}
+              <div className="relative mb-1 flex h-8 w-full items-end justify-center">
+                <div className="h-1/2 w-px bg-gray-400" />
+              </div>
+              <span className="text-xs">{i}</span>
             </div>
           ))}
         </div>
-        <div className="absolute bottom-0 left-1/2 top-0 w-[2px] -translate-x-1/2 transform bg-red-500" />
+        <div className="absolute left-1/2 top-0 h-8 w-[2px] -translate-x-1/2 transform bg-red-500" />
       </div>
     </div>
   );
