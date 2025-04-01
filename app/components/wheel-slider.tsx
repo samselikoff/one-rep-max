@@ -9,7 +9,8 @@
 //     </motion.div>
 //   );
 // }
-import { useState, useRef, useEffect } from "react";
+import type { UIEvent } from "react";
+import { useRef, useEffect } from "react";
 
 export function WheelSlider({
   value,
@@ -21,7 +22,7 @@ export function WheelSlider({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const min = 0;
-  const max = 100;
+  const max = 1000;
   const step = 5;
 
   // const steps = (max - min) / step;
@@ -46,9 +47,15 @@ export function WheelSlider({
     }
   }, [selectedIndex, value, values]);
 
-  const handleScroll = (e) => {
+  const handleScroll = (e: UIEvent<HTMLDivElement, UIEvent>) => {
+    if (!(e.target instanceof HTMLElement)) return;
+
     const { scrollLeft } = e.target;
-    const newIndex = Math.floor(scrollLeft / itemWidth);
+    const newIndex = Math.max(
+      Math.min(Math.floor(scrollLeft / itemWidth), values.length - 1),
+      0
+    );
+
     const newValue = values[newIndex];
 
     if (newValue !== value) {
@@ -61,7 +68,7 @@ export function WheelSlider({
       <div className="relative">
         <div
           ref={scrollContainerRef}
-          onScroll={handleScroll}
+          onScroll={(e) => handleScroll}
           className="flex snap-x snap-mandatory snap-always overflow-x-auto pb-3 pl-[50%] pr-[50%]"
         >
           {values.map((value) => (

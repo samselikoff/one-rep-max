@@ -1,12 +1,10 @@
-import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
-import * as Checkbox from "@radix-ui/react-checkbox";
-import { Form, Link, useTransition } from "@remix-run/react";
-import { format, formatDistanceToNow, parseISO, startOfToday } from "date-fns";
-import { Fragment, useRef, useState } from "react";
-import { v4 as uuid } from "uuid";
-import { CheckIcon } from "@heroicons/react/16/solid";
-import { usePreferredUnit } from "./exercise-settings";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
 import * as Dialog from "@radix-ui/react-dialog";
+import { Form, useTransition } from "@remix-run/react";
+import { formatDistanceToNow, parseISO } from "date-fns";
+import { useRef, useState } from "react";
+import { v4 as uuid } from "uuid";
+import { usePreferredUnit } from "./exercise-settings";
 import { WheelSlider } from "./wheel-slider";
 
 export default function EntryForm({
@@ -83,7 +81,9 @@ export default function EntryForm({
                 setSets={setSets}
                 sets={sets}
                 index={index}
-                onSelect={() => setSelectedSetId(set.id)}
+                onSelect={() =>
+                  setSelectedSetId((c) => (c === set.id ? null : set.id))
+                }
                 isSelected={selectedSetId === set.id}
               />
             ))}
@@ -148,40 +148,36 @@ export default function EntryForm({
       </Form>
 
       {selectedSet && (
-        <Dialog.Root open modal={false}>
-          <Dialog.Portal>
-            <div className="fixed inset-x-0 bottom-0 bg-gray-100 ">
-              <Dialog.Content
-                aria-describedby={undefined}
-                className="border-t p-4 focus:outline-none"
-              >
-                <Dialog.Title>Set {sets.indexOf(selectedSet) + 1}</Dialog.Title>
+        <>
+          <SetControls
+            sets={sets}
+            selectedSet={selectedSet}
+            onWeightChange={(v) =>
+              setSets((sets) =>
+                sets.map((s) => ({
+                  ...s,
+                  weight: s.id === selectedSetId ? `${v}` : s.weight,
+                }))
+              )
+            }
+            onPrevious={() => {
+              setSelectedSetId((prev) => {
+                if (!prev) return prev;
+                const currentIndex = sets.map((s) => s.id).indexOf(prev);
 
-                <div>
-                  {/* <p>Weight</p> */}
-                  {/* <p className="text-center text-lg">{selectedSet.weight}</p> */}
+                return sets[currentIndex - 1].id;
+              });
+            }}
+            onNext={() => {
+              setSelectedSetId((prev) => {
+                if (!prev) return prev;
+                const currentIndex = sets.map((s) => s.id).indexOf(prev);
 
-                  <div className="mb-4 text-center font-mono text-2xl tabular-nums">
-                    {selectedSet.weight} lbs
-                  </div>
-                  <div className="mt-2 pb-8">
-                    <WheelSlider
-                      value={+selectedSet.weight}
-                      onChange={(v) => {
-                        setSets((sets) =>
-                          sets.map((s) => ({
-                            ...s,
-                            weight: s.id === selectedSetId ? `${v}` : s.weight,
-                          }))
-                        );
-                      }}
-                    />
-                  </div>
-                </div>
-              </Dialog.Content>
-            </div>
-          </Dialog.Portal>
-        </Dialog.Root>
+                return sets[currentIndex + 1].id;
+              });
+            }}
+          />
+        </>
       )}
 
       {lastEntry && (
@@ -234,7 +230,7 @@ function SetRow({
     }
   }
 
-  const labelClasses = {
+  const labelClasses: Record<string, string> = {
     "warm-up": "bg-amber-400/20 text-amber-700",
     "working-set": "bg-green-400/20 text-green-700",
     failure: "bg-red-400/20 text-red-700",
@@ -410,6 +406,68 @@ function SetRow({
         </button> */}
       </div>
     </button>
+  );
+}
+
+function SetControls({
+  sets,
+  selectedSet,
+  onWeightChange,
+  onNext,
+  onPrevious,
+}: {
+  sets: Set[];
+  selectedSet: Set;
+  onWeightChange: (v: number) => void;
+  onNext: () => void;
+  onPrevious: () => void;
+}) {
+  return (
+    <Dialog.Root open modal={false}>
+      <Dialog.Portal>
+        <div className="fixed inset-x-0 bottom-0 bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,.1),0_-2px_4px_-2px_rgba(0,0,0,.1)]">
+          <Dialog.Content
+            aria-describedby={undefined}
+            className="p-4 focus:outline-none"
+          >
+            <Dialog.Title className="hidden">Set</Dialog.Title>
+            <div>
+              <div className="mb-4 text-center font-mono text-2xl tabular-nums">
+                {selectedSet.weight} lbs
+              </div>
+
+              <div className="mt-2">
+                <WheelSlider
+                  value={selectedSet.weight ? +selectedSet.weight : 0}
+                  onChange={onWeightChange}
+                />
+              </div>
+
+              <div className="mt-2 flex justify-end">
+                <button
+                  onClick={onNext}
+                  className="inline-flex size-10 items-center justify-center focus:outline-none"
+                >
+                  <ChevronLeftIcon className="size-5 text-blue-500" />
+                </button>
+                <button className="h-10 px-3">
+                  Set{" "}
+                  <span className="tabular-nums">
+                    {sets.indexOf(selectedSet) + 1}
+                  </span>
+                </button>
+                <button
+                  onClick={onPrevious}
+                  className="inline-flex size-10 items-center justify-center focus:outline-none"
+                >
+                  <ChevronRightIcon className="size-5 text-blue-500" />
+                </button>
+              </div>
+            </div>
+          </Dialog.Content>
+        </div>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
 
