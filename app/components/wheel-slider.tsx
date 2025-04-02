@@ -1,14 +1,3 @@
-// import { motion } from "framer-motion";
-
-// export function WheelSlider() {
-//   return (
-//     <motion.div drag="x" className="flex justify-between">
-//       {Array.from(Array(10).keys()).map((i) => (
-//         <span className="inline-block h-4 w-[2px] bg-gray-300" key={i} />
-//       ))}
-//     </motion.div>
-//   );
-// }
 import type { UIEvent } from "react";
 import { useRef, useEffect } from "react";
 
