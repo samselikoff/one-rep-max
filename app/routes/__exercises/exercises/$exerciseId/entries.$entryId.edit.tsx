@@ -6,7 +6,7 @@ import { Form, Link, useLoaderData } from "@remix-run/react";
 import { format, isSameDay, parse, startOfToday } from "date-fns";
 import { useState } from "react";
 import { z } from "zod";
-import EntryForm from "~/components/EntryForm";
+import { EntryForm } from "~/components/entry-form";
 import {
   Dialog,
   DialogContent,
@@ -172,7 +172,7 @@ export default function EditEntryPage() {
         </div>
       </header>
 
-      <main className="relative mt-[68px] pb-safe-bottom">
+      <main className="relative mt-[calc(68px+env(safe-area-inset-top))] pb-safe-bottom">
         <div className="mt-5 px-4 pb-8">
           <EntryForm
             entry={entry}

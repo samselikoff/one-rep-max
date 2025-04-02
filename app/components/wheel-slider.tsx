@@ -15,17 +15,18 @@ import { useRef, useEffect } from "react";
 export function WheelSlider({
   value,
   onChange = () => {},
+  min,
+  max,
+  step = 1,
 }: {
   value: number;
   onChange: (v: number) => void;
+  min: number;
+  max: number;
+  step?: number;
 }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const min = 0;
-  const max = 1000;
-  const step = 5;
-
-  // const steps = (max - min) / step;
   const values = Array.from(
     { length: Math.floor((max - min) / step) + 1 },
     (_, i) => min + i * step
@@ -47,7 +48,7 @@ export function WheelSlider({
     }
   }, [selectedIndex, value, values]);
 
-  const handleScroll = (e: UIEvent<HTMLDivElement, UIEvent>) => {
+  function handleScroll(e: UIEvent<HTMLDivElement, globalThis.UIEvent>) {
     if (!(e.target instanceof HTMLElement)) return;
 
     const { scrollLeft } = e.target;
@@ -61,14 +62,14 @@ export function WheelSlider({
     if (newValue !== value) {
       onChange(newValue);
     }
-  };
+  }
 
   return (
     <div className="relative mx-auto w-full text-center">
       <div className="relative">
         <div
           ref={scrollContainerRef}
-          onScroll={(e) => handleScroll}
+          onScroll={handleScroll}
           className="flex snap-x snap-mandatory snap-always overflow-x-auto pb-3 pl-[50%] pr-[50%]"
         >
           {values.map((value) => (
