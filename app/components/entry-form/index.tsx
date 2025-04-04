@@ -5,6 +5,7 @@ import { v4 as uuid } from "uuid";
 import { SetControls } from "./set-controls";
 import { usePreferredUnit } from "../exercise-settings";
 import { SetRow } from "./set-row";
+import { AnimatePresence, motion } from "framer-motion";
 
 export function EntryForm({
   exercise,
@@ -144,8 +145,8 @@ export function EntryForm({
         </div>
       </Form>
 
-      {selectedSet && (
-        <>
+      <AnimatePresence>
+        {selectedSet && (
           <SetControls
             sets={sets}
             selectedSet={selectedSet}
@@ -169,7 +170,6 @@ export function EntryForm({
               setSelectedSetId((prev) => {
                 if (!prev) return prev;
                 const currentIndex = sets.map((s) => s.id).indexOf(prev);
-
                 return sets[currentIndex - 1].id;
               });
             }}
@@ -177,7 +177,6 @@ export function EntryForm({
               setSelectedSetId((prev) => {
                 if (!prev) return prev;
                 const currentIndex = sets.map((s) => s.id).indexOf(prev);
-
                 return sets[currentIndex + 1].id;
               });
             }}
@@ -185,7 +184,6 @@ export function EntryForm({
               const newId = uuid();
               setSets((prev) => {
                 const lastSet = prev.at(-1);
-
                 return [
                   ...prev,
                   {
@@ -211,8 +209,8 @@ export function EntryForm({
             }}
             onClose={() => setSelectedSetId(null)}
           />
-        </>
-      )}
+        )}
+      </AnimatePresence>
 
       {lastEntry && (
         <div className="mt-10 border p-2">
