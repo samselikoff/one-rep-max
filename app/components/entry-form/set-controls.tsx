@@ -54,12 +54,13 @@ export function SetControls({
               transition: { ease: [0.4, 0, 0.6, 1], duration: 0.3 },
             }}
           >
-            <div className="p-4 pb-safe-bottom">
+            <div className="px-4 pb-[calc(16px+env(safe-area-inset-bottom))] pt-2">
               <button
                 onClick={onClose}
-                className="absolute right-0 top-0 size-10 text-gray-400"
+                className="absolute right-4 top-2 size-10 font-medium text-blue-500"
               >
-                <XMarkIcon className="size-5" />
+                Done
+                {/* <XMarkIcon className="size-5" /> */}
               </button>
               <Dialog.Title className="hidden">Set</Dialog.Title>
               <div>
@@ -86,6 +87,7 @@ export function SetControls({
                     max={20}
                   />
                 </div>
+
                 <div className="relative mt-2 flex h-10 items-center">
                   <div className="flex-1">
                     <button
@@ -95,34 +97,13 @@ export function SetControls({
                       <SetLabel set={selectedSet} large />
                     </button>
                   </div>
-                  <div className="flex items-center">
-                    <button
-                      onClick={onPrevious}
-                      disabled={prevDisabled}
-                      className="inline-flex size-10 items-center justify-center focus:outline-none disabled:opacity-50 disabled:grayscale"
-                    >
-                      <ChevronLeftIcon className="size-6 text-blue-500" />
-                    </button>
-                    <span className="px-1">
-                      Set{" "}
-                      <span className="tabular-nums">
-                        {sets.indexOf(selectedSet) + 1}
-                      </span>
-                    </span>
-                    <button
-                      onClick={onNext}
-                      disabled={nextDisabled}
-                      className="inline-flex size-10 items-center justify-center focus:outline-none disabled:opacity-50 disabled:grayscale"
-                    >
-                      <ChevronRightIcon className="size-6 text-blue-500" />
-                    </button>
-                  </div>
+
                   <div className="flex-1 text-right">
                     <button
                       onClick={onAdd}
                       className="font-medium text-blue-500 focus:outline-none"
                     >
-                      Add
+                      Add Set
                     </button>
                   </div>
                 </div>

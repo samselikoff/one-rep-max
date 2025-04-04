@@ -146,12 +146,12 @@ export default function EditEntryPage() {
           </div> */}
 
           <div className="absolute left-1/2 -translate-x-1/2 text-center leading-none">
-            <h1 className="font-semibold leading-5 text-white">
+            <h1 className="mb-0.5 font-medium leading-5 text-white">
               {exercise.name}
             </h1>
 
             <Dialog>
-              <DialogTrigger className="text-xs font-medium text-blue-500">
+              <DialogTrigger className="text-sm font-medium text-blue-500">
                 {dateLabel}
               </DialogTrigger>
               <DialogContent>
