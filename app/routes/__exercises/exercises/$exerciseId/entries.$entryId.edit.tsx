@@ -2,18 +2,12 @@ import { parseWithZod } from "@conform-to/zod";
 import { ChevronLeftIcon, TrashIcon } from "@radix-ui/react-icons";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import { Form, Link, useLoaderData, useTransition } from "@remix-run/react";
 import { format, isSameDay, parse, startOfToday } from "date-fns";
 import { useState } from "react";
 import { z } from "zod";
 import { EntryForm } from "~/components/entry-form";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
+import Spinner from "~/components/Spinner";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import { minDelay } from "~/utils/minDelay";
@@ -108,12 +102,10 @@ export async function action({ request, params }: ActionArgs) {
 export default function EditEntryPage() {
   let { entry, lastEntry, exercise, lastTrackedEntry } =
     useLoaderData<typeof loader>();
+  let { state } = useTransition();
+  let isSaving = state === "submitting" || state === "loading";
 
   const [dateString, setDateString] = useState(entry.date.substring(0, 10));
-  const date = parse(dateString, "yyyy-MM-dd", new Date());
-  const dateLabel = isSameDay(date, startOfToday())
-    ? "Today"
-    : format(date, "M/d/yy");
 
   return (
     <>
@@ -127,47 +119,29 @@ export default function EditEntryPage() {
             Back
           </Link>
 
-          {/* <div className="relative flex h-5 items-center">
-            <Dialog>
-              <DialogTrigger className="text-sm font-medium text-blue-500">
-                {dateLabel}
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Date</DialogTitle>
-                </DialogHeader>
-                <input
-                  type="date"
-                  value={dateString}
-                  onChange={(e) => setDateString(e.target.value)}
-                />
-              </DialogContent>
-            </Dialog>
-          </div> */}
-
           <div className="absolute left-1/2 -translate-x-1/2 text-center leading-none">
             <h1 className="mb-0.5 font-medium leading-5 text-white">
               {exercise.name}
             </h1>
 
-            <Dialog>
-              <DialogTrigger className="text-sm font-medium text-blue-500">
-                {dateLabel}
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Date</DialogTitle>
-                </DialogHeader>
-                <input
-                  type="date"
-                  value={dateString}
-                  onChange={(e) => setDateString(e.target.value)}
-                />
-              </DialogContent>
-            </Dialog>
-            {/* <span className="text-xs font-medium leading-none text-gray-400">
-              Log
-            </span> */}
+            <input
+              type="date"
+              value={dateString}
+              className="bg-transparent text-sm font-medium text-blue-500"
+              style={{ colorScheme: "dark" }}
+              onChange={(e) => setDateString(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <button
+              className="text-sm font-medium text-blue-500"
+              type="submit"
+              form="entry-form"
+            >
+              <Spinner loading={isSaving}>Save</Spinner>
+              {/* {isSaving ? "Saving..." : "Save"} */}
+            </button>
           </div>
         </div>
       </header>

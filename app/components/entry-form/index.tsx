@@ -36,7 +36,7 @@ export function EntryForm({
           },
         ]
   );
-  const [selectedSetId, setSelectedSetId] = useState<null | string>(sets[0].id);
+  const [selectedSetId, setSelectedSetId] = useState<null | string>(null);
   const selectedSet = sets.find((s) => s.id === selectedSetId);
 
   let { state } = useTransition();
@@ -44,30 +44,7 @@ export function EntryForm({
 
   return (
     <div className="mt-4">
-      <Form
-        method="post"
-        ref={formRef}
-        // onBlur={(event) => {
-        //   const nextFocused = event.relatedTarget || document.activeElement;
-
-        //   if (!event.currentTarget.contains(nextFocused)) {
-        //     setSets((sets) => {
-        //       const lastSet = sets.at(-1);
-
-        //       if (
-        //         sets.length > 1 &&
-        //         lastSet &&
-        //         lastSet.weight === null &&
-        //         lastSet.reps === null
-        //       ) {
-        //         return sets.slice(0, -1);
-        //       } else {
-        //         return sets;
-        //       }
-        //     });
-        //   }
-        // }}
-      >
+      <Form id="entry-form" method="post" ref={formRef}>
         <input type="hidden" name="date" value={dateString} />
 
         <div className="mt-6">
