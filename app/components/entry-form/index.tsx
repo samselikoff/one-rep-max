@@ -1,11 +1,11 @@
 import { Form, useTransition } from "@remix-run/react";
 import { formatDistanceToNow, parseISO } from "date-fns";
+import { AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
 import { v4 as uuid } from "uuid";
-import { SetControls } from "./set-controls";
 import { usePreferredUnit } from "../exercise-settings";
+import { SetControls } from "./set-controls";
 import { SetRow } from "./set-row";
-import { AnimatePresence, motion } from "framer-motion";
 
 export function EntryForm({
   exercise,

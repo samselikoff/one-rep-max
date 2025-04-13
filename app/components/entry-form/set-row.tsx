@@ -19,21 +19,6 @@ export function SetRow({
   isSelected: boolean;
 }) {
   let { convertTo, convertFrom, units } = usePreferredUnit();
-  let label = "";
-  if (set.kind === "warm-up") {
-    label = "Warm-up";
-  } else {
-    label = `Working set`;
-    if (set.kind === "failure") {
-      label += " – Failure";
-    }
-  }
-
-  const labelClasses: Record<string, string> = {
-    "warm-up": "bg-amber-400/20 text-amber-700",
-    "working-set": "bg-green-400/20 text-green-700",
-    failure: "bg-red-400/20 text-red-700",
-  };
 
   return (
     <div className="relative">
