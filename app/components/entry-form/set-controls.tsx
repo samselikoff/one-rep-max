@@ -1,10 +1,9 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import type { Set } from ".";
 import { WheelSlider } from "../wheel-slider";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import { XMarkIcon } from "@heroicons/react/24/solid";
 import { SetLabel } from "./set-label";
 import { motion } from "framer-motion";
+import { TrashIcon } from "@heroicons/react/16/solid";
 
 export function SetControls({
   sets,
@@ -15,6 +14,7 @@ export function SetControls({
   onNext,
   onPrevious,
   onAdd,
+  onRemove,
   onClose,
 }: {
   sets: Set[];
@@ -25,11 +25,12 @@ export function SetControls({
   onNext: () => void;
   onPrevious: () => void;
   onAdd: () => void;
+  onRemove: () => void;
   onClose: () => void;
 }) {
-  const currentIndex = sets.indexOf(selectedSet);
-  const prevDisabled = currentIndex === 0;
-  const nextDisabled = currentIndex === sets.length - 1;
+  // const currentIndex = sets.indexOf(selectedSet);
+  // const prevDisabled = currentIndex === 0;
+  // const nextDisabled = currentIndex === sets.length - 1;
 
   const kinds = ["warm-up", "working-set", "failure"];
   const currentKindIndex = kinds.indexOf(selectedSet.kind);
@@ -55,12 +56,19 @@ export function SetControls({
             }}
           >
             <div className="px-4 pb-[calc(16px+env(safe-area-inset-bottom))] pt-2">
+              {sets.length > 1 && (
+                <button
+                  onClick={onRemove}
+                  className="absolute left-4 top-2 size-10 font-medium text-gray-400"
+                >
+                  <TrashIcon className="size-5" />
+                </button>
+              )}
               <button
                 onClick={onClose}
                 className="absolute right-4 top-2 size-10 font-medium text-blue-500"
               >
                 Done
-                {/* <XMarkIcon className="size-5" /> */}
               </button>
               <Dialog.Title className="hidden">Set</Dialog.Title>
               <div>

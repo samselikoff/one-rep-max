@@ -67,29 +67,6 @@ export function EntryForm({
           <div className="relative">
             <input className="opacity-0" placeholder="aa" />
           </div>
-
-          {/* <div className="mt-7">
-            <button
-              className="inline-flex w-full items-center justify-center gap-3 rounded bg-gray-200 px-2.5 py-1.5"
-              type="button"
-              onClick={() => {
-                setSets((sets) => [
-                  ...sets,
-                  {
-                    id: uuid(),
-                    weight: sets[sets.length - 1].weight,
-                    reps: sets[sets.length - 1].reps,
-                    tracked: false,
-                    complete: false,
-                    kind: sets[sets.length - 1].kind,
-                  },
-                ]);
-              }}
-            >
-              <PlusIcon />
-              Add set
-            </button>
-          </div> */}
         </div>
 
         <div className="mt-6">
@@ -160,6 +137,14 @@ export function EntryForm({
                 ];
               });
               setSelectedSetId(newId);
+            }}
+            onRemove={() => {
+              const currentSelectedIndex = sets.indexOf(selectedSet);
+              const newSelectedIndex =
+                currentSelectedIndex > 0 ? currentSelectedIndex - 1 : 0;
+
+              setSets((prev) => prev.filter((s) => s.id !== selectedSet.id));
+              setSelectedSetId(sets[newSelectedIndex].id);
             }}
             onKindChange={(v) => {
               setSets((sets) =>
