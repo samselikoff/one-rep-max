@@ -45,29 +45,10 @@ export function SetRow({
             <div className="flex gap-4">
               <div className="flex items-end gap-1">
                 <div className="relative flex overflow-hidden">
-                  <span className="invisible font-mono text-3xl font-semibold leading-[36px] tracking-tight">
+                  <span className="font-mono text-3xl font-semibold leading-[36px] tracking-tight">
                     {convertTo(set.weight ? +set.weight : 0)}
                   </span>
-                  <input
-                    value={set.weight ? convertTo(+set.weight) : ""}
-                    placeholder="_"
-                    className="absolute h-[36px] w-[calc(100%+2px)] bg-transparent font-mono text-3xl font-semibold tabular-nums tracking-tight focus:outline-none"
-                    inputMode="decimal"
-                    onChange={(e) => {
-                      setSets((sets) => {
-                        let newSets = [...sets];
-                        let currentSet = newSets[index];
-                        newSets[index] = {
-                          ...currentSet,
-                          weight:
-                            e.target.value === ""
-                              ? null
-                              : `${convertFrom(+e.target.value)}`,
-                        };
-                        return newSets;
-                      });
-                    }}
-                  />
+
                   <input
                     type="hidden"
                     name={`sets.create[${index}]weight`}
@@ -80,39 +61,14 @@ export function SetRow({
               </div>
               <div className="flex items-end gap-1">
                 <div className="relative flex">
-                  <div className="invisible font-mono text-3xl font-semibold leading-[36px]">
+                  <div className="font-mono text-3xl font-semibold leading-[36px]">
                     {set.reps}
                   </div>
+
                   <input
-                    className="absolute h-[36px] w-[calc(100%+2px)] bg-transparent font-mono text-3xl font-semibold focus:outline-none"
-                    placeholder="_"
-                    value={set.reps ?? 0}
-                    inputMode="numeric"
+                    type="hidden"
                     name={`sets.create[${index}]reps`}
-                    onChange={(e) => {
-                      setSets((sets) => {
-                        let newSets = [...sets];
-                        let currentSet = newSets[index];
-                        let newReps =
-                          e.target.value === "" ? null : +e.target.value;
-                        let isLastSet = index === sets.length - 1;
-                        newSets[index] = {
-                          ...currentSet,
-                          reps: newReps,
-                        };
-                        if (newReps !== null && isLastSet) {
-                          newSets[index + 1] = {
-                            id: uuid(),
-                            weight: null,
-                            reps: null,
-                            tracked: false,
-                            complete: false,
-                            kind: sets[sets.length - 1].kind,
-                          };
-                        }
-                        return newSets;
-                      });
-                    }}
+                    value={set.reps ?? 0}
                   />
                 </div>
                 <span className="pb-1 text-sm font-medium text-gray-500">
