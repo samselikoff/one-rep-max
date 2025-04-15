@@ -87,18 +87,6 @@ export async function action({ request, params }) {
 
       return redirect(`/exercises/${params.exerciseId}`);
 
-    case "CREATE_ENTRY":
-      const newEntry = await prisma.entry.create({
-        data: {
-          exerciseId: params.exerciseId,
-          userId,
-          date: new Date(),
-        },
-      });
-      return redirect(
-        `/exercises/${params.exerciseId}/entries/${newEntry.id}/edit`
-      );
-
     default:
       throw new Error("Unimplemented");
   }
@@ -211,12 +199,9 @@ export default function ExerciseIndexPage() {
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold">Logs</h2>
 
-              <Form method="post">
-                <button type="submit">
-                  <PlusIcon className="text-blue-500" width="20" height="20" />
-                </button>
-                <input type="hidden" name="_action" value="CREATE_ENTRY" />
-              </Form>
+              <Link to={`/exercises/${exercise.id}/new`}>
+                <PlusIcon className="text-blue-500" width="20" height="20" />
+              </Link>
             </div>
 
             {entries.length > 0 ? (
