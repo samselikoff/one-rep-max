@@ -346,7 +346,7 @@ function Stat({ title, stat, statSuffix, subItems = [] }) {
             <span className="ml-0.5 text-sm font-medium">{statSuffix}</span>
           </p>
           <div className="text-[10px] text-gray-500">
-            <div className="flex gap-1">{subItemsLabel}</div>
+            <div className="flex gap-0.5">{subItemsLabel}</div>
           </div>
         </>
       ) : (

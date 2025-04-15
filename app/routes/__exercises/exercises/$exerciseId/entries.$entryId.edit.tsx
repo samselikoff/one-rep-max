@@ -91,7 +91,7 @@ export async function action({ request, params }: ActionArgs) {
         where: { id: params.entryId },
         data: submission.value,
       }),
-      750
+      250
     );
 
     return redirect(`/exercises/${exerciseId}`);
@@ -105,7 +105,6 @@ export default function EditEntryPage() {
   let isSaving = state === "submitting" || state === "loading";
 
   const [dateString, setDateString] = useState(entry.date.substring(0, 10));
-  console.log(dateString);
 
   return (
     <>
