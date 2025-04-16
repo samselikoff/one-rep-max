@@ -53,7 +53,7 @@ model Set {
   reps      Int
   tracked   Boolean  @default(false)
   complete  Boolean  @default(true)
-  kind      String   @default("warm-up")
+  kind      String   @default("working-set")
   entryId   String
   entry     Entry    @relation(fields: [entryId], references: [id], onDelete: Cascade)
 }
