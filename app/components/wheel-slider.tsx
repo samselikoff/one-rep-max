@@ -7,25 +7,28 @@ export function WheelSlider({
   min,
   max,
   step = 1,
+  itemWidth = 40,
+  tickStep = 1,
 }: {
   value: number;
   onChange: (v: number) => void;
   min: number;
   max: number;
   step?: number;
+  itemWidth?: number;
+  tickStep?: number;
 }) {
+  const hasSetInitialScroll = useRef(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const values = Array.from(
     { length: Math.floor((max - min) / step) + 1 },
     (_, i) => min + i * step
   );
-  const selectedIndex = values.indexOf(value);
-
-  const itemWidth = 40; // in pixels
+  const selectedIndex = values.findIndex((v) => v >= value);
 
   useEffect(() => {
-    if (!scrollContainerRef.current) return;
+    if (!scrollContainerRef.current || hasSetInitialScroll.current) return;
 
     const { scrollLeft } = scrollContainerRef.current;
     const internalIndex = Math.floor(scrollLeft / itemWidth);
@@ -35,7 +38,9 @@ export function WheelSlider({
       scrollContainerRef.current.scrollLeft =
         selectedIndex * itemWidth + itemWidth / 2;
     }
-  }, [selectedIndex, value, values]);
+
+    hasSetInitialScroll.current = true;
+  }, [itemWidth, selectedIndex, value, values]);
 
   function handleScroll(e: UIEvent<HTMLDivElement, globalThis.UIEvent>) {
     if (!(e.target instanceof HTMLElement)) return;
@@ -68,9 +73,14 @@ export function WheelSlider({
               style={{ width: itemWidth }}
             >
               <div className="relative mb-1 flex h-8 w-full items-end justify-center">
-                <div className="h-1/2 w-px bg-gray-300" />
+                <div
+                  style={{ height: value % tickStep === 0 ? "50%" : "25%" }}
+                  className="w-px bg-gray-300"
+                />
               </div>
-              <span className="text-xs">{value}</span>
+              <span className="h-[1lh] text-xs">
+                {value % tickStep === 0 ? value : ""}
+              </span>
             </div>
           ))}
         </div>

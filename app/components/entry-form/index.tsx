@@ -1,4 +1,4 @@
-import { Form, useTransition } from "@remix-run/react";
+import { Form } from "@remix-run/react";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
@@ -39,9 +39,6 @@ export function EntryForm({
   const [selectedSetId, setSelectedSetId] = useState<null | string>(null);
   const selectedSet = sets.find((s) => s.id === selectedSetId);
 
-  let { state } = useTransition();
-  let isSaving = state === "submitting" || state === "loading";
-
   return (
     <div className="mt-4">
       <Form id="entry-form" method="post" ref={formRef}>
@@ -49,19 +46,21 @@ export function EntryForm({
 
         <div className="mt-6">
           <div className="flex flex-col divide-y">
-            {sets.map((set, index) => (
-              <SetRow
-                set={set}
-                key={set.id}
-                setSets={setSets}
-                sets={sets}
-                index={index}
-                onSelect={() =>
-                  setSelectedSetId((c) => (c === set.id ? null : set.id))
-                }
-                isSelected={selectedSetId === set.id}
-              />
-            ))}
+            <AnimatePresence initial={false}>
+              {sets.map((set, index) => (
+                <SetRow
+                  set={set}
+                  key={set.id}
+                  setSets={setSets}
+                  sets={sets}
+                  index={index}
+                  onSelect={() =>
+                    setSelectedSetId((c) => (c === set.id ? null : set.id))
+                  }
+                  isSelected={selectedSetId === set.id}
+                />
+              ))}
+            </AnimatePresence>
           </div>
 
           <div className="relative">
@@ -105,36 +104,22 @@ export function EntryForm({
                 }))
               )
             }
-            onPrevious={() => {
-              setSelectedSetId((prev) => {
-                if (!prev) return prev;
-                const currentIndex = sets.map((s) => s.id).indexOf(prev);
-                return sets[currentIndex - 1].id;
-              });
-            }}
-            onNext={() => {
-              setSelectedSetId((prev) => {
-                if (!prev) return prev;
-                const currentIndex = sets.map((s) => s.id).indexOf(prev);
-                return sets[currentIndex + 1].id;
-              });
-            }}
             onAdd={() => {
               const newId = uuid();
               setSets((prev) => {
-                const lastSet = prev.at(-1);
-                return [
-                  ...prev,
-                  {
-                    id: newId,
-                    entryId: lastSet?.entryId,
-                    complete: false,
-                    kind: lastSet?.kind ?? "warm-up",
-                    weight: lastSet?.weight ?? null,
-                    reps: lastSet?.reps ?? null,
-                    tracked: false,
-                  },
-                ];
+                const index = prev.indexOf(selectedSet);
+                const newSets = prev.slice();
+                newSets.splice(index + 1, 0, {
+                  id: newId,
+                  entryId: selectedSet.entryId,
+                  complete: false,
+                  kind: selectedSet.kind ?? "warm-up",
+                  weight: selectedSet.weight ?? null,
+                  reps: selectedSet.reps ?? null,
+                  tracked: false,
+                });
+
+                return newSets;
               });
               setSelectedSetId(newId);
             }}
