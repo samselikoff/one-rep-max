@@ -15,8 +15,8 @@ export default function Spinner({
   loading?: boolean;
   children?: ReactNode;
   className?: string;
-}) {
-  if (!loading) return children;
+}): JSX.Element | null {
+  if (!loading) return <>{children}</>;
 
   const spinner = (
     <span className={`relative inline-flex ${className ?? "size-4"}`}>
