@@ -1,18 +1,15 @@
-import { json } from "@remix-run/node";
 import {
-  Form,
   Links,
   LiveReload,
   Meta,
-  NavLink,
   Outlet,
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { getUser } from "./session.server";
 import globalStylesheetURL from "./styles/global.css";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
-import { useOptionalUser } from "./utils";
+import { json } from "@remix-run/server-runtime";
+import { getUser } from "./session.server";
 
 export function links() {
   return [
@@ -25,6 +22,18 @@ export function links() {
     { rel: "apple-touch-icon", href: "apple-icon-180.png" },
     { rel: "stylesheet", href: tailwindStylesheetUrl },
     { rel: "stylesheet", href: globalStylesheetURL },
+    { rel: "preconnect", href: "https://rsms.me/" },
+    { rel: "stylesheet", href: "https://rsms.me/inter/inter.css" },
+    { rel: "preconnect", href: "https://fonts.googleapis.com" },
+    {
+      rel: "preconnect",
+      href: "https://fonts.gstatic.com",
+      crossOrigin: "",
+    },
+    {
+      rel: "stylesheet",
+      href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap",
+    },
     { rel: "manifest", href: "/site.webmanifest" },
     {
       rel: "apple-touch-startup-image",
@@ -185,6 +194,12 @@ export function links() {
   ];
 }
 
+export async function loader({ request }) {
+  return json({
+    user: await getUser(request),
+  });
+}
+
 export function meta() {
   return {
     charset: "utf-8",
@@ -195,15 +210,7 @@ export function meta() {
   };
 }
 
-export async function loader({ request }) {
-  return json({
-    user: await getUser(request),
-  });
-}
-
 export default function App() {
-  let user = useOptionalUser();
-
   return (
     <html lang="en" className="h-full">
       <head>
@@ -211,22 +218,6 @@ export default function App() {
         <Links />
       </head>
       <body className="h-full antialiased">
-        <header className="bg-gray-900 pt-safe-top">
-          <div className="flex items-center justify-between p-4">
-            <NavLink className="text-2xl font-semibold text-white" end to=".">
-              One Rep Max
-            </NavLink>
-
-            {user && (
-              <Form action="/logout" method="post">
-                <button className="text-sm text-gray-400" type="submit">
-                  Sign out
-                </button>
-              </Form>
-            )}
-          </div>
-        </header>
-
         <main className="pb-safe-bottom">
           <Outlet />
         </main>

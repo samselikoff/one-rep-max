@@ -24,6 +24,10 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 
+button:focus {
+  outline: none;
+}
+
 .scrollbar-hidden::-webkit-scrollbar {
   display: none;
 }

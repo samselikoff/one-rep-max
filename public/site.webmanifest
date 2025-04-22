@@ -2,6 +2,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "short_name": "One Rep Max",
+  "start_url": "/",
   "icons": [
     {
       "src": "manifest-icon-192.maskable.png",

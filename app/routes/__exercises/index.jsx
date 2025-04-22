@@ -1,5 +1,5 @@
 import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Form, NavLink, useLoaderData, useParams } from "@remix-run/react";
 import { useState } from "react";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
@@ -10,9 +10,15 @@ import {
   ExerciseSettingsProvider,
   usePreferredUnit,
 } from "~/components/exercise-settings";
+import { useOptionalUser } from "~/utils";
+import Header from "~/components/header";
 
 export async function loader({ request }) {
   let userId = await requireUserId(request);
+
+  let exercises = await prisma.exercise.findMany({
+    orderBy: { createdAt: "asc" },
+  });
 
   let entries = await prisma.entry.findMany({
     where: { userId },
@@ -28,32 +34,69 @@ export async function loader({ request }) {
     take: 15,
   });
 
-  return json({ entries });
+  return json({ exercises, entries });
 }
 
 export default function ExercisesIndexPage() {
-  let { entries } = useLoaderData();
+  let { entries, exercises } = useLoaderData();
+  let user = useOptionalUser();
+  let params = useParams();
 
   return (
-    <div className="my-5 px-4">
-      {entries.length > 0 ? (
-        <>
-          <h1 className="text-2xl font-semibold">Latest exercises</h1>
-          <div className="mt-6 flex flex-col gap-4">
-            {entries.map((entry) => (
-              <ExerciseSettingsProvider
-                units={entry.exercise.exerciseSettings[0]?.unit || "pounds"}
-                key={entry.id}
+    <>
+      <Header>
+        <NavLink className="text-2xl font-semibold text-white" end to=".">
+          One Rep Max
+        </NavLink>
+
+        {user && (
+          <Form action="/logout" method="post">
+            <button className="text-sm text-gray-400" type="submit">
+              Sign out
+            </button>
+          </Form>
+        )}
+      </Header>
+
+      <main className="pb-safe-bottom">
+        <div className="overflow-x-auto bg-gray-900 pb-2 [scrollbar-width:none]">
+          <div className="flex gap-2">
+            {exercises.map((exercise) => (
+              <NavLink
+                className={`${
+                  params.exerciseId === exercise.id
+                    ? "border-blue-500 text-white"
+                    : "border-transparent text-gray-400"
+                } whitespace-nowrap border-b-2 px-2 py-2 text-sm font-medium`}
+                key={exercise.id}
+                to={`/exercises/${exercise.id}`}
               >
-                <EntryCard entry={entry} />
-              </ExerciseSettingsProvider>
+                {exercise.name}
+              </NavLink>
             ))}
           </div>
-        </>
-      ) : (
-        <p>Choose an exercise.</p>
-      )}
-    </div>
+        </div>
+        <div className="my-5 px-4">
+          {entries.length > 0 ? (
+            <>
+              <h1 className="text-2xl font-semibold">Latest exercises</h1>
+              <div className="mt-6 flex flex-col gap-4">
+                {entries.map((entry) => (
+                  <ExerciseSettingsProvider
+                    units={entry.exercise.exerciseSettings[0]?.unit || "pounds"}
+                    key={entry.id}
+                  >
+                    <EntryCard entry={entry} />
+                  </ExerciseSettingsProvider>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p>Choose an exercise.</p>
+          )}
+        </div>
+      </main>
+    </>
   );
 }
 
